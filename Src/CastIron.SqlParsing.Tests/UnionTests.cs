@@ -26,14 +26,14 @@ namespace CastIron.SqlParsing.Tests
             select1.Columns.Count.Should().Be(1);
             select1.Columns[0].Should().BeOfType<SqlStarNode>();
             select1.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select1.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            select1.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (select1.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table1");
 
             var select2 = statement.Second as SqlSelectNode;
             select2.Columns.Count.Should().Be(1);
             select2.Columns[0].Should().BeOfType<SqlStarNode>();
             select2.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select2.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            select2.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (select2.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table2");
         }
 
@@ -54,7 +54,7 @@ namespace CastIron.SqlParsing.Tests
             select1.Columns.Count.Should().Be(1);
             select1.Columns[0].Should().BeOfType<SqlStarNode>();
             select1.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select1.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            select1.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (select1.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table1");
 
             var union2 = union1.Second as SqlUnionStatementNode;
@@ -64,14 +64,14 @@ namespace CastIron.SqlParsing.Tests
             select2.Columns.Count.Should().Be(1);
             select2.Columns[0].Should().BeOfType<SqlStarNode>();
             select2.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select2.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            select2.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (select2.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table2");
 
             var select3 = union2.Second as SqlSelectNode;
             select3.Columns.Count.Should().Be(1);
             select3.Columns[0].Should().BeOfType<SqlStarNode>();
             select3.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select3.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            select3.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (select3.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table3");
         }
 
@@ -92,14 +92,14 @@ namespace CastIron.SqlParsing.Tests
             select1.Columns.Count.Should().Be(1);
             select1.Columns[0].Should().BeOfType<SqlStarNode>();
             select1.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select1.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            select1.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (select1.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table1");
 
             var select2 = statement.Second as SqlSelectNode;
             select2.Columns.Count.Should().Be(1);
             select2.Columns[0].Should().BeOfType<SqlStarNode>();
             select2.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select2.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            select2.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (select2.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table2");
         }
 
@@ -120,14 +120,14 @@ namespace CastIron.SqlParsing.Tests
             select1.Columns.Count.Should().Be(1);
             select1.Columns[0].Should().BeOfType<SqlStarNode>();
             select1.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select1.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            select1.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (select1.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table1");
 
             var select2 = statement.Second as SqlSelectNode;
             select2.Columns.Count.Should().Be(1);
             select2.Columns[0].Should().BeOfType<SqlStarNode>();
             select2.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select2.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            select2.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (select2.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table2");
         }
 
@@ -148,14 +148,14 @@ namespace CastIron.SqlParsing.Tests
             select1.Columns.Count.Should().Be(1);
             select1.Columns[0].Should().BeOfType<SqlStarNode>();
             select1.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select1.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            select1.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (select1.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table1");
 
             var select2 = statement.Second as SqlSelectNode;
             select2.Columns.Count.Should().Be(1);
             select2.Columns[0].Should().BeOfType<SqlStarNode>();
             select2.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select2.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            select2.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (select2.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table2");
         }
     }

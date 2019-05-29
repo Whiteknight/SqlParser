@@ -14,7 +14,7 @@ namespace CastIron.SqlParsing.Ast
         public SqlSelectTopNode Top { get; set; }
         public List<SqlNode> Columns { get; }
         public SqlSelectFromClauseNode FromClause { get; set; }
-        public SqlNode OrderBy { get; set; }
+        public SqlSelectOrderByClauseNode OrderBy { get; set; }
         public SqlNode GroupBy { get; set; }
 
         public override void ToString(StringBuilder sb, int level)

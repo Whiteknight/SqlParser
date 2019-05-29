@@ -23,44 +23,30 @@ namespace CastIron.SqlParsing.Ast
         }
     }
 
-    public class SqlColumnIdentifierNode : SqlNode
+    public class SqlQualifiedIdentifierNode : SqlNode
     {
-        public SqlIdentifierNode Table { get; set; }
-        public SqlNode Column { get; set; }
+        public SqlQualifiedIdentifierNode()
+        {
+        }
+
+        public SqlQualifiedIdentifierNode(SqlToken token)
+        {
+            Location = token.Location;
+            Identifier = new SqlIdentifierNode(token);
+        }
+
+        public SqlIdentifierNode Qualifier { get; set; }
+        public SqlNode Identifier { get; set; }
 
         public override void ToString(StringBuilder sb, int level)
         {
-            if (Table != null)
+            if (Qualifier != null)
             {
-                Table.ToString(sb, level);
+                Qualifier.ToString(sb, level);
                 sb.Append(".");
             }
 
-            Column.ToString(sb, level);
-        }
-    }
-
-    public class SqlTableIdentifierNode : SqlIdentifierNode
-    {
-        public SqlTableIdentifierNode()
-        {
-        }
-
-        public SqlTableIdentifierNode(SqlToken token) : base(token)
-        {
-        }
-
-        public SqlIdentifierNode Schema { get; set; }
-
-        public override void ToString(StringBuilder sb, int level)
-        {
-            if (Schema != null)
-            {
-                Schema.ToString(sb, level);
-                sb.Append(".");
-            }
-
-            sb.Append(Name);
+            Identifier.ToString(sb, level);
         }
     }
 }

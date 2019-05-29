@@ -23,7 +23,7 @@ namespace CastIron.SqlParsing.Tests
             statement.Columns.Count.Should().Be(1);
             statement.Columns[0].Should().BeOfType<SqlStarNode>();
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
         }
 
@@ -41,9 +41,9 @@ namespace CastIron.SqlParsing.Tests
             statement.Columns.Count.Should().Be(1);
             statement.Columns[0].Should().BeOfType<SqlStarNode>();
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            var table = statement.FromClause.Source as SqlTableIdentifierNode;
-            table.Name.Should().Be("MyTable");
-            table.Schema.Name.Should().Be("dbo");
+            var table = statement.FromClause.Source as SqlQualifiedIdentifierNode;
+            (table.Identifier as SqlIdentifierNode).Name.Should().Be("MyTable");
+            table.Qualifier.Name.Should().Be("dbo");
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace CastIron.SqlParsing.Tests
             statement.Columns.Count.Should().Be(1);
             statement.Columns[0].Should().BeOfType<SqlStarNode>();
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
         }
 
@@ -92,7 +92,7 @@ namespace CastIron.SqlParsing.Tests
             statement.Columns.Count.Should().Be(1);
             statement.Columns[0].Should().BeOfType<SqlStarNode>();
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
         }
 
@@ -111,7 +111,7 @@ namespace CastIron.SqlParsing.Tests
             statement.Columns.Count.Should().Be(1);
             statement.Columns[0].Should().BeOfType<SqlStarNode>();
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
         }
 
@@ -145,10 +145,10 @@ namespace CastIron.SqlParsing.Tests
             var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
             statement.Should().NotBeNull();
             statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlColumnIdentifierNode>();
-            var column1 = statement.Columns[0] as SqlColumnIdentifierNode;
-            column1.Table.Name.Should().Be("t1");
-            column1.Column.Should().BeOfType<SqlStarNode>();
+            statement.Columns[0].Should().BeOfType<SqlQualifiedIdentifierNode>();
+            var column1 = statement.Columns[0] as SqlQualifiedIdentifierNode;
+            column1.Qualifier.Name.Should().Be("t1");
+            column1.Identifier.Should().BeOfType<SqlStarNode>();
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
             statement.FromClause.Source.Should().BeOfType<SqlAliasNode>();
             var table = (statement.FromClause.Source as SqlAliasNode).Source as SqlIdentifierNode;
@@ -168,10 +168,10 @@ namespace CastIron.SqlParsing.Tests
             var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
             statement.Should().NotBeNull();
             statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlColumnIdentifierNode>();
-            var column1 = statement.Columns[0] as SqlColumnIdentifierNode;
-            column1.Table.Name.Should().Be("t1");
-            (column1.Column as SqlIdentifierNode).Name.Should().Be("MyColumn");
+            statement.Columns[0].Should().BeOfType<SqlQualifiedIdentifierNode>();
+            var column1 = statement.Columns[0] as SqlQualifiedIdentifierNode;
+            column1.Qualifier.Name.Should().Be("t1");
+            (column1.Identifier as SqlIdentifierNode).Name.Should().Be("MyColumn");
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
             statement.FromClause.Source.Should().BeOfType<SqlAliasNode>();
             var table = (statement.FromClause.Source as SqlAliasNode).Source as SqlIdentifierNode;
@@ -191,10 +191,10 @@ namespace CastIron.SqlParsing.Tests
             var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
             statement.Should().NotBeNull();
             statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlColumnIdentifierNode>();
-            var column1 = statement.Columns[0] as SqlColumnIdentifierNode;
-            column1.Table.Name.Should().Be("t1");
-            column1.Column.Should().BeOfType<SqlStarNode>();
+            statement.Columns[0].Should().BeOfType<SqlQualifiedIdentifierNode>();
+            var column1 = statement.Columns[0] as SqlQualifiedIdentifierNode;
+            column1.Qualifier.Name.Should().Be("t1");
+            column1.Identifier.Should().BeOfType<SqlStarNode>();
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
             statement.FromClause.Source.Should().BeOfType<SqlAliasNode>();
             var table = (statement.FromClause.Source as SqlAliasNode).Source as SqlIdentifierNode;
@@ -214,10 +214,10 @@ namespace CastIron.SqlParsing.Tests
             var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
             statement.Should().NotBeNull();
             statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlColumnIdentifierNode>();
-            var column1 = statement.Columns[0] as SqlColumnIdentifierNode;
-            column1.Table.Name.Should().Be("t1");
-            column1.Column.Should().BeOfType<SqlStarNode>();
+            statement.Columns[0].Should().BeOfType<SqlQualifiedIdentifierNode>();
+            var column1 = statement.Columns[0] as SqlQualifiedIdentifierNode;
+            column1.Qualifier.Name.Should().Be("t1");
+            column1.Identifier.Should().BeOfType<SqlStarNode>();
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
             statement.FromClause.Source.Should().BeOfType<SqlAliasNode>();
             var table = (statement.FromClause.Source as SqlAliasNode).Source as SqlVariableNode;
@@ -241,10 +241,10 @@ namespace CastIron.SqlParsing.Tests
             var select1 = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
             select1.Should().NotBeNull();
             select1.Columns.Count.Should().Be(1);
-            select1.Columns[0].Should().BeOfType<SqlColumnIdentifierNode>();
-            var column1 = select1.Columns[0] as SqlColumnIdentifierNode;
-            column1.Table.Name.Should().Be("t1");
-            column1.Column.Should().BeOfType<SqlStarNode>();
+            select1.Columns[0].Should().BeOfType<SqlQualifiedIdentifierNode>();
+            var column1 = select1.Columns[0] as SqlQualifiedIdentifierNode;
+            column1.Qualifier.Name.Should().Be("t1");
+            column1.Identifier.Should().BeOfType<SqlStarNode>();
             select1.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
 
             select1.FromClause.Source.Should().BeOfType<SqlAliasNode>();
@@ -255,7 +255,7 @@ namespace CastIron.SqlParsing.Tests
             select2.Columns.Count.Should().Be(1);
             select2.Columns[0].Should().BeOfType<SqlStarNode>();
             select2.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select2.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            select2.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (select2.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
         }
 
@@ -276,7 +276,7 @@ namespace CastIron.SqlParsing.Tests
 
 
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
         }
 
@@ -297,7 +297,7 @@ namespace CastIron.SqlParsing.Tests
 
 
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
         }
 
@@ -318,7 +318,7 @@ namespace CastIron.SqlParsing.Tests
 
 
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
         }
 
@@ -339,7 +339,7 @@ namespace CastIron.SqlParsing.Tests
 
 
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
         }
 
@@ -361,7 +361,7 @@ namespace CastIron.SqlParsing.Tests
 
 
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
         }
 
@@ -383,7 +383,7 @@ namespace CastIron.SqlParsing.Tests
 
 
             statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlTableIdentifierNode>();
+            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
             (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
         }
 

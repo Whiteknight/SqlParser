@@ -41,5 +41,23 @@ namespace CastIron.SqlParsing
             // ...
             throw new Exception($"Cannot parse statement starting with {keyword}");
         }
+
+        private TNode ParseMaybeParenthesis<TNode>(SqlTokenizer t, Func<TNode> parse)
+            where TNode : SqlNode
+        {
+            var next = t.Peek();
+            bool hasParens = false;
+            if (next.Is(SqlTokenType.Symbol, "("))
+            {
+                hasParens = true;
+                t.GetNext();
+            }
+
+            var value = parse();
+
+            if (hasParens)
+                t.Expect(SqlTokenType.Symbol, ")");
+            return value;
+        }
     }
 }

@@ -57,24 +57,8 @@ namespace CastIron.SqlParsing
                 return null;
 
             var topToken = t.GetNext();
-            var next = t.GetNext();
-            bool hasParens = false;
-            if (next.Is(SqlTokenType.Symbol, "("))
-            {
-                hasParens = true;
-                next = t.GetNext();
-            }
 
-            SqlNode numberOrVariable = null;
-            if (next.IsType(SqlTokenType.Variable))
-                numberOrVariable = new SqlVariableNode(next);
-            else if (next.IsType(SqlTokenType.Number))
-                numberOrVariable = new SqlNumberNode(next);
-
-            if (numberOrVariable == null)
-                throw new Exception($"Cannot parse TOP clause. Expecting number or variable but found {next}");
-            if (hasParens)
-                t.Expect(SqlTokenType.Symbol, ")");
+            var numberOrVariable = ParseMaybeParenthesis(t, () => ParseNumberOrVariable(t));
 
             bool percent = t.NextIs(SqlTokenType.Keyword, "PERCENT", true);
             bool withTies = false;
@@ -132,22 +116,7 @@ namespace CastIron.SqlParsing
                 }
             }
 
-            // TODO: Should be <SelectColumnExpression> ("AS" <Alias>)?
-            // <Identifier> AS <Alias>
-            if (next.IsType(SqlTokenType.Identifier))
-            {
-                if (t.NextIs(SqlTokenType.Keyword, "AS"))
-                {
-                    var op = t.GetNext();
-                    var alias = t.Expect(SqlTokenType.Identifier);
-                    return new SqlAliasNode
-                    {
-                        Location = op.Location,
-                        Source = new SqlIdentifierNode(next),
-                        Alias = new SqlIdentifierNode(alias)
-                    };
-                }
-            }
+            // TODO: <Number> | <String>
 
             t.PutBack(next);
 
@@ -198,21 +167,21 @@ namespace CastIron.SqlParsing
             var second = t.GetNext();
             if (second.Is(SqlTokenType.Symbol, "*"))
             {
-                return new SqlColumnIdentifierNode
+                return new SqlQualifiedIdentifierNode
                 {
                     Location = first.Location,
-                    Table = new SqlIdentifierNode(first),
-                    Column = new SqlStarNode { Location = second.Location }
+                    Qualifier = new SqlIdentifierNode(first),
+                    Identifier = new SqlStarNode { Location = second.Location }
                 };
             }
 
             if (second.IsType(SqlTokenType.Identifier))
             {
-                return new SqlColumnIdentifierNode
+                return new SqlQualifiedIdentifierNode
                 {
                     Location = first.Location,
-                    Table = new SqlIdentifierNode(first),
-                    Column = new SqlIdentifierNode(second)
+                    Qualifier = new SqlIdentifierNode(first),
+                    Identifier = new SqlIdentifierNode(second)
                 };
             }
 
@@ -245,7 +214,7 @@ namespace CastIron.SqlParsing
 
             SqlNode condition = null;
             if (join.Operator != "NATURAL JOIN")
-                condition = ParseJoinCondition(t);
+                condition = ParseJoinOnCondition(t);
 
             return new SqlJoinNode
             {
@@ -257,14 +226,14 @@ namespace CastIron.SqlParsing
             };
         }
 
-        private SqlNode ParseJoinCondition(SqlTokenizer t)
+        private SqlNode ParseJoinOnCondition(SqlTokenizer t)
         {
             // TODO: Need real condition expression parsing
             // <column> <operator> <column>
             var on = t.Expect(SqlTokenType.Keyword, "ON");
-            var left = ParseSingleColumnOrValue(t);
+            var left = ParseVariableOrDottedIdentifier(t);
             var op = t.Expect(SqlTokenType.Symbol);
-            var right = ParseSingleColumnOrValue(t);
+            var right = ParseVariableOrDottedIdentifier(t);
             return new SqlInfixOperationNode
             {
                 Location = on.Location,
@@ -272,35 +241,6 @@ namespace CastIron.SqlParsing
                 Operator = new SqlOperatorNode { Operator = op.Value },
                 Right = right
             };
-        }
-
-        private SqlNode ParseSingleColumnOrValue(SqlTokenizer t)
-        {
-            var next = t.GetNext();
-
-            // <Variable>
-            if (next.IsType(SqlTokenType.Variable))
-                return new SqlVariableNode(next);
-
-            // <Identifier> ("." <Identifier>)?
-            if (next.IsType(SqlTokenType.Identifier))
-            {
-                if (t.NextIs(SqlTokenType.Symbol, "."))
-                {
-                    var dot = t.GetNext();
-                    var column = t.Expect(SqlTokenType.Identifier);
-                    return new SqlColumnIdentifierNode
-                    {
-                        Location = next.Location,
-                        Table = new SqlIdentifierNode(next),
-                        Column = new SqlIdentifierNode(column)
-                    };
-                }
-
-                return new SqlIdentifierNode { Name = next.Value };
-            }
-
-            throw new Exception("Cannot parse identifier");
         }
 
         private SqlOperatorNode ParseJoinOperator(SqlTokenizer t)
@@ -392,28 +332,14 @@ namespace CastIron.SqlParsing
 
         private SqlNode ParseTableOrSubexpression(SqlTokenizer t)
         {
-            // ( <Schema> "." )? <TableName> | <tableVariable> | "(" <Subexpression> ")"
+            // <QualifiedIdentifier> | <tableVariable> | "(" <Subexpression> ")"
+
+            var qualifiedIdentifier = ParseQualifiedIdentifier(t);
+            if (qualifiedIdentifier != null)
+                return qualifiedIdentifier;
 
             var next = t.GetNext();
 
-            // ( <Schema> "." )? <TableName>
-            if (next.IsType(SqlTokenType.Identifier))
-            {
-                if (t.Peek().Is(SqlTokenType.Symbol, "."))
-                {
-                    t.GetNext();
-                    var schema = new SqlTableIdentifierNode(next);
-                    var tableName = t.Expect(SqlTokenType.Identifier);
-                    return new SqlTableIdentifierNode
-                    {
-                        Location = schema.Location,
-                        Name = tableName.Value,
-                        Schema = schema
-                    };
-                }
-
-                return new SqlTableIdentifierNode(next);
-            }
             // <tableVariable>
 
             if (next.IsType(SqlTokenType.Variable))
@@ -435,13 +361,79 @@ namespace CastIron.SqlParsing
             throw new Exception($"Unexpected token {next} when parsing table name");
         }
 
-        private SqlNode ParseSelectOrderByClause(SqlTokenizer t)
+        private SqlSelectOrderByClauseNode ParseSelectOrderByClause(SqlTokenizer t)
         {
-            return null;
+            if (!t.NextIs(SqlTokenType.Keyword, "ORDER"))
+                return null;
+
+            var orderByToken = t.GetNext();
+            t.Expect(SqlTokenType.Keyword, "BY");
+            var orderByNode = new SqlSelectOrderByClauseNode
+            {
+                Location = orderByToken.Location
+            };
+            while (true)
+            {
+                var term = ParseOrderTerm(t);
+                orderByNode.Entries.Add(term);
+                if (!t.NextIs(SqlTokenType.Symbol, ","))
+                    break;
+                t.GetNext();
+            }
+            if (t.NextIs(SqlTokenType.Keyword, "OFFSET"))
+            {
+                t.GetNext();
+                orderByNode.Offset = ParseNumberOrVariable(t);
+                t.Expect(SqlTokenType.Keyword, "ROWS");
+            }
+            if (t.NextIs(SqlTokenType.Keyword, "FETCH"))
+            {
+                t.GetNext();
+                t.Expect(SqlTokenType.Keyword, "NEXT");
+                orderByNode.Limit = ParseNumberOrVariable(t);
+                t.Expect(SqlTokenType.Keyword, "ROWS");
+                t.Expect(SqlTokenType.Keyword, "ONLY");
+            }
+
+            return orderByNode;
+        }
+
+        private SqlOrderByEntryNode ParseOrderTerm(SqlTokenizer t)
+        {
+            // ( <QualifiedIdentifier> | <Number> ) ("ASC" | "DESC")?
+            var identifier = ParseQualifiedIdentifier(t);
+            if (identifier == null)
+            {
+                if (t.Peek().IsType(SqlTokenType.Number))
+                {
+                    var number = t.GetNext();
+                    identifier = new SqlNumberNode(number);
+                }
+            }
+
+            if (identifier == null)
+                throw new Exception("Expected identifier or number");
+            var entry = new SqlOrderByEntryNode
+            {
+                Location = identifier.Location,
+                Source = identifier
+            };
+            var next = t.Peek();
+            if (next.IsKeyword("ASC") || next.IsKeyword("DESC"))
+            {
+                t.GetNext();
+                entry.Direction = next.Value;
+            }
+
+            return entry;
         }
 
         private SqlNode ParseSelectGroupByClause(SqlTokenizer t)
         {
+            if (!t.NextIs(SqlTokenType.Keyword, "GROUP"))
+                return null;
+            //t.GetNext();
+            //t.Expect(SqlTokenType.Keyword, "BY");
             return null;
         }
     }

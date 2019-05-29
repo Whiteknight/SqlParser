@@ -36,8 +36,8 @@ SELECT
             (join.Right as SqlAliasNode).Alias.Name.Should().Be("t2");
             join.Operator.Operator.Should().Be("JOIN");
             var condition = join.OnCondition as SqlInfixOperationNode;
-            ((condition.Left as SqlColumnIdentifierNode).Column as SqlIdentifierNode).Name.Should().Be("Id");
-            ((condition.Right as SqlColumnIdentifierNode).Column as SqlIdentifierNode).Name.Should().Be("Id");
+            ((condition.Left as SqlQualifiedIdentifierNode).Identifier as SqlIdentifierNode).Name.Should().Be("Id");
+            ((condition.Right as SqlQualifiedIdentifierNode).Identifier as SqlIdentifierNode).Name.Should().Be("Id");
             (condition.Operator as SqlOperatorNode).Operator.Should().Be("=");
         }
 
@@ -68,8 +68,8 @@ SELECT
             (join.Right as SqlAliasNode).Alias.Name.Should().Be("t2");
             join.Operator.Operator.Should().Be("FULL JOIN");
             var condition = join.OnCondition as SqlInfixOperationNode;
-            ((condition.Left as SqlColumnIdentifierNode).Column as SqlIdentifierNode).Name.Should().Be("Id");
-            ((condition.Right as SqlColumnIdentifierNode).Column as SqlIdentifierNode).Name.Should().Be("Id");
+            ((condition.Left as SqlQualifiedIdentifierNode).Identifier as SqlIdentifierNode).Name.Should().Be("Id");
+            ((condition.Right as SqlQualifiedIdentifierNode).Identifier as SqlIdentifierNode).Name.Should().Be("Id");
             (condition.Operator as SqlOperatorNode).Operator.Should().Be("=");
         }
 
@@ -100,8 +100,8 @@ SELECT
             (join.Right as SqlAliasNode).Alias.Name.Should().Be("t2");
             join.Operator.Operator.Should().Be("FULL OUTER JOIN");
             var condition = join.OnCondition as SqlInfixOperationNode;
-            ((condition.Left as SqlColumnIdentifierNode).Column as SqlIdentifierNode).Name.Should().Be("Id");
-            ((condition.Right as SqlColumnIdentifierNode).Column as SqlIdentifierNode).Name.Should().Be("Id");
+            ((condition.Left as SqlQualifiedIdentifierNode).Identifier as SqlIdentifierNode).Name.Should().Be("Id");
+            ((condition.Right as SqlQualifiedIdentifierNode).Identifier as SqlIdentifierNode).Name.Should().Be("Id");
             (condition.Operator as SqlOperatorNode).Operator.Should().Be("=");
         }
 
@@ -164,8 +164,8 @@ SELECT
             (join.Right as SqlAliasNode).Alias.Name.Should().Be("t2");
             join.Operator.Operator.Should().Be("LEFT INNER JOIN");
             var condition = join.OnCondition as SqlInfixOperationNode;
-            ((condition.Left as SqlColumnIdentifierNode).Column as SqlIdentifierNode).Name.Should().Be("Id");
-            ((condition.Right as SqlColumnIdentifierNode).Column as SqlIdentifierNode).Name.Should().Be("Id");
+            ((condition.Left as SqlQualifiedIdentifierNode).Identifier as SqlIdentifierNode).Name.Should().Be("Id");
+            ((condition.Right as SqlQualifiedIdentifierNode).Identifier as SqlIdentifierNode).Name.Should().Be("Id");
             (condition.Operator as SqlOperatorNode).Operator.Should().Be("=");
         }
 
@@ -196,8 +196,8 @@ SELECT
             (join.Right as SqlAliasNode).Alias.Name.Should().Be("t2");
             join.Operator.Operator.Should().Be("RIGHT OUTER JOIN");
             var condition = join.OnCondition as SqlInfixOperationNode;
-            ((condition.Left as SqlColumnIdentifierNode).Column as SqlIdentifierNode).Name.Should().Be("Id");
-            ((condition.Right as SqlColumnIdentifierNode).Column as SqlIdentifierNode).Name.Should().Be("Id");
+            ((condition.Left as SqlQualifiedIdentifierNode).Identifier as SqlIdentifierNode).Name.Should().Be("Id");
+            ((condition.Right as SqlQualifiedIdentifierNode).Identifier as SqlIdentifierNode).Name.Should().Be("Id");
             (condition.Operator as SqlOperatorNode).Operator.Should().Be("=");
         }
 
@@ -229,8 +229,8 @@ SELECT
             (join.Right as SqlAliasNode).Alias.Name.Should().Be("t2");
             join.Operator.Operator.Should().Be("CROSS APPLY");
             var condition = join.OnCondition as SqlInfixOperationNode;
-            ((condition.Left as SqlColumnIdentifierNode).Column as SqlIdentifierNode).Name.Should().Be("Id");
-            ((condition.Right as SqlColumnIdentifierNode).Column as SqlIdentifierNode).Name.Should().Be("Id");
+            ((condition.Left as SqlQualifiedIdentifierNode).Identifier as SqlIdentifierNode).Name.Should().Be("Id");
+            ((condition.Right as SqlQualifiedIdentifierNode).Identifier as SqlIdentifierNode).Name.Should().Be("Id");
             (condition.Operator as SqlOperatorNode).Operator.Should().Be("=");
         }
 
