@@ -6,12 +6,12 @@ namespace CastIron.SqlParsing
 {
     public partial class SqlParser
     {
-        public SqlNode Parse(SqlTokenizer t)
+        public SqlStatementListNode Parse(SqlTokenizer t)
         {
             return ParseStatementList(t);
         }
 
-        private SqlNode ParseStatementList(SqlTokenizer t)
+        private SqlStatementListNode ParseStatementList(SqlTokenizer t)
         {
             var statements = new SqlStatementListNode();
             while (true)
@@ -42,7 +42,7 @@ namespace CastIron.SqlParsing
             throw new Exception($"Cannot parse statement starting with {keyword}");
         }
 
-        private TNode ParseMaybeParenthesis<TNode>(SqlTokenizer t, Func<TNode> parse)
+        private TNode ParseMaybeParenthesis<TNode>(SqlTokenizer t, Func<SqlTokenizer, TNode> parse)
             where TNode : SqlNode
         {
             var next = t.Peek();
@@ -53,11 +53,38 @@ namespace CastIron.SqlParsing
                 t.GetNext();
             }
 
-            var value = parse();
+            var value = parse(t);
 
             if (hasParens)
                 t.Expect(SqlTokenType.Symbol, ")");
             return value;
+        }
+
+        private TNode ParseParenthesis<TNode>(SqlTokenizer t, Func<SqlTokenizer, TNode> parse)
+            where TNode : SqlNode
+        {
+            t.Expect(SqlTokenType.Symbol, "(");
+            var value = parse(t);
+            t.Expect(SqlTokenType.Symbol, ")");
+            return value;
+        }
+
+        private SqlListNode<TNode> ParseList<TNode>(SqlTokenizer t, Func<SqlTokenizer, TNode> getItem)
+            where TNode : SqlNode
+        {
+            // <Item> ("," <Item>)*
+            var list = new SqlListNode<TNode>();
+            while (true)
+            {
+                var item = getItem(t);
+                list.Children.Add(item);
+                if (t.NextIs(SqlTokenType.Symbol, ",", true))
+                    continue;
+                break;
+            }
+
+            list.Location = list.Children[0].Location;
+            return list;
         }
     }
 }

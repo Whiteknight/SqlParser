@@ -65,9 +65,30 @@
             return IsType(SqlTokenType.Keyword);
         }
 
-        public bool IsKeyword(string keyword)
+        public bool IsKeyword(params string[] keywords)
         {
-            return Type == SqlTokenType.Keyword && Value == keyword;
+            if (Type != SqlTokenType.Keyword)
+                return false;
+            foreach (var keyword in keywords)
+            {
+                if (Value == keyword)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public bool IsSymbol(params string[] symbols)
+        {
+            if (Type != SqlTokenType.Symbol)
+                return false;
+            foreach (var symbol in symbols)
+            {
+                if (Value == symbol)
+                    return true;
+            }
+
+            return false;
         }
 
         public bool IsType(SqlTokenType type)

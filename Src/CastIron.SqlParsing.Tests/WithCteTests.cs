@@ -1,6 +1,7 @@
-﻿using CastIron.SqlParsing.Ast;
+﻿using System.Linq;
+using CastIron.SqlParsing.Ast;
+using CastIron.SqlParsing.Tests.Utility;
 using CastIron.SqlParsing.Tokenizing;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace CastIron.SqlParsing.Tests
@@ -19,16 +20,41 @@ Cte1 AS (
 SELECT * FROM Cte1;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode).Statements[0] as SqlWithNode;
-            statement.Ctes.Count.Should().Be(1);
-            statement.Ctes[0].Name.Name.Should().Be("Cte1");
-            var select1 = statement.Ctes[0].Select as SqlSelectNode;
-            (select1.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
-            var select2 = statement.Statement as SqlSelectNode;
-            (select2.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Cte1");
+            result.Statements.First().Should().MatchAst(
+                new SqlWithNode
+                {
+                    Ctes = new SqlListNode<SqlCteNode>
+                    {
+                        new SqlCteNode
+                        {
+                            Select = new SqlSelectNode
+                            {
+                                Columns = new SqlListNode<SqlNode>
+                                {
+                                    new SqlStarNode()
+                                },
+                                FromClause = new SqlSelectFromClauseNode
+                                {
+                                    Source = new SqlIdentifierNode("MyTable")
+                                }
+                            },
+                            Name = new SqlIdentifierNode("Cte1")
+                        }
+                    },
+                    Statement = new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            new SqlStarNode()
+                        },
+                        FromClause = new SqlSelectFromClauseNode
+                        {
+                            Source = new SqlIdentifierNode("Cte1")
+                        }
+                    }
+                }
+            );
         }
 
         [Test]
@@ -45,22 +71,56 @@ Cte2 AS (
 SELECT * FROM Cte2;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode).Statements[0] as SqlWithNode;
-            statement.Ctes.Count.Should().Be(2);
-
-            statement.Ctes[0].Name.Name.Should().Be("Cte1");
-            var select1 = statement.Ctes[0].Select as SqlSelectNode;
-            (select1.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
-
-            statement.Ctes[1].Name.Name.Should().Be("Cte2");
-            var select2 = statement.Ctes[1].Select as SqlSelectNode;
-            (select2.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Cte1");
-
-            var select3 = statement.Statement as SqlSelectNode;
-            (select3.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Cte2");
+            result.Statements.First().Should().MatchAst(
+                new SqlWithNode
+                {
+                    Ctes = new SqlListNode<SqlCteNode>
+                    {
+                        new SqlCteNode
+                        {
+                            Select = new SqlSelectNode
+                            {
+                                Columns = new SqlListNode<SqlNode>
+                                {
+                                    new SqlStarNode()
+                                },
+                                FromClause = new SqlSelectFromClauseNode
+                                {
+                                    Source = new SqlIdentifierNode("MyTable")
+                                }
+                            },
+                            Name = new SqlIdentifierNode("Cte1")
+                        },
+                        new SqlCteNode
+                        {
+                            Select = new SqlSelectNode
+                            {
+                                Columns = new SqlListNode<SqlNode>
+                                {
+                                    new SqlStarNode()
+                                },
+                                FromClause = new SqlSelectFromClauseNode
+                                {
+                                    Source = new SqlIdentifierNode("Cte1")
+                                }
+                            },
+                            Name = new SqlIdentifierNode("Cte2")
+                        }
+                    },
+                    Statement = new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            new SqlStarNode()
+                        },
+                        FromClause = new SqlSelectFromClauseNode
+                        {
+                            Source = new SqlIdentifierNode("Cte2")
+                        }
+                    }
+                }
+            );
         }
     }
 }

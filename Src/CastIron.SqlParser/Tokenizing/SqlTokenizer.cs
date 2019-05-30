@@ -15,16 +15,10 @@ namespace CastIron.SqlParsing.Tokenizing
             _putbacks = new Stack<SqlToken>();
 
             _operators = new SymbolSequence();
-            _operators.Add(".");
-            _operators.Add(",");
-            _operators.Add(";");
-            _operators.Add("(");
-            _operators.Add(")");
-            _operators.Add("*");
-            _operators.Add("=");
-            _operators.Add("<=");
-            _operators.Add(">=");
-            _operators.Add("<>");
+            _operators.Add(".", ",", ";");
+            _operators.Add("(", ")");
+            _operators.Add("+", "-", "/", "*");
+            _operators.Add("=", "!=", "<>", ">", "<", ">=", "<=");
 
             _enumerator = GetEnumerator(new CharSequence(s ?? ""));
         }
@@ -127,9 +121,10 @@ namespace CastIron.SqlParsing.Tokenizing
                 _next = new Dictionary<char, SymbolSequence>();
             }
 
-            public void Add(string chars)
+            public void Add(params string[] chars)
             {
-                Add(chars, 0);
+                foreach (var c in chars)
+                    Add(c, 0);
             }
 
             private void Add(string chars, int idx)

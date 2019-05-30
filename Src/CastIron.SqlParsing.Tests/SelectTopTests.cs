@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using CastIron.SqlParsing.Ast;
+using CastIron.SqlParsing.Tests.Utility;
 using CastIron.SqlParsing.Tokenizing;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace CastIron.SqlParsing.Tests
@@ -15,21 +15,24 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP 10 * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
-            statement.Should().NotBeNull();
-            var top = statement.Top as SqlSelectTopNode;
-            top.Value.Should().BeOfType<SqlNumberNode>();
-            top.Percent.Should().BeFalse();
-            top.WithTies.Should().BeFalse();
-            (top.Value as SqlNumberNode).Value.Should().Be(10);
-            statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlStarNode>();
-            statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlStarNode()
+                    },
+                    FromClause = new SqlSelectFromClauseNode
+                    {
+                        Source = new SqlIdentifierNode("MyTable")
+                    },
+                    TopClause = new SqlSelectTopNode
+                    {
+                        Value = new SqlNumberNode(10)
+                    }
+                }
+            );
         }
 
         [Test]
@@ -38,21 +41,24 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP @limit * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
-            statement.Should().NotBeNull();
-            var top = statement.Top as SqlSelectTopNode;
-            top.Value.Should().BeOfType<SqlVariableNode>();
-            (top.Value as SqlVariableNode).Name.Should().Be("@limit");
-            top.Percent.Should().BeFalse();
-            top.WithTies.Should().BeFalse();
-            statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlStarNode>();
-            statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlStarNode()
+                    },
+                    FromClause = new SqlSelectFromClauseNode
+                    {
+                        Source = new SqlIdentifierNode("MyTable")
+                    },
+                    TopClause = new SqlSelectTopNode
+                    {
+                        Value = new SqlVariableNode("@limit")
+                    }
+                }
+            );
         }
 
         [Test]
@@ -61,21 +67,24 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (10) * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
-            statement.Should().NotBeNull();
-            var top = statement.Top as SqlSelectTopNode;
-            top.Value.Should().BeOfType<SqlNumberNode>();
-            (top.Value as SqlNumberNode).Value.Should().Be(10);
-            top.Percent.Should().BeFalse();
-            top.WithTies.Should().BeFalse();
-            statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlStarNode>();
-            statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlStarNode()
+                    },
+                    FromClause = new SqlSelectFromClauseNode
+                    {
+                        Source = new SqlIdentifierNode("MyTable")
+                    },
+                    TopClause = new SqlSelectTopNode
+                    {
+                        Value = new SqlNumberNode(10)
+                    }
+                }
+            );
         }
 
         [Test]
@@ -84,21 +93,24 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (@limit) * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
-            statement.Should().NotBeNull();
-            var top = statement.Top as SqlSelectTopNode;
-            top.Value.Should().BeOfType<SqlVariableNode>();
-            (top.Value as SqlVariableNode).Name.Should().Be("@limit");
-            top.Percent.Should().BeFalse();
-            top.WithTies.Should().BeFalse();
-            statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlStarNode>();
-            statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlStarNode()
+                    },
+                    FromClause = new SqlSelectFromClauseNode
+                    {
+                        Source = new SqlIdentifierNode("MyTable")
+                    },
+                    TopClause = new SqlSelectTopNode
+                    {
+                        Value = new SqlVariableNode("@limit")
+                    }
+                }
+            );
         }
 
         [Test]
@@ -107,21 +119,25 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (10) PERCENT * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
-            statement.Should().NotBeNull();
-            var top = statement.Top as SqlSelectTopNode;
-            top.Value.Should().BeOfType<SqlNumberNode>();
-            top.Percent.Should().BeTrue();
-            top.WithTies.Should().BeFalse();
-            (top.Value as SqlNumberNode).Value.Should().Be(10);
-            statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlStarNode>();
-            statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlStarNode()
+                    },
+                    FromClause = new SqlSelectFromClauseNode
+                    {
+                        Source = new SqlIdentifierNode("MyTable")
+                    },
+                    TopClause = new SqlSelectTopNode
+                    {
+                        Value = new SqlNumberNode(10),
+                        Percent = true
+                    }
+                }
+            );
         }
 
         [Test]
@@ -130,21 +146,25 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (10) WITH TIES * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
-            statement.Should().NotBeNull();
-            var top = statement.Top as SqlSelectTopNode;
-            top.Value.Should().BeOfType<SqlNumberNode>();
-            top.Percent.Should().BeFalse();
-            top.WithTies.Should().BeTrue();
-            (top.Value as SqlNumberNode).Value.Should().Be(10);
-            statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlStarNode>();
-            statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlStarNode()
+                    },
+                    FromClause = new SqlSelectFromClauseNode
+                    {
+                        Source = new SqlIdentifierNode("MyTable")
+                    },
+                    TopClause = new SqlSelectTopNode
+                    {
+                        Value = new SqlNumberNode(10),
+                        WithTies = true
+                    }
+                }
+            );
         }
 
         [Test]
@@ -153,21 +173,26 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (10) PERCENT WITH TIES * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
-            statement.Should().NotBeNull();
-            var top = statement.Top as SqlSelectTopNode;
-            top.Value.Should().BeOfType<SqlNumberNode>();
-            top.Percent.Should().BeTrue();
-            top.WithTies.Should().BeTrue();
-            (top.Value as SqlNumberNode).Value.Should().Be(10);
-            statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlStarNode>();
-            statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlStarNode()
+                    },
+                    FromClause = new SqlSelectFromClauseNode
+                    {
+                        Source = new SqlIdentifierNode("MyTable")
+                    },
+                    TopClause = new SqlSelectTopNode
+                    {
+                        Value = new SqlNumberNode(10),
+                        Percent = true,
+                        WithTies = true
+                    }
+                }
+            );
         }
     }
 }

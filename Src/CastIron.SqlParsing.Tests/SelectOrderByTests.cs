@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using CastIron.SqlParsing.Ast;
+using CastIron.SqlParsing.Tests.Utility;
 using CastIron.SqlParsing.Tokenizing;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace CastIron.SqlParsing.Tests
@@ -15,21 +15,31 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn DESC;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
-            statement.Should().NotBeNull();
-            statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlStarNode>();
-            statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
-
-            statement.OrderBy.Should().NotBeNull();
-            statement.OrderBy.Entries.Count().Should().Be(1);
-            (statement.OrderBy.Entries[0].Source as SqlIdentifierNode).Name.Should().Be("MyColumn");
-            statement.OrderBy.Entries[0].Direction.Should().Be("DESC");
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlStarNode()
+                    },
+                    FromClause = new SqlSelectFromClauseNode
+                    {
+                        Source = new SqlIdentifierNode("MyTable")
+                    },
+                    OrderByClause = new SqlSelectOrderByClauseNode
+                    {
+                        Entries = new SqlListNode<SqlOrderByEntryNode>
+                        {
+                            new SqlOrderByEntryNode
+                            {
+                                Source = new SqlIdentifierNode("MyColumn"),
+                                Direction = "DESC"
+                            }
+                        }
+                    }
+                }
+            );
         }
 
         [Test]
@@ -38,21 +48,31 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM MyTable ORDER BY 1 DESC;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
-            statement.Should().NotBeNull();
-            statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlStarNode>();
-            statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
-
-            statement.OrderBy.Should().NotBeNull();
-            statement.OrderBy.Entries.Count().Should().Be(1);
-            (statement.OrderBy.Entries[0].Source as SqlNumberNode).Value.Should().Be(1);
-            statement.OrderBy.Entries[0].Direction.Should().Be("DESC");
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlStarNode()
+                    },
+                    FromClause = new SqlSelectFromClauseNode
+                    {
+                        Source = new SqlIdentifierNode("MyTable")
+                    },
+                    OrderByClause = new SqlSelectOrderByClauseNode
+                    {
+                        Entries = new SqlListNode<SqlOrderByEntryNode>
+                        {
+                            new SqlOrderByEntryNode
+                            {
+                                Source = new SqlNumberNode(1),
+                                Direction = "DESC"
+                            }
+                        }
+                    }
+                }
+            );
         }
 
         [Test]
@@ -61,21 +81,31 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn ASC;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
-            statement.Should().NotBeNull();
-            statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlStarNode>();
-            statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
-
-            statement.OrderBy.Should().NotBeNull();
-            statement.OrderBy.Entries.Count().Should().Be(1);
-            (statement.OrderBy.Entries[0].Source as SqlIdentifierNode).Name.Should().Be("MyColumn");
-            statement.OrderBy.Entries[0].Direction.Should().Be("ASC");
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlStarNode()
+                    },
+                    FromClause = new SqlSelectFromClauseNode
+                    {
+                        Source = new SqlIdentifierNode("MyTable")
+                    },
+                    OrderByClause = new SqlSelectOrderByClauseNode
+                    {
+                        Entries = new SqlListNode<SqlOrderByEntryNode>
+                        {
+                            new SqlOrderByEntryNode
+                            {
+                                Source = new SqlIdentifierNode("MyColumn"),
+                                Direction = "ASC"
+                            }
+                        }
+                    }
+                }
+            );
         }
 
         [Test]
@@ -84,21 +114,30 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
-            statement.Should().NotBeNull();
-            statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlStarNode>();
-            statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
-
-            statement.OrderBy.Should().NotBeNull();
-            statement.OrderBy.Entries.Count().Should().Be(1);
-            (statement.OrderBy.Entries[0].Source as SqlIdentifierNode).Name.Should().Be("MyColumn");
-            statement.OrderBy.Entries[0].Direction.Should().BeNullOrEmpty();
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlStarNode()
+                    },
+                    FromClause = new SqlSelectFromClauseNode
+                    {
+                        Source = new SqlIdentifierNode("MyTable")
+                    },
+                    OrderByClause = new SqlSelectOrderByClauseNode
+                    {
+                        Entries = new SqlListNode<SqlOrderByEntryNode>
+                        {
+                            new SqlOrderByEntryNode
+                            {
+                                Source = new SqlIdentifierNode("MyColumn")
+                            }
+                        }
+                    }
+                }
+            );
         }
 
         [Test]
@@ -107,24 +146,32 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
-            statement.Should().NotBeNull();
-            statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlStarNode>();
-            statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
-
-            statement.OrderBy.Should().NotBeNull();
-            statement.OrderBy.Entries.Count().Should().Be(1);
-            (statement.OrderBy.Entries[0].Source as SqlIdentifierNode).Name.Should().Be("MyColumn");
-            statement.OrderBy.Entries[0].Direction.Should().BeNullOrEmpty();
-
-            (statement.OrderBy.Offset as SqlNumberNode).Value.Should().Be(5);
-            (statement.OrderBy.Limit as SqlNumberNode).Value.Should().Be(10);
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlStarNode()
+                    },
+                    FromClause = new SqlSelectFromClauseNode
+                    {
+                        Source = new SqlIdentifierNode("MyTable")
+                    },
+                    OrderByClause = new SqlSelectOrderByClauseNode
+                    {
+                        Entries = new SqlListNode<SqlOrderByEntryNode>
+                        {
+                            new SqlOrderByEntryNode
+                            {
+                                Source = new SqlIdentifierNode("MyColumn")
+                            }
+                        },
+                        Offset = new SqlNumberNode(5),
+                        Limit = new SqlNumberNode(10)
+                    }
+                }
+            );
         }
 
         [Test]
@@ -133,23 +180,36 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn1 ASC, MyColumn2 DESC;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlSelectNode;
-            statement.Should().NotBeNull();
-            statement.Columns.Count.Should().Be(1);
-            statement.Columns[0].Should().BeOfType<SqlStarNode>();
-            statement.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            statement.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (statement.FromClause.Source as SqlIdentifierNode).Name.Should().Be("MyTable");
-
-            statement.OrderBy.Should().NotBeNull();
-            statement.OrderBy.Entries.Count().Should().Be(2);
-            (statement.OrderBy.Entries[0].Source as SqlIdentifierNode).Name.Should().Be("MyColumn1");
-            statement.OrderBy.Entries[0].Direction.Should().Be("ASC");
-            (statement.OrderBy.Entries[1].Source as SqlIdentifierNode).Name.Should().Be("MyColumn2");
-            statement.OrderBy.Entries[1].Direction.Should().Be("DESC");
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlStarNode()
+                    },
+                    FromClause = new SqlSelectFromClauseNode
+                    {
+                        Source = new SqlIdentifierNode("MyTable")
+                    },
+                    OrderByClause = new SqlSelectOrderByClauseNode
+                    {
+                        Entries = new SqlListNode<SqlOrderByEntryNode>
+                        {
+                            new SqlOrderByEntryNode
+                            {
+                                Source = new SqlIdentifierNode("MyColumn1"),
+                                Direction = "ASC"
+                            },
+                            new SqlOrderByEntryNode
+                            {
+                                Source = new SqlIdentifierNode("MyColumn2"),
+                                Direction = "DESC"
+                            }
+                        }
+                    }
+                }
+            );
         }
     }
 }

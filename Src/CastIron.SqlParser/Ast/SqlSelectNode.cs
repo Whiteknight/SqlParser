@@ -1,21 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 
 namespace CastIron.SqlParsing.Ast
 {
     public class SqlSelectNode : SqlNode
     {
-        public SqlSelectNode()
-        {
-            Columns = new List<SqlNode>();
-        }
-
         public string Modifier { get; set; }
-        public SqlSelectTopNode Top { get; set; }
-        public List<SqlNode> Columns { get; }
+        public SqlSelectTopNode TopClause { get; set; }
+        public SqlListNode<SqlNode> Columns { get; set; }
         public SqlSelectFromClauseNode FromClause { get; set; }
-        public SqlSelectOrderByClauseNode OrderBy { get; set; }
-        public SqlNode GroupBy { get; set; }
+        public SqlSelectWhereClauseNode WhereClause { get; set; }
+        public SqlSelectOrderByClauseNode OrderByClause { get; set; }
+        public SqlSelectGroupByNode GroupByClause { get; set; }
+
+        public SqlSelectHavingClauseNode HavingClause { get; set; }
 
         public override void ToString(StringBuilder sb, int level)
         {
@@ -27,18 +24,23 @@ namespace CastIron.SqlParsing.Ast
                 sb.Append(" ");
             }
             level++;
-            Top?.ToString(sb, level);
-            foreach (var column in Columns)
+            ToString(sb, TopClause, level);
+            Columns.ToString(sb, level);
+            ToString(sb, FromClause, level);
+            ToString(sb, WhereClause, level);
+            ToString(sb, OrderByClause, level);
+            ToString(sb, GroupByClause, level);
+            ToString(sb, HavingClause, level);
+        }
+
+        private void ToString(StringBuilder sb, SqlNode child, int level)
+        {
+            if (child != null)
             {
                 sb.AppendLine();
                 sb.AppendIndent(level);
-                column.ToString(sb, level);
+                child.ToString(sb, level);
             }
-
-            sb.AppendLine();
-            FromClause?.ToString(sb, level);
-            OrderBy?.ToString(sb, level);
-            GroupBy?.ToString(sb, level);
         }
     }
 
@@ -53,6 +55,30 @@ namespace CastIron.SqlParsing.Ast
             sb.AppendLine();
             sb.AppendIndent(level);
             sb.Append(")");
+        }
+    }
+
+    public class SqlSelectWhereClauseNode : SqlNode
+    {
+        public SqlNode SearchCondition { get; set; }
+
+        public override void ToString(StringBuilder sb, int level)
+        {
+            sb.AppendLine("WHERE");
+            sb.AppendIndent(level + 1);
+            SearchCondition.ToString(sb, level + 1);
+        }
+    }
+
+    public class SqlSelectHavingClauseNode : SqlNode
+    {
+        public SqlNode SearchCondition { get; set; }
+
+        public override void ToString(StringBuilder sb, int level)
+        {
+            sb.AppendLine("HAVING");
+            sb.AppendIndent(level + 1);
+            SearchCondition.ToString(sb, level + 1);
         }
     }
 }

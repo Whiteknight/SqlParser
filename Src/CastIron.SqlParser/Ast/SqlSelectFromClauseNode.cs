@@ -8,7 +8,6 @@ namespace CastIron.SqlParsing.Ast
 
         public override void ToString(StringBuilder sb, int level)
         {
-            sb.AppendIndent(level);
             sb.AppendLine("FROM ");
             sb.AppendIndent(level + 1);
             Source.ToString(sb, level + 1);

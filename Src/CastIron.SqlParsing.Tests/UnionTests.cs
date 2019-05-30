@@ -1,7 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using CastIron.SqlParsing.Ast;
+using CastIron.SqlParsing.Tests.Utility;
 using CastIron.SqlParsing.Tokenizing;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace CastIron.SqlParsing.Tests
@@ -15,26 +16,41 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM Table1 UNION SELECT * FROM Table2";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlUnionStatementNode;
-            statement.Should().NotBeNull();
-            statement.Operator.Should().Be("UNION");
-
-            var select1 = statement.First as SqlSelectNode;
-            select1.Columns.Count.Should().Be(1);
-            select1.Columns[0].Should().BeOfType<SqlStarNode>();
-            select1.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select1.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (select1.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table1");
-
-            var select2 = statement.Second as SqlSelectNode;
-            select2.Columns.Count.Should().Be(1);
-            select2.Columns[0].Should().BeOfType<SqlStarNode>();
-            select2.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select2.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (select2.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table2");
+            result.Statements.First().Should().MatchAst(
+                new SqlUnionStatementNode
+                {
+                    First = new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            Children = new List<SqlNode>
+                            {
+                                new SqlStarNode()
+                            }
+                        },
+                        FromClause = new SqlSelectFromClauseNode
+                        {
+                            Source = new SqlIdentifierNode("Table1")
+                        }
+                    },
+                    Operator = "UNION",
+                    Second = new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            Children = new List<SqlNode>
+                            {
+                                new SqlStarNode()
+                            }
+                        },
+                        FromClause = new SqlSelectFromClauseNode
+                        {
+                            Source = new SqlIdentifierNode("Table2")
+                        }
+                    }
+                }
+            );
         }
 
         [Test]
@@ -43,36 +59,59 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM Table1 UNION SELECT * FROM Table2 UNION ALL SELECT * FROM Table3;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var union1 = (result as SqlStatementListNode)?.Statements?.First() as SqlUnionStatementNode;
-            union1.Should().NotBeNull();
-            union1.Operator.Should().Be("UNION");
-
-            var select1 = union1.First as SqlSelectNode;
-            select1.Columns.Count.Should().Be(1);
-            select1.Columns[0].Should().BeOfType<SqlStarNode>();
-            select1.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select1.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (select1.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table1");
-
-            var union2 = union1.Second as SqlUnionStatementNode;
-            union2.Operator.Should().Be("UNION ALL");
-
-            var select2 = union2.First as SqlSelectNode;
-            select2.Columns.Count.Should().Be(1);
-            select2.Columns[0].Should().BeOfType<SqlStarNode>();
-            select2.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select2.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (select2.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table2");
-
-            var select3 = union2.Second as SqlSelectNode;
-            select3.Columns.Count.Should().Be(1);
-            select3.Columns[0].Should().BeOfType<SqlStarNode>();
-            select3.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select3.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (select3.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table3");
+            result.Statements.First().Should().MatchAst(
+                new SqlUnionStatementNode
+                {
+                    First = new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            Children = new List<SqlNode>
+                            {
+                                new SqlStarNode()
+                            }
+                        },
+                        FromClause = new SqlSelectFromClauseNode
+                        {
+                            Source = new SqlIdentifierNode("Table1")
+                        }
+                    },
+                    Operator = "UNION",
+                    Second = new SqlUnionStatementNode
+                    {
+                        First = new SqlSelectNode
+                        {
+                            Columns = new SqlListNode<SqlNode>
+                            {
+                                Children = new List<SqlNode>
+                                {
+                                    new SqlStarNode()
+                                }
+                            },
+                            FromClause = new SqlSelectFromClauseNode
+                            {
+                                Source = new SqlIdentifierNode("Table2")
+                            }
+                        },
+                        Operator = "UNION ALL",
+                        Second = new SqlSelectNode
+                        {
+                            Columns = new SqlListNode<SqlNode>
+                            {
+                                Children = new List<SqlNode>
+                                {
+                                    new SqlStarNode()
+                                }
+                            },
+                            FromClause = new SqlSelectFromClauseNode
+                            {
+                                Source = new SqlIdentifierNode("Table3")
+                            }
+                        }
+                    }
+                }
+            );
         }
 
         [Test]
@@ -81,26 +120,41 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM Table1 UNION ALL SELECT * FROM Table2";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlUnionStatementNode;
-            statement.Should().NotBeNull();
-            statement.Operator.Should().Be("UNION ALL");
-
-            var select1 = statement.First as SqlSelectNode;
-            select1.Columns.Count.Should().Be(1);
-            select1.Columns[0].Should().BeOfType<SqlStarNode>();
-            select1.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select1.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (select1.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table1");
-
-            var select2 = statement.Second as SqlSelectNode;
-            select2.Columns.Count.Should().Be(1);
-            select2.Columns[0].Should().BeOfType<SqlStarNode>();
-            select2.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select2.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (select2.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table2");
+            result.Statements.First().Should().MatchAst(
+                new SqlUnionStatementNode
+                {
+                    First = new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            Children = new List<SqlNode>
+                            {
+                                new SqlStarNode()
+                            }
+                        },
+                        FromClause = new SqlSelectFromClauseNode
+                        {
+                            Source = new SqlIdentifierNode("Table1")
+                        }
+                    },
+                    Operator = "UNION ALL",
+                    Second = new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            Children = new List<SqlNode>
+                            {
+                                new SqlStarNode()
+                            }
+                        },
+                        FromClause = new SqlSelectFromClauseNode
+                        {
+                            Source = new SqlIdentifierNode("Table2")
+                        }
+                    }
+                }
+            );
         }
 
         [Test]
@@ -109,26 +163,41 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM Table1 EXCEPT SELECT * FROM Table2";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlUnionStatementNode;
-            statement.Should().NotBeNull();
-            statement.Operator.Should().Be("EXCEPT");
-
-            var select1 = statement.First as SqlSelectNode;
-            select1.Columns.Count.Should().Be(1);
-            select1.Columns[0].Should().BeOfType<SqlStarNode>();
-            select1.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select1.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (select1.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table1");
-
-            var select2 = statement.Second as SqlSelectNode;
-            select2.Columns.Count.Should().Be(1);
-            select2.Columns[0].Should().BeOfType<SqlStarNode>();
-            select2.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select2.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (select2.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table2");
+            result.Statements.First().Should().MatchAst(
+                new SqlUnionStatementNode
+                {
+                    First = new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            Children = new List<SqlNode>
+                            {
+                                new SqlStarNode()
+                            }
+                        },
+                        FromClause = new SqlSelectFromClauseNode
+                        {
+                            Source = new SqlIdentifierNode("Table1")
+                        }
+                    },
+                    Operator = "EXCEPT",
+                    Second = new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            Children = new List<SqlNode>
+                            {
+                                new SqlStarNode()
+                            }
+                        },
+                        FromClause = new SqlSelectFromClauseNode
+                        {
+                            Source = new SqlIdentifierNode("Table2")
+                        }
+                    }
+                }
+            );
         }
 
         [Test]
@@ -137,26 +206,41 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM Table1 INTERSECT SELECT * FROM Table2";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().NotBeNull();
-            var output = result.ToString();
 
-            var statement = (result as SqlStatementListNode)?.Statements?.First() as SqlUnionStatementNode;
-            statement.Should().NotBeNull();
-            statement.Operator.Should().Be("INTERSECT");
-
-            var select1 = statement.First as SqlSelectNode;
-            select1.Columns.Count.Should().Be(1);
-            select1.Columns[0].Should().BeOfType<SqlStarNode>();
-            select1.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select1.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (select1.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table1");
-
-            var select2 = statement.Second as SqlSelectNode;
-            select2.Columns.Count.Should().Be(1);
-            select2.Columns[0].Should().BeOfType<SqlStarNode>();
-            select2.FromClause.Should().BeOfType<SqlSelectFromClauseNode>();
-            select2.FromClause.Source.Should().BeOfType<SqlIdentifierNode>();
-            (select2.FromClause.Source as SqlIdentifierNode).Name.Should().Be("Table2");
+            result.Statements.First().Should().MatchAst(
+                new SqlUnionStatementNode
+                {
+                    First = new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            Children = new List<SqlNode>
+                            {
+                                new SqlStarNode()
+                            }
+                        },
+                        FromClause = new SqlSelectFromClauseNode
+                        {
+                            Source = new SqlIdentifierNode("Table1")
+                        }
+                    },
+                    Operator = "INTERSECT",
+                    Second = new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            Children = new List<SqlNode>
+                            {
+                                new SqlStarNode()
+                            }
+                        },
+                        FromClause = new SqlSelectFromClauseNode
+                        {
+                            Source = new SqlIdentifierNode("Table2")
+                        }
+                    }
+                }
+            );
         }
     }
 }

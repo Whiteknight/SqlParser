@@ -15,6 +15,11 @@ namespace CastIron.SqlParsing.Ast
             Location = token.Location;
         }
 
+        public SqlIdentifierNode(string name)
+        {
+            Name = name;
+        }
+
         public string Name { get; set; }
 
         public override void ToString(StringBuilder sb, int level)

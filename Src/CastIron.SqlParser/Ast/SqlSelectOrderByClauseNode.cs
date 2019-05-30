@@ -1,16 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 
 namespace CastIron.SqlParsing.Ast
 {
     public class SqlSelectOrderByClauseNode : SqlNode
     {
-        public SqlSelectOrderByClauseNode()
-        {
-            Entries = new List<SqlOrderByEntryNode>();
-        }
-
-        public List<SqlOrderByEntryNode> Entries { get; }
+        public SqlListNode<SqlOrderByEntryNode> Entries { get; set; }
 
         public SqlNode Offset { get; set; }
         public SqlNode Limit { get; set; }
@@ -20,12 +14,12 @@ namespace CastIron.SqlParsing.Ast
             sb.AppendIndent(level);
             sb.AppendLine("ORDER BY");
             sb.AppendIndent(level + 1);
-            Entries[0].ToString(sb, level + 1);
-            for (int i = 1; i < Entries.Count; i++)
+            Entries.Children[0].ToString(sb, level + 1);
+            for (int i = 1; i < Entries.Children.Count; i++)
             {
                 sb.AppendLine(",");
                 sb.AppendIndent(level + 1);
-                Entries[i].ToString(sb, level + 1);
+                Entries.Children[i].ToString(sb, level + 1);
             }
             if (Offset != null || Limit != null)
             {

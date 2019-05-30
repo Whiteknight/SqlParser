@@ -41,12 +41,42 @@ namespace CastIron.SqlParsing
                 selectNode.Modifier = modifier.Value;
             }
             
-            selectNode.Top = ParseSelectTopClause(t);
-            selectNode.Columns.AddRange(ParseSelectColumnList(t));
+            selectNode.TopClause = ParseSelectTopClause(t);
+            selectNode.Columns = ParseList(t, ParseSelectColumn);
             selectNode.FromClause = ParseSelectFromClause(t);
-            selectNode.OrderBy = ParseSelectOrderByClause(t);
-            selectNode.GroupBy = ParseSelectGroupByClause(t);
+            selectNode.WhereClause = ParseSelectWhereClause(t);
+            selectNode.OrderByClause = ParseSelectOrderByClause(t);
+            selectNode.GroupByClause = ParseSelectGroupByClause(t);
+            selectNode.HavingClause = ParseSelectHavingClause(t);
             return selectNode;
+        }
+
+        private SqlSelectWhereClauseNode ParseSelectWhereClause(SqlTokenizer t)
+        {
+            if (!t.NextIs(SqlTokenType.Keyword, "WHERE"))
+                return null;
+
+            var whereToken = t.GetNext();
+            var expression = ParseLogicalExpression(t);
+            return new SqlSelectWhereClauseNode
+            {
+                Location = whereToken.Location,
+                SearchCondition = expression
+            };
+        }
+
+        private SqlSelectHavingClauseNode ParseSelectHavingClause(SqlTokenizer t)
+        {
+            if (!t.NextIs(SqlTokenType.Keyword, "HAVING"))
+                return null;
+
+            var whereToken = t.GetNext();
+            var expression = ParseLogicalExpression(t);
+            return new SqlSelectHavingClauseNode
+            {
+                Location = whereToken.Location,
+                SearchCondition = expression
+            };
         }
 
         private SqlSelectTopNode ParseSelectTopClause(SqlTokenizer t)
@@ -58,7 +88,7 @@ namespace CastIron.SqlParsing
 
             var topToken = t.GetNext();
 
-            var numberOrVariable = ParseMaybeParenthesis(t, () => ParseNumberOrVariable(t));
+            var numberOrVariable = ParseMaybeParenthesis(t, ParseNumberOrVariable);
 
             bool percent = t.NextIs(SqlTokenType.Keyword, "PERCENT", true);
             bool withTies = false;
@@ -76,22 +106,6 @@ namespace CastIron.SqlParsing
             };
         }
 
-        private IEnumerable<SqlNode> ParseSelectColumnList(SqlTokenizer t)
-        {
-            // "*"
-            // <Column> ("," <Column>)*
-            var list = new List<SqlNode>();
-            while (true)
-            {
-                var column = ParseSelectColumn(t);
-                list.Add(column);
-                if (!t.NextIs(SqlTokenType.Symbol, ",", true))
-                    break;
-            }
-
-            return list;
-        }
-
         private SqlNode ParseSelectColumn(SqlTokenizer t)
         {
             var next = t.GetNext();
@@ -107,21 +121,20 @@ namespace CastIron.SqlParsing
                 if (t.NextIs(SqlTokenType.Symbol, "="))
                 {
                     var equalsOperator = t.GetNext();
+                    var rvalue = ParseScalarExpression(t);
                     return new SqlAssignVariableNode
                     {
                         Location = equalsOperator.Location,
                         Variable = new SqlVariableNode(next),
-                        RValue = ParseSelectColumnExpression(t)
+                        RValue = rvalue
                     };
                 }
             }
 
-            // TODO: <Number> | <String>
-
             t.PutBack(next);
 
             // <SelectColumnExpression> (AS <Alias>)?
-            var expr = ParseSelectColumnExpression(t);
+            var expr = ParseScalarExpression(t);
             if (t.NextIs(SqlTokenType.Keyword, "AS"))
             {
                 var op = t.GetNext();
@@ -135,57 +148,6 @@ namespace CastIron.SqlParsing
             }
 
             return expr;
-        }
-
-        private SqlNode ParseSelectColumnExpression(SqlTokenizer t)
-        {
-            // TODO: Need more robust expression parsing
-            var n = t.GetNext();
-            if (n.IsType(SqlTokenType.Identifier))
-            {
-                t.PutBack(n);
-                return ParseSelectColumnIdentifier(t);
-            }
-
-            if (n.IsType(SqlTokenType.Variable))
-                return new SqlVariableNode(n);
-            if (n.IsType(SqlTokenType.Number))
-                return new SqlNumberNode(n);
-            if (n.IsType(SqlTokenType.QuotedString))
-                return new SqlStringNode(n);
-
-            return null;
-        }
-
-        private SqlNode ParseSelectColumnIdentifier(SqlTokenizer t)
-        {
-            // <Identifier> ("." ("*" | <Identifier>))?
-            var first = t.Expect(SqlTokenType.Identifier);
-            if (!t.NextIs(SqlTokenType.Symbol, ".", true))
-                return new SqlIdentifierNode(first);
-
-            var second = t.GetNext();
-            if (second.Is(SqlTokenType.Symbol, "*"))
-            {
-                return new SqlQualifiedIdentifierNode
-                {
-                    Location = first.Location,
-                    Qualifier = new SqlIdentifierNode(first),
-                    Identifier = new SqlStarNode { Location = second.Location }
-                };
-            }
-
-            if (second.IsType(SqlTokenType.Identifier))
-            {
-                return new SqlQualifiedIdentifierNode
-                {
-                    Location = first.Location,
-                    Qualifier = new SqlIdentifierNode(first),
-                    Identifier = new SqlIdentifierNode(second)
-                };
-            }
-
-            throw new Exception($"Unknown column identifier {first.Value}.{second.Value}");
         }
 
         private SqlSelectFromClauseNode ParseSelectFromClause(SqlTokenizer t)
@@ -214,7 +176,11 @@ namespace CastIron.SqlParsing
 
             SqlNode condition = null;
             if (join.Operator != "NATURAL JOIN")
-                condition = ParseJoinOnCondition(t);
+            {
+                // "ON" <BooleanExpression>
+                t.Expect(SqlTokenType.Keyword, "ON");
+                condition = ParseBooleanExpression(t);
+            }
 
             return new SqlJoinNode
             {
@@ -226,28 +192,12 @@ namespace CastIron.SqlParsing
             };
         }
 
-        private SqlNode ParseJoinOnCondition(SqlTokenizer t)
-        {
-            // TODO: Need real condition expression parsing
-            // <column> <operator> <column>
-            var on = t.Expect(SqlTokenType.Keyword, "ON");
-            var left = ParseVariableOrDottedIdentifier(t);
-            var op = t.Expect(SqlTokenType.Symbol);
-            var right = ParseVariableOrDottedIdentifier(t);
-            return new SqlInfixOperationNode
-            {
-                Location = on.Location,
-                Left = left,
-                Operator = new SqlOperatorNode { Operator = op.Value },
-                Right = right
-            };
-        }
-
         private SqlOperatorNode ParseJoinOperator(SqlTokenizer t)
         {
-            // (LEFT | RIGHT)? (INNER | OUTER)? JOIN
-            // NATURAL? JOIN
-            // CROSS APPLY
+            // "CROSS" ("APPLY" | "JOIN")
+            //  "NATURAL" "JOIN"
+            // "INNER" "JOIN"
+            // ("LEFT" | "RIGHT")?  "OUTER"? "JOIN"
             
             var k = t.GetNext();
             if (!k.IsKeyword())
@@ -257,32 +207,37 @@ namespace CastIron.SqlParsing
             }
             if (k.Value == "CROSS")
             {
-                t.Expect(SqlTokenType.Keyword, "APPLY");
-                return new SqlOperatorNode("CROSS APPLY", k.Location);
+                if (t.NextIs(SqlTokenType.Keyword, "APPLY", true))
+                    return new SqlOperatorNode("CROSS APPLY", k.Location);
+                if (t.NextIs(SqlTokenType.Keyword, "JOIN", true))
+                    return new SqlOperatorNode("CROSS JOIN", k.Location);
             }
             if (k.Value == "NATURAL")
             {
                 t.Expect(SqlTokenType.Keyword, "JOIN");
                 return new SqlOperatorNode("NATURAL JOIN", k.Location);
             }
+            if (k.Value == "INNER")
+            {
+                t.Expect(SqlTokenType.Keyword, "JOIN");
+                return new SqlOperatorNode("INNER JOIN", k.Location);
+
+            }
 
             var joinOperator = new List<SqlToken>();
             var location = k.Location;
-            if (k.Value == "FULL")
-            {
-                joinOperator.Add(k);
-                k = t.GetNext();
-            }
-            if (k.Value == "LEFT" || k.Value == "RIGHT")
+            if (k.Value == "FULL" || k.Value == "LEFT" || k.Value == "RIGHT")
             {
                 joinOperator.Add(k);
                 k = t.GetNext();
             }
 
-            if (k.Value == "INNER" || k.Value == "OUTER")
+            if (k.Value == "OUTER")
             {
                 joinOperator.Add(k);
                 k = t.GetNext();
+                if (k.Value == "APPLY")
+                    return new SqlOperatorNode("OUTER APPLY");
             }
 
             if (k.Value == "JOIN")
@@ -332,6 +287,7 @@ namespace CastIron.SqlParsing
 
         private SqlNode ParseTableOrSubexpression(SqlTokenizer t)
         {
+            // TODO: select * from (VALUES (1), (2), (3)) x(id)
             // <QualifiedIdentifier> | <tableVariable> | "(" <Subexpression> ")"
 
             var qualifiedIdentifier = ParseQualifiedIdentifier(t);
@@ -368,18 +324,13 @@ namespace CastIron.SqlParsing
 
             var orderByToken = t.GetNext();
             t.Expect(SqlTokenType.Keyword, "BY");
+            var orderByItems = ParseList(t, ParseOrderTerm);
             var orderByNode = new SqlSelectOrderByClauseNode
             {
-                Location = orderByToken.Location
+                Location = orderByToken.Location,
+                Entries = orderByItems
+
             };
-            while (true)
-            {
-                var term = ParseOrderTerm(t);
-                orderByNode.Entries.Add(term);
-                if (!t.NextIs(SqlTokenType.Symbol, ","))
-                    break;
-                t.GetNext();
-            }
             if (t.NextIs(SqlTokenType.Keyword, "OFFSET"))
             {
                 t.GetNext();
@@ -428,13 +379,19 @@ namespace CastIron.SqlParsing
             return entry;
         }
 
-        private SqlNode ParseSelectGroupByClause(SqlTokenizer t)
+        private SqlSelectGroupByNode ParseSelectGroupByClause(SqlTokenizer t)
         {
             if (!t.NextIs(SqlTokenType.Keyword, "GROUP"))
                 return null;
-            //t.GetNext();
-            //t.Expect(SqlTokenType.Keyword, "BY");
-            return null;
+            var groupByToken = t.GetNext();
+            t.Expect(SqlTokenType.Keyword, "BY");
+
+            var groupByNode = new SqlSelectGroupByNode
+            {
+                Location = groupByToken.Location
+            };
+            groupByNode.Keys = ParseList(t, ParseQualifiedIdentifier);
+            return groupByNode;
         }
     }
 }

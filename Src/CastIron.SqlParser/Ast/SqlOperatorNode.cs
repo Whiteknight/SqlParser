@@ -21,6 +21,11 @@ namespace CastIron.SqlParsing.Ast
             Location = location;
         }
 
+        public SqlOperatorNode(string op)
+        {
+            Operator = op;
+        }
+
         public string Operator { get; set; }
 
         public override void ToString(StringBuilder sb, int level)

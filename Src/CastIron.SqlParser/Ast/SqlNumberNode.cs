@@ -15,6 +15,11 @@ namespace CastIron.SqlParsing.Ast
             Location = token.Location;
         }
 
+        public SqlNumberNode(decimal value)
+        {
+            Value = value;
+        }
+
         public decimal Value { get; set; }
 
         public override void ToString(StringBuilder sb, int level)
