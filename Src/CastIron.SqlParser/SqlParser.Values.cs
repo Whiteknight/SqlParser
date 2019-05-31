@@ -88,9 +88,16 @@ namespace CastIron.SqlParsing
             throw new Exception("Cannot parse variable or identifier");
         }
 
+        private SqlIdentifierNode ParseIdentifier(SqlTokenizer t)
+        {
+            var next = t.Expect(SqlTokenType.Identifier);
+            return new SqlIdentifierNode(next);
+        }
+
         private SqlNode ParseQualifiedIdentifier(SqlTokenizer t)
         {
             // ( <Qualifier> "." )? <Identifier>
+            
             var next = t.Peek();
             if (!next.IsType(SqlTokenType.Identifier))
                 return null;
@@ -105,6 +112,53 @@ namespace CastIron.SqlParsing
                 Location = qualifier.Location,
                 Qualifier = qualifier,
                 Identifier = identifier.Is(SqlTokenType.Symbol, "*") ? (SqlNode)new SqlStarNode() : new SqlIdentifierNode(identifier)
+            };
+        }
+
+        private SqlObjectIdentifierNode ParseObjectIdentifier(SqlTokenizer t)
+        {
+            // (((<ServerName> ".")? <DatabaseName> ".")? <Schema> ".")? <Identifier>
+            var item1 = t.Expect(SqlTokenType.Identifier);
+            if (!t.NextIs(SqlTokenType.Symbol, ".", true))
+            {
+                return new SqlObjectIdentifierNode
+                {
+                    Location = item1.Location,
+                    Name = new SqlIdentifierNode(item1)
+                };
+            }
+
+            var item2 = t.Expect(SqlTokenType.Identifier);
+            if (!t.NextIs(SqlTokenType.Symbol, ".", true))
+            {
+                return new SqlObjectIdentifierNode
+                {
+                    Location = item1.Location,
+                    Schema = new SqlIdentifierNode(item1),
+                    Name = new SqlIdentifierNode(item2)
+                };
+            }
+
+            var item3 = t.Expect(SqlTokenType.Identifier);
+            if (!t.NextIs(SqlTokenType.Symbol, ".", true))
+            {
+                return new SqlObjectIdentifierNode
+                {
+                    Location = item1.Location,
+                    Database = new SqlIdentifierNode(item1),
+                    Schema = new SqlIdentifierNode(item2),
+                    Name = new SqlIdentifierNode(item3)
+                };
+            }
+
+            var item4 = t.Expect(SqlTokenType.Identifier);
+            return new SqlObjectIdentifierNode
+            {
+                Location = item1.Location,
+                Server = new SqlIdentifierNode(item1),
+                Database = new SqlIdentifierNode(item2),
+                Schema = new SqlIdentifierNode(item3),
+                Name = new SqlIdentifierNode(item4)
             };
         }
     }

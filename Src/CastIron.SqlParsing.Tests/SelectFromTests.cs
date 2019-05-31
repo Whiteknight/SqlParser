@@ -26,7 +26,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     }
                 }
             );
@@ -51,11 +51,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlQualifiedIdentifierNode
-                        {
-                            Qualifier = new SqlIdentifierNode("dbo"),
-                            Identifier = new SqlIdentifierNode("MyTable")
-                        }
+                        Source = new SqlObjectIdentifierNode("dbo", "MyTable")
                     }
                 }
             );
@@ -87,7 +83,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     }
                 }
             );
@@ -119,7 +115,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     }
                 }
             );
@@ -146,7 +142,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     }
                 }
             );
@@ -203,7 +199,7 @@ namespace CastIron.SqlParsing.Tests
                         Source = new SqlAliasNode
                         {
                             Alias = new SqlIdentifierNode("t1"),
-                            Source = new SqlIdentifierNode("MyTable")
+                            Source = new SqlObjectIdentifierNode("MyTable")
                         }
                     }
                 }
@@ -236,7 +232,7 @@ namespace CastIron.SqlParsing.Tests
                         Source = new SqlAliasNode
                         {
                             Alias = new SqlIdentifierNode("t1"),
-                            Source = new SqlIdentifierNode("MyTable")
+                            Source = new SqlObjectIdentifierNode("MyTable")
                         }
                     }
                 }
@@ -269,7 +265,7 @@ namespace CastIron.SqlParsing.Tests
                         Source = new SqlAliasNode
                         {
                             Alias = new SqlIdentifierNode("t1"),
-                            Source = new SqlIdentifierNode("MyTable")
+                            Source = new SqlObjectIdentifierNode("MyTable")
                         }
                     }
                 }
@@ -351,7 +347,7 @@ namespace CastIron.SqlParsing.Tests
                                     },
                                     FromClause = new SqlSelectFromClauseNode
                                     {
-                                        Source = new SqlIdentifierNode("MyTable")
+                                        Source = new SqlObjectIdentifierNode("MyTable")
                                     }
                                 }
                             },
@@ -382,7 +378,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     }
                 }
             );
@@ -408,7 +404,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     }
                 }
             );
@@ -434,7 +430,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     }
                 }
             );
@@ -460,7 +456,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     }
                 }
             );
@@ -489,7 +485,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     }
                 }
             );
@@ -518,7 +514,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     }
                 }
             );
@@ -547,7 +543,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     }
                 }
             );

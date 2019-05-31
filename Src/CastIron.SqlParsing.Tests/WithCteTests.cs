@@ -36,7 +36,7 @@ SELECT * FROM Cte1;";
                                 },
                                 FromClause = new SqlSelectFromClauseNode
                                 {
-                                    Source = new SqlIdentifierNode("MyTable")
+                                    Source = new SqlObjectIdentifierNode("MyTable")
                                 }
                             },
                             Name = new SqlIdentifierNode("Cte1")
@@ -50,7 +50,7 @@ SELECT * FROM Cte1;";
                         },
                         FromClause = new SqlSelectFromClauseNode
                         {
-                            Source = new SqlIdentifierNode("Cte1")
+                            Source = new SqlObjectIdentifierNode("Cte1")
                         }
                     }
                 }
@@ -87,7 +87,7 @@ SELECT * FROM Cte2;";
                                 },
                                 FromClause = new SqlSelectFromClauseNode
                                 {
-                                    Source = new SqlIdentifierNode("MyTable")
+                                    Source = new SqlObjectIdentifierNode("MyTable")
                                 }
                             },
                             Name = new SqlIdentifierNode("Cte1")
@@ -102,7 +102,7 @@ SELECT * FROM Cte2;";
                                 },
                                 FromClause = new SqlSelectFromClauseNode
                                 {
-                                    Source = new SqlIdentifierNode("Cte1")
+                                    Source = new SqlObjectIdentifierNode("Cte1")
                                 }
                             },
                             Name = new SqlIdentifierNode("Cte2")
@@ -116,7 +116,7 @@ SELECT * FROM Cte2;";
                         },
                         FromClause = new SqlSelectFromClauseNode
                         {
-                            Source = new SqlIdentifierNode("Cte2")
+                            Source = new SqlObjectIdentifierNode("Cte2")
                         }
                     }
                 }

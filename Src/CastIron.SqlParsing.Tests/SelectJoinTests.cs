@@ -45,13 +45,13 @@ SELECT
                             Left = new SqlAliasNode
                             {
                                 Alias = new SqlIdentifierNode("t1"),
-                                Source = new SqlIdentifierNode("Table1")
+                                Source = new SqlObjectIdentifierNode("Table1")
                             },
                             Operator = new SqlOperatorNode(joinType),
                             Right = new SqlAliasNode
                             {
                                 Alias = new SqlIdentifierNode("t2"),
-                                Source = new SqlIdentifierNode("Table2")
+                                Source = new SqlObjectIdentifierNode("Table2")
                             },
                             OnCondition = new SqlInfixOperationNode
                             {
@@ -100,13 +100,13 @@ SELECT
                             Left = new SqlAliasNode
                             {
                                 Alias = new SqlIdentifierNode("t1"),
-                                Source = new SqlIdentifierNode("Table1")
+                                Source = new SqlObjectIdentifierNode("Table1")
                             },
                             Operator = new SqlOperatorNode("NATURAL JOIN"),
                             Right = new SqlAliasNode
                             {
                                 Alias = new SqlIdentifierNode("t2"),
-                                Source = new SqlIdentifierNode("Table2")
+                                Source = new SqlObjectIdentifierNode("Table2")
                             }
                         },
                     }

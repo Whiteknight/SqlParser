@@ -38,7 +38,16 @@ namespace CastIron.SqlParsing
                 return ParseWithStatement(t);
             if (keyword.Value == "INSERT")
                 return ParseInsertStatement(t);
-            // ...
+            if (keyword.Value == "UPDATE")
+                return ParseUpdateStatement(t);
+            if (keyword.Value == "DELETE")
+                return ParseDeleteStatement(t);
+            
+            // TODO: MERGE
+            // TODO: DECLARE
+            // TODO: SET
+            // TODO: BEGIN/END
+            // TODO: CREATE/DROP/ALTER
             throw new Exception($"Cannot parse statement starting with {keyword}");
         }
 

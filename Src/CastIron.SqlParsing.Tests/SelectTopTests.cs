@@ -25,7 +25,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     },
                     TopClause = new SqlSelectTopNode
                     {
@@ -51,7 +51,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     },
                     TopClause = new SqlSelectTopNode
                     {
@@ -77,7 +77,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     },
                     TopClause = new SqlSelectTopNode
                     {
@@ -103,7 +103,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     },
                     TopClause = new SqlSelectTopNode
                     {
@@ -129,7 +129,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     },
                     TopClause = new SqlSelectTopNode
                     {
@@ -156,7 +156,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     },
                     TopClause = new SqlSelectTopNode
                     {
@@ -183,7 +183,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     },
                     TopClause = new SqlSelectTopNode
                     {

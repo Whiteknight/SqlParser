@@ -24,6 +24,20 @@ namespace CastIron.SqlParsing
             };
         }
 
+        private SqlNode ParseUpdateColumnAssignExpression(SqlTokenizer t)
+        {
+            var columnName = ParseQualifiedIdentifier(t);
+            t.Expect(SqlTokenType.Symbol, "=");
+            var rvalue = ParseScalarExpression(t);
+            return new SqlInfixOperationNode
+            {
+                Left = columnName,
+                Location = columnName.Location,
+                Operator = new SqlOperatorNode("="),
+                Right = rvalue
+            };
+        }
+
         private SqlNode ParseBooleanExpression(SqlTokenizer t)
         {
             // <ScalarExpression> <ComparisonOperator> <ScalarExpression>

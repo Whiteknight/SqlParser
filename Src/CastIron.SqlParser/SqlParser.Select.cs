@@ -44,21 +44,21 @@ namespace CastIron.SqlParsing
             selectNode.TopClause = ParseSelectTopClause(t);
             selectNode.Columns = ParseList(t, ParseSelectColumn);
             selectNode.FromClause = ParseSelectFromClause(t);
-            selectNode.WhereClause = ParseSelectWhereClause(t);
+            selectNode.WhereClause = ParseWhereClause(t);
             selectNode.OrderByClause = ParseSelectOrderByClause(t);
             selectNode.GroupByClause = ParseSelectGroupByClause(t);
             selectNode.HavingClause = ParseSelectHavingClause(t);
             return selectNode;
         }
 
-        private SqlSelectWhereClauseNode ParseSelectWhereClause(SqlTokenizer t)
+        private SqlWhereNode ParseWhereClause(SqlTokenizer t)
         {
             if (!t.NextIs(SqlTokenType.Keyword, "WHERE"))
                 return null;
 
             var whereToken = t.GetNext();
             var expression = ParseLogicalExpression(t);
-            return new SqlSelectWhereClauseNode
+            return new SqlWhereNode
             {
                 Location = whereToken.Location,
                 SearchCondition = expression
@@ -290,9 +290,8 @@ namespace CastIron.SqlParsing
             // TODO: select * from (VALUES (1), (2), (3)) x(id)
             // <QualifiedIdentifier> | <tableVariable> | "(" <Subexpression> ")"
 
-            var qualifiedIdentifier = ParseQualifiedIdentifier(t);
-            if (qualifiedIdentifier != null)
-                return qualifiedIdentifier;
+            if (t.Peek().IsType(SqlTokenType.Identifier))
+                return ParseObjectIdentifier(t);
 
             var next = t.GetNext();
 

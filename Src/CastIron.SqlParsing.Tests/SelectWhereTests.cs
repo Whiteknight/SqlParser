@@ -25,9 +25,9 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     },
-                    WhereClause = new SqlSelectWhereClauseNode
+                    WhereClause = new SqlWhereNode
                     {
                         SearchCondition = new SqlInfixOperationNode
                         {
@@ -56,9 +56,9 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     },
-                    WhereClause = new SqlSelectWhereClauseNode
+                    WhereClause = new SqlWhereNode
                     {
                         SearchCondition = new SqlInfixOperationNode
                         {
@@ -92,9 +92,9 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     },
-                    WhereClause = new SqlSelectWhereClauseNode
+                    WhereClause = new SqlWhereNode
                     {
                         SearchCondition = new SqlInfixOperationNode
                         {
@@ -133,9 +133,9 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     },
-                    WhereClause = new SqlSelectWhereClauseNode
+                    WhereClause = new SqlWhereNode
                     {
                         SearchCondition = new SqlBetweenOperationNode
                         { 
@@ -164,9 +164,9 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("MyTable")
                     },
-                    WhereClause = new SqlSelectWhereClauseNode
+                    WhereClause = new SqlWhereNode
                     {
                         SearchCondition = new SqlInNode
                         { 

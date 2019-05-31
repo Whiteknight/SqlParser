@@ -8,7 +8,7 @@ namespace CastIron.SqlParsing.Ast
         public SqlSelectTopNode TopClause { get; set; }
         public SqlListNode<SqlNode> Columns { get; set; }
         public SqlSelectFromClauseNode FromClause { get; set; }
-        public SqlSelectWhereClauseNode WhereClause { get; set; }
+        public SqlWhereNode WhereClause { get; set; }
         public SqlSelectOrderByClauseNode OrderByClause { get; set; }
         public SqlSelectGroupByNode GroupByClause { get; set; }
 
@@ -58,7 +58,7 @@ namespace CastIron.SqlParsing.Ast
         }
     }
 
-    public class SqlSelectWhereClauseNode : SqlNode
+    public class SqlWhereNode : SqlNode
     {
         public SqlNode SearchCondition { get; set; }
 

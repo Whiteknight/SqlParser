@@ -26,7 +26,7 @@ namespace CastIron.SqlParsing.Tests
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
-                        Source = new SqlIdentifierNode("TableA")
+                        Source = new SqlObjectIdentifierNode("TableA")
                     },
                     GroupByClause = new SqlSelectGroupByNode
                     {
