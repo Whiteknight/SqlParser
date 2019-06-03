@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 
 namespace CastIron.SqlParsing.Ast
 {
@@ -12,11 +11,11 @@ namespace CastIron.SqlParsing.Ast
             Statements = new List<SqlNode>();
         }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
             foreach (var statement in Statements)
             {
-                statement.ToString(sb, level);
+                statement.ToString(sb);
                 sb.AppendLine(";");
             }
         }

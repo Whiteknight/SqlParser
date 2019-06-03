@@ -19,6 +19,7 @@ namespace CastIron.SqlParsing.Tests
             string s = $"SELECT * FROM Table1 {op} SELECT * FROM Table2";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlUnionStatementNode
@@ -29,7 +30,7 @@ namespace CastIron.SqlParsing.Tests
                         {
                             Children = new List<SqlNode>
                             {
-                                new SqlStarNode()
+                                new SqlOperatorNode("*")
                             }
                         },
                         FromClause = new SqlSelectFromClauseNode
@@ -44,7 +45,7 @@ namespace CastIron.SqlParsing.Tests
                         {
                             Children = new List<SqlNode>
                             {
-                                new SqlStarNode()
+                                new SqlOperatorNode("*")
                             }
                         },
                         FromClause = new SqlSelectFromClauseNode
@@ -62,6 +63,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM Table1 UNION SELECT * FROM Table2 UNION ALL SELECT * FROM Table3;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlUnionStatementNode
@@ -72,7 +74,7 @@ namespace CastIron.SqlParsing.Tests
                         {
                             Children = new List<SqlNode>
                             {
-                                new SqlStarNode()
+                                new SqlOperatorNode("*")
                             }
                         },
                         FromClause = new SqlSelectFromClauseNode
@@ -89,7 +91,7 @@ namespace CastIron.SqlParsing.Tests
                             {
                                 Children = new List<SqlNode>
                                 {
-                                    new SqlStarNode()
+                                    new SqlOperatorNode("*")
                                 }
                             },
                             FromClause = new SqlSelectFromClauseNode
@@ -104,7 +106,7 @@ namespace CastIron.SqlParsing.Tests
                             {
                                 Children = new List<SqlNode>
                                 {
-                                    new SqlStarNode()
+                                    new SqlOperatorNode("*")
                                 }
                             },
                             FromClause = new SqlSelectFromClauseNode

@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace CastIron.SqlParsing.Ast
+﻿namespace CastIron.SqlParsing.Ast
 {
     public class SqlSelectNode : SqlNode
     {
@@ -14,59 +12,36 @@ namespace CastIron.SqlParsing.Ast
 
         public SqlSelectHavingClauseNode HavingClause { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
-            sb.AppendIndent(level);
             sb.Append("SELECT ");
             if (Modifier != null)
             {
                 sb.Append(Modifier);
                 sb.Append(" ");
             }
-            level++;
-            ToString(sb, TopClause, level);
-            Columns.ToString(sb, level);
-            ToString(sb, FromClause, level);
-            ToString(sb, WhereClause, level);
-            ToString(sb, OrderByClause, level);
-            ToString(sb, GroupByClause, level);
-            ToString(sb, HavingClause, level);
+
+            sb.IncreaseIndent();
+
+            ToString(sb, TopClause);
+            sb.AppendLineAndIndent();
+            Columns.ToString(sb);
+            ToString(sb, FromClause);
+            ToString(sb, WhereClause);
+            ToString(sb, OrderByClause);
+            ToString(sb, GroupByClause);
+            ToString(sb, HavingClause);
+
+            sb.DecreaseIndent();
         }
 
-        private void ToString(StringBuilder sb, SqlNode child, int level)
+        private void ToString(SqlStringifier sb, SqlNode child)
         {
             if (child != null)
             {
-                sb.AppendLine();
-                sb.AppendIndent(level);
-                child.ToString(sb, level);
+                sb.AppendLineAndIndent();
+                child.ToString(sb);
             }
-        }
-    }
-
-    public class SqlSelectSubexpressionNode : SqlNode
-    {
-        public SqlNode Select { get; set; }
-
-        public override void ToString(StringBuilder sb, int level)
-        {
-            sb.AppendLine("(");
-            Select?.ToString(sb, level + 1);
-            sb.AppendLine();
-            sb.AppendIndent(level);
-            sb.Append(")");
-        }
-    }
-
-    public class SqlWhereNode : SqlNode
-    {
-        public SqlNode SearchCondition { get; set; }
-
-        public override void ToString(StringBuilder sb, int level)
-        {
-            sb.AppendLine("WHERE");
-            sb.AppendIndent(level + 1);
-            SearchCondition.ToString(sb, level + 1);
         }
     }
 
@@ -74,11 +49,13 @@ namespace CastIron.SqlParsing.Ast
     {
         public SqlNode SearchCondition { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
             sb.AppendLine("HAVING");
-            sb.AppendIndent(level + 1);
-            SearchCondition.ToString(sb, level + 1);
+            sb.IncreaseIndent();
+            sb.WriteIndent();
+            SearchCondition.ToString(sb);
+            sb.DecreaseIndent();
         }
     }
 }

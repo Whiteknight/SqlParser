@@ -1,15 +1,15 @@
 ﻿namespace CastIron.SqlParsing.Ast
 {
-    public class SqlSelectFromClauseNode : SqlNode
+    public class SqlWhereNode : SqlNode
     {
-        public SqlNode Source { get; set; }
+        public SqlNode SearchCondition { get; set; }
 
         public override void ToString(SqlStringifier sb)
         {
-            sb.AppendLine("FROM ");
+            sb.AppendLine("WHERE");
             sb.IncreaseIndent();
             sb.WriteIndent();
-            Source.ToString(sb);
+            SearchCondition.ToString(sb);
             sb.DecreaseIndent();
         }
     }

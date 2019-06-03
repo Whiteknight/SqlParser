@@ -1,5 +1,4 @@
-﻿using System.Text;
-using CastIron.SqlParsing.Tokenizing;
+﻿using CastIron.SqlParsing.Tokenizing;
 
 namespace CastIron.SqlParsing.Ast
 {
@@ -22,9 +21,11 @@ namespace CastIron.SqlParsing.Ast
 
         public string Name { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
+            sb.Append("[");
             sb.Append(Name);
+            sb.Append("]");
         }
     }
 
@@ -43,15 +44,15 @@ namespace CastIron.SqlParsing.Ast
         public SqlIdentifierNode Qualifier { get; set; }
         public SqlNode Identifier { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
             if (Qualifier != null)
             {
-                Qualifier.ToString(sb, level);
+                Qualifier.ToString(sb);
                 sb.Append(".");
             }
 
-            Identifier.ToString(sb, level);
+            Identifier.ToString(sb);
         }
     }
 
@@ -92,27 +93,27 @@ namespace CastIron.SqlParsing.Ast
         public SqlNode Schema { get; set; }
         public SqlNode Name { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
             if (Server != null)
             {
-                Server.ToString(sb, level);
+                Server.ToString(sb);
                 sb.Append(".");
             }
 
             if (Database != null)
             {
-                Database.ToString(sb, level);
+                Database.ToString(sb);
                 sb.Append(".");
             }
 
             if (Schema != null)
             {
-                Schema.ToString(sb, level);
+                Schema.ToString(sb);
                 sb.Append(".");
             }
 
-            Name.ToString(sb, level);
+            Name.ToString(sb);
         }
     }
 }

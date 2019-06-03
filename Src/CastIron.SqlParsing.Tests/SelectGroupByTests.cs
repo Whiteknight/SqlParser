@@ -2,7 +2,6 @@
 using CastIron.SqlParsing.Ast;
 using CastIron.SqlParsing.Tests.Utility;
 using CastIron.SqlParsing.Tokenizing;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace CastIron.SqlParsing.Tests
@@ -16,13 +15,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM TableA GROUP BY Column1";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {

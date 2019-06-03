@@ -15,13 +15,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn DESC;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
@@ -48,13 +49,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM MyTable ORDER BY 1 DESC;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
@@ -81,13 +83,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn ASC;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
@@ -114,13 +117,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
@@ -146,13 +150,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
@@ -180,13 +185,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn1 ASC, MyColumn2 DESC;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {

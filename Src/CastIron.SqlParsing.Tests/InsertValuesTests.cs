@@ -15,6 +15,8 @@ namespace CastIron.SqlParsing.Tests
             const string s = "INSERT INTO MyTable(Column1, Column2) VALUES (1, 'TEST');";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            var output = result.ToString();
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlInsertNode
@@ -46,6 +48,8 @@ namespace CastIron.SqlParsing.Tests
             const string s = "INSERT INTO MyTable(Column1, Column2) VALUES (1, 'TESTA'), (2, 'TESTB');";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            var output = result.ToString();
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlInsertNode
@@ -82,6 +86,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "INSERT INTO MyTable(Column1, Column2) DEFAULT VALUES;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlInsertNode
@@ -92,7 +97,7 @@ namespace CastIron.SqlParsing.Tests
                         new SqlIdentifierNode("Column1"),
                         new SqlIdentifierNode("Column2")
                     },
-                    Source = new SqlDefaultValuesNode()
+                    Source = new SqlKeywordNode("DEFAULT VALUES")
                 }
             );
         }

@@ -111,8 +111,19 @@ namespace CastIron.SqlParsing
             {
                 Location = qualifier.Location,
                 Qualifier = qualifier,
-                Identifier = identifier.Is(SqlTokenType.Symbol, "*") ? (SqlNode)new SqlStarNode() : new SqlIdentifierNode(identifier)
+                Identifier = identifier.Is(SqlTokenType.Symbol, "*") ? (SqlNode)new SqlOperatorNode("*") : new SqlIdentifierNode(identifier)
             };
+        }
+
+        private SqlNode ParseVariableOrObjectIdentifier(SqlTokenizer t)
+        {
+            var next = t.GetNext();
+
+            // <Variable>
+            if (next.IsType(SqlTokenType.Variable))
+                return new SqlVariableNode(next);
+            t.PutBack(next);
+            return ParseObjectIdentifier(t);
         }
 
         private SqlObjectIdentifierNode ParseObjectIdentifier(SqlTokenizer t)
@@ -160,6 +171,42 @@ namespace CastIron.SqlParsing
                 Schema = new SqlIdentifierNode(item3),
                 Name = new SqlIdentifierNode(item4)
             };
+        }
+
+        private SqlNode ParseMaybeAliased(SqlTokenizer t, Func<SqlTokenizer, SqlNode> parse)
+        {
+            var node = parse(t);
+
+            var next = t.Peek();
+            if (next.IsKeyword("AS"))
+            {
+                var asToken = t.GetNext();
+                var alias = t.Expect(SqlTokenType.Identifier);
+                return new SqlAliasNode
+                {
+                    Location = asToken.Location,
+                    Source = node,
+                    Alias = new SqlIdentifierNode(alias)
+                };
+            }
+            if (next.IsType(SqlTokenType.Identifier))
+            {
+                t.GetNext();
+                return new SqlAliasNode
+                {
+                    Location = node.Location,
+                    Source = node,
+                    Alias = new SqlIdentifierNode(next)
+                };
+            }
+
+            return node;
+        }
+
+        private SqlStringNode ParseString(SqlTokenizer t)
+        {
+            var s = t.Expect(SqlTokenType.QuotedString);
+            return new SqlStringNode(s);
         }
     }
 }

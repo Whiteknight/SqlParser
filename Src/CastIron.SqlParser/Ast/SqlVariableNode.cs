@@ -22,7 +22,7 @@ namespace CastIron.SqlParsing.Ast
 
         public string Name { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
             if (!Name.StartsWith("@"))
                 sb.Append("@");

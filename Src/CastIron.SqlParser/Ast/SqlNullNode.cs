@@ -1,12 +1,21 @@
-﻿using System.Text;
+﻿using CastIron.SqlParsing.Tokenizing;
 
 namespace CastIron.SqlParsing.Ast
 {
     public class SqlNullNode : SqlNode
     {
-        public override void ToString(StringBuilder sb, int level)
+        public SqlNullNode()
         {
-            throw new System.NotImplementedException();
+        }
+
+        public SqlNullNode(SqlToken t)
+        {
+            Location = t.Location;
+        }
+
+        public override void ToString(SqlStringifier sb)
+        {
+            sb.Append("NULL");
         }
     }
 }

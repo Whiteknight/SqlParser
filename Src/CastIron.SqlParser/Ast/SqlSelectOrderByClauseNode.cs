@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace CastIron.SqlParsing.Ast
+﻿namespace CastIron.SqlParsing.Ast
 {
     public class SqlSelectOrderByClauseNode : SqlNode
     {
@@ -9,34 +7,30 @@ namespace CastIron.SqlParsing.Ast
         public SqlNode Offset { get; set; }
         public SqlNode Limit { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
-            sb.AppendIndent(level);
-            sb.AppendLine("ORDER BY");
-            sb.AppendIndent(level + 1);
-            Entries.Children[0].ToString(sb, level + 1);
-            for (int i = 1; i < Entries.Children.Count; i++)
+            sb.Append("ORDER BY");
+            sb.IncreaseIndent();
+            Entries.ToString(sb, (x, c) =>
             {
-                sb.AppendLine(",");
-                sb.AppendIndent(level + 1);
-                Entries.Children[i].ToString(sb, level + 1);
-            }
+                sb.AppendLineAndIndent();
+                c.ToString(sb);
+            }, x => x.Append(","));
             if (Offset != null || Limit != null)
             {
-                sb.AppendLine();
-                sb.AppendIndent(level + 1);
+                sb.AppendLineAndIndent();
                 if (Offset != null)
                 {
                     sb.Append("OFFSET ");
-                    Offset.ToString(sb, level + 1);
+                    Offset.ToString(sb);
                     sb.Append(" ROWS ");
                 }
 
                 if (Limit != null)
                 {
                     sb.Append("FETCH NEXT ");
-                    Limit.ToString(sb, level + 1);
-                    sb.Append("ROWS ONLY");
+                    Limit.ToString(sb);
+                    sb.Append(" ROWS ONLY");
                 }
             }
         }
@@ -47,11 +41,14 @@ namespace CastIron.SqlParsing.Ast
         public SqlNode Source { get; set; }
         public string Direction { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
-            Source.ToString(sb, level);
-            sb.Append(" ");
-            sb.Append(Direction ?? "ASC");
+            Source.ToString(sb);
+            if (!string.IsNullOrEmpty(Direction))
+            {
+                sb.Append(" ");
+                sb.Append(Direction);
+            }
         }
     }
 }

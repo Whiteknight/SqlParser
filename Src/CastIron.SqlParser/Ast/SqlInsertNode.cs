@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace CastIron.SqlParsing.Ast
+﻿namespace CastIron.SqlParsing.Ast
 {
     public class SqlInsertNode : SqlNode
     {
@@ -8,52 +6,39 @@ namespace CastIron.SqlParsing.Ast
         public SqlListNode<SqlIdentifierNode> Columns { get; set; }
         public SqlNode Source { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
-            sb.AppendIndent(level);
             sb.Append("INSERT INTO ");
-            Table.ToString(sb, level);
+            Table.ToString(sb);
             sb.Append("(");
-            Columns.ToString(sb, level);
+            Columns.ToString(sb, (x, c) => c.ToString(x), x => x.Append(", "));
             sb.AppendLine(")");
-            sb.AppendIndent(level + 1);
-            Source.ToString(sb, level + 1);
+            sb.IncreaseIndent();
+            sb.WriteIndent();
+            Source.ToString(sb);
+            sb.DecreaseIndent();
         }
     }
 
     public class SqlInsertValuesNode : SqlNode
     {
-        public SqlNode Values { get; set; }
+        public SqlListNode<SqlListNode<SqlNode>> Values { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
+            void between(SqlStringifier x)
+            {
+                sb.Append(", ");
+            }
+            void forEach(SqlStringifier x, SqlListNode<SqlNode> child)
+            {
+                sb.Append("(");
+                child.ToString(sb, (y, c) => c.ToString(y), y => y.Append(", "));
+                sb.Append(")");
+            }
+
             sb.Append("VALUES ");
-            Values.ToString(sb, level);
-        }
-    }
-
-    public class SqlDefaultValuesNode : SqlNode
-    {
-        public override void ToString(StringBuilder sb, int level)
-        {
-            sb.Append("DEFAULT VALUES");
-        }
-    }
-
-    public class SqlUpdateNode : SqlNode
-    {
-        public SqlNode Source { get; set; }
-        public SqlListNode<SqlNode> SetClause { get; set; }
-        public SqlWhereNode WhereClause { get; set; }
-
-        public override void ToString(StringBuilder sb, int level)
-        {
-            sb.AppendIndent(level);
-            sb.Append("UPDATE ");
-            Source.ToString(sb, level);
-            sb.Append(" SET ");
-            SetClause.ToString(sb, level);
-            WhereClause?.ToString(sb, level);
+            Values.ToString(sb, forEach, between);
         }
     }
 }

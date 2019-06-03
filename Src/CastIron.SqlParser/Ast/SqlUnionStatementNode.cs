@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-
-namespace CastIron.SqlParsing.Ast
+﻿namespace CastIron.SqlParsing.Ast
 {
     public class SqlUnionStatementNode : SqlNode
     {
@@ -9,13 +6,12 @@ namespace CastIron.SqlParsing.Ast
         public string Operator { get; set; }
         public SqlNode Second { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
-            First.ToString(sb, level);
-            sb.AppendLine();
-            sb.AppendIndent(level);
-            sb.AppendLine(Operator);
-            Second.ToString(sb, level);
+            First.ToString(sb);
+            sb.AppendLineAndIndent();
+            sb.AppendLineAndIndent(Operator);
+            Second.ToString(sb);
         }
     }
 }

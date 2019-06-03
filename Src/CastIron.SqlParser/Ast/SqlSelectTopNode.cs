@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace CastIron.SqlParsing.Ast
+﻿namespace CastIron.SqlParsing.Ast
 {
     public class SqlSelectTopNode : SqlNode
     {
@@ -8,12 +6,10 @@ namespace CastIron.SqlParsing.Ast
         public bool Percent { get; set; }
         public bool WithTies { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
-            sb.AppendLine();
-            sb.AppendIndent(level);
             sb.Append("TOP (");
-            Value.ToString(sb, level);
+            Value.ToString(sb);
             sb.Append(")");
             if (Percent)
                 sb.Append(" PERCENT");

@@ -15,13 +15,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP 10 * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
@@ -41,13 +42,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP @limit * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
@@ -67,13 +69,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (10) * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
@@ -93,13 +96,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (@limit) * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
@@ -119,13 +123,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (10) PERCENT * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
@@ -146,13 +151,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (10) WITH TIES * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
@@ -173,13 +179,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (10) PERCENT WITH TIES * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {

@@ -1,5 +1,4 @@
-﻿using System.Text;
-using CastIron.SqlParsing.Tokenizing;
+﻿using CastIron.SqlParsing.Tokenizing;
 
 namespace CastIron.SqlParsing.Ast
 {
@@ -22,9 +21,9 @@ namespace CastIron.SqlParsing.Ast
 
         public decimal Value { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
-            sb.Append(Value);
+            sb.Append(Value.ToString());
         }
     }
 }

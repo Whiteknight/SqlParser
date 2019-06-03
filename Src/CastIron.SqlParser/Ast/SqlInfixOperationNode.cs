@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace CastIron.SqlParsing.Ast
+﻿namespace CastIron.SqlParsing.Ast
 {
     public class SqlInfixOperationNode : SqlNode
     {
@@ -8,20 +6,30 @@ namespace CastIron.SqlParsing.Ast
         public SqlOperatorNode Operator { get; set; }
         public SqlNode Right { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
-            Left.ToString(sb, level);
+            ToStringChild(Left, sb);
             if (Operator.Operator == "AND" || Operator.Operator == "OR")
-            {
-                sb.AppendLine();
-                sb.AppendIndent(level);
-            }
+                sb.AppendLineAndIndent();
             else
                 sb.Append(" ");
 
-            Operator.ToString(sb, level);
+            Operator.ToString(sb);
             sb.Append(" ");
-            Right.ToString(sb, level);
+            ToStringChild(Right, sb);
+        }
+
+        private void ToStringChild(SqlNode node, SqlStringifier sb)
+        {
+            if (node is SqlInfixOperationNode)
+            {
+                sb.Append("(");
+                node.ToString(sb);
+                sb.Append(")");
+                return;
+            }
+
+            node.ToString(sb);
         }
     }
 }

@@ -5,12 +5,12 @@ namespace CastIron.SqlParsing.Ast
 {
     public abstract class SqlNode
     {
-        public abstract void ToString(StringBuilder sb, int level);
+        public abstract void ToString(SqlStringifier sb);
 
         public override string ToString()
         {
             var sb = new StringBuilder();
-            ToString(sb, 0);
+            ToString(new SqlStringifier(sb));
             return sb.ToString();
         }
 

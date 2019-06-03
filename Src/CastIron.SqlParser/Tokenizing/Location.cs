@@ -16,6 +16,4 @@
             return $"Line {Line} Column {Column}";
         }
     }
-
-
 }

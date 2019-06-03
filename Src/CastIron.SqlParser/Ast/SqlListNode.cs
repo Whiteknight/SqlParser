@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CastIron.SqlParsing.Ast
 {
@@ -15,13 +14,29 @@ namespace CastIron.SqlParsing.Ast
 
         public List<TNode> Children { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
-            foreach (var child in Children)
+            void between(SqlStringifier x)
             {
-                sb.AppendLine();
-                sb.AppendIndent(level);
-                child.ToString(sb, level);
+                x.AppendLineAndIndent(",");
+            }
+            void forEach(SqlStringifier x, TNode child)
+            {
+                child.ToString(x);
+            }
+
+            ToString(sb, forEach, between);
+        }
+
+        public void ToString(SqlStringifier sb, Action<SqlStringifier, TNode> forEach, Action<SqlStringifier> between)
+        {
+            if (Children.Count == 0)
+                return;
+            forEach?.Invoke(sb, Children[0]);
+            for (int i = 1; i < Children.Count; i++)
+            {
+                between?.Invoke(sb);
+                forEach?.Invoke(sb, Children[i]);
             }
         }
 

@@ -1,18 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Text;
-
-namespace CastIron.SqlParsing.Ast
+﻿namespace CastIron.SqlParsing.Ast
 {
     public class SqlSelectGroupByNode : SqlNode
     {
         public SqlListNode<SqlNode> Keys { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
-            sb.AppendIndent(level);
-            sb.AppendLine("GROUP BY");
-            sb.AppendIndent(level + 1);
-            Keys.ToString(sb, level + 1);
+            sb.Append("GROUP BY");
+            sb.IncreaseIndent();
+            sb.AppendLineAndIndent();
+            Keys.ToString(sb);
+            sb.DecreaseIndent();
         }
     }
 }

@@ -17,6 +17,7 @@ namespace CastIron.SqlParsing.Tests
 ;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlInsertNode

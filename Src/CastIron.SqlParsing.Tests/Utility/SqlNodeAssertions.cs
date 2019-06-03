@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -24,6 +25,20 @@ namespace CastIron.SqlParsing.Tests.Utility
             expected.Should().NotBeNull();
             AssertMatchAst(Subject, expected, "");
             return new AndConstraint<SqlNodeAssertions>(this);
+        }
+
+        public AndConstraint<SqlNodeAssertions> RoundTrip()
+        {
+            var asString = Subject.ToString();
+            var roundTripped = new SqlParser().Parse(asString);
+            try
+            {
+                AssertMatchAst(Subject, roundTripped, "ROUNDTRIP");
+                return new AndConstraint<SqlNodeAssertions>(this);
+            } catch (Exception e)
+            {
+                throw new Exception("Expected\n" + asString + "\n\nBut got\n" + roundTripped.ToString(), e);
+            }
         }
 
         private void AssertMatchAst(SqlNode a, SqlNode b, string path)

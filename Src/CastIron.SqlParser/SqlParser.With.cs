@@ -18,10 +18,11 @@ namespace CastIron.SqlParsing
 
         private SqlCteNode ParseCte(SqlTokenizer t)
         {
-            // <identifier> "AS"? "(" <SelectStatement> ")"
+            // <identifier> ("(" <columnList> ")")? "AS"? "(" <SelectStatement> ")"
             var name = t.Expect(SqlTokenType.Identifier);
+            // TODO: ColumnList
             t.NextIs(SqlTokenType.Keyword, "AS", true);
-            var selectStatement = ParseParenthesis(t, ParseQueryExpression);
+            var selectStatement = ParseParenthesis(t, ParseQueryExpression).Expression;
             return new SqlCteNode
             {
                 Name = new SqlIdentifierNode { Name = name.Value },

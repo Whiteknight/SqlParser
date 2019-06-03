@@ -15,7 +15,7 @@ namespace CastIron.SqlParsing
                 Location = insertToken.Location
             };
             insertNode.Table = ParseObjectIdentifier(t);
-            insertNode.Columns = ParseParenthesis(t, a => ParseList(a, ParseIdentifier));
+            insertNode.Columns = ParseParenthesis(t, a => ParseList(a, ParseIdentifier)).Expression;
 
             // TODO: OUTPUT Clause
 
@@ -28,7 +28,7 @@ namespace CastIron.SqlParsing
             {
                 t.GetNext();
                 t.Expect(SqlTokenType.Keyword, "VALUES");
-                insertNode.Source = new SqlDefaultValuesNode();
+                insertNode.Source = new SqlKeywordNode("DEFAULT VALUES");
             }
 
             return insertNode;
@@ -40,7 +40,7 @@ namespace CastIron.SqlParsing
             return new SqlInsertValuesNode
             {
                 Location = valuesToken.Location,
-                Values = ParseList(t, a => ParseParenthesis(a, b => ParseList(b, ParseVariableOrConstant)))
+                Values = ParseList(t, a => ParseParenthesis(a, b => ParseList(b, ParseVariableOrConstant)).Expression)
             };
         }
     }

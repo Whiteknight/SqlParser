@@ -57,7 +57,7 @@ namespace CastIron.SqlParsing
                 return null;
 
             var whereToken = t.GetNext();
-            var expression = ParseLogicalExpression(t);
+            var expression = ParseBooleanExpression(t);
             return new SqlWhereNode
             {
                 Location = whereToken.Location,
@@ -71,7 +71,7 @@ namespace CastIron.SqlParsing
                 return null;
 
             var whereToken = t.GetNext();
-            var expression = ParseLogicalExpression(t);
+            var expression = ParseBooleanExpression(t);
             return new SqlSelectHavingClauseNode
             {
                 Location = whereToken.Location,
@@ -112,7 +112,7 @@ namespace CastIron.SqlParsing
 
             // "*"
             if (next.Is(SqlTokenType.Symbol, "*"))
-                return new SqlStarNode { Location = next.Location };
+                return new SqlOperatorNode(next);
 
             // TODO: Should change this to (<Variable> "=")? <SelectColumnExpression>
             // <Variable> ("=" <SelectColumnExpression>)? 
@@ -122,11 +122,12 @@ namespace CastIron.SqlParsing
                 {
                     var equalsOperator = t.GetNext();
                     var rvalue = ParseScalarExpression(t);
-                    return new SqlAssignVariableNode
+                    return new SqlInfixOperationNode
                     {
                         Location = equalsOperator.Location,
-                        Variable = new SqlVariableNode(next),
-                        RValue = rvalue
+                        Left = new SqlVariableNode(next),
+                        Right = rvalue,
+                        Operator = new SqlOperatorNode(equalsOperator)
                     };
                 }
             }
@@ -134,20 +135,7 @@ namespace CastIron.SqlParsing
             t.PutBack(next);
 
             // <SelectColumnExpression> (AS <Alias>)?
-            var expr = ParseScalarExpression(t);
-            if (t.NextIs(SqlTokenType.Keyword, "AS"))
-            {
-                var op = t.GetNext();
-                var alias = t.Expect(SqlTokenType.Identifier);
-                return new SqlAliasNode
-                {
-                    Location = op.Location,
-                    Source = expr,
-                    Alias = new SqlIdentifierNode(alias)
-                };
-            }
-
-            return expr;
+            return ParseMaybeAliased(t, ParseScalarExpression);
         }
 
         private SqlSelectFromClauseNode ParseSelectFromClause(SqlTokenizer t)
@@ -167,12 +155,13 @@ namespace CastIron.SqlParsing
         private SqlNode ParseJoin(SqlTokenizer t)
         {
             // <TableExpression> (<JoinOperator> <TableExpression> "ON" <JoinCondition>)?
-            var tableExpression1 = ParseTableExpression(t);
+            // TODO: <TableExpression> ("WITH" <Hint>)?
+            var tableExpression1 = ParseMaybeAliased(t, ParseTableOrSubexpression);
 
             var join = ParseJoinOperator(t);
             if (join == null)
                 return tableExpression1;
-            var tableExpression2 = ParseTableExpression(t);
+            var tableExpression2 = ParseMaybeAliased(t, ParseTableOrSubexpression);
 
             SqlNode condition = null;
             if (join.Operator != "NATURAL JOIN")
@@ -254,37 +243,6 @@ namespace CastIron.SqlParsing
             return null;
         }
 
-        private SqlNode ParseTableExpression(SqlTokenizer t)
-        {
-            // <TableOrSubexpression> ("AS"? <Alias>)?
-            var tableOrSubexpr = ParseTableOrSubexpression(t);
-            
-            var next = t.Peek();
-            if (next.IsKeyword("AS"))
-            {
-                var a = t.GetNext();
-                var alias = t.Expect(SqlTokenType.Identifier);
-                return new SqlAliasNode
-                {
-                    Location = a.Location,
-                    Source = tableOrSubexpr,
-                    Alias = new SqlIdentifierNode(alias)
-                };
-            }
-            if (next.IsType(SqlTokenType.Identifier))
-            {
-                t.GetNext();
-                return new SqlAliasNode
-                {
-                    Location = tableOrSubexpr.Location,
-                    Source = tableOrSubexpr,
-                    Alias = new SqlIdentifierNode(next)
-                };
-            }
-
-            return tableOrSubexpr;
-        }
-
         private SqlNode ParseTableOrSubexpression(SqlTokenizer t)
         {
             // TODO: select * from (VALUES (1), (2), (3)) x(id)
@@ -304,10 +262,10 @@ namespace CastIron.SqlParsing
             if (next.Is(SqlTokenType.Symbol, "("))
             {
                 var expr = ParseQueryExpression(t);
-                var subexpression = new SqlSelectSubexpressionNode
+                var subexpression = new SqlParenthesisNode<SqlNode>
                 {
                     Location = expr.Location,
-                    Select = expr
+                    Expression = expr
                 };
                 t.Expect(SqlTokenType.Symbol, ")");
                 return subexpression;

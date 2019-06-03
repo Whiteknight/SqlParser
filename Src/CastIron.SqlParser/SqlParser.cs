@@ -11,8 +11,14 @@ namespace CastIron.SqlParsing
             return ParseStatementList(t);
         }
 
+        public SqlStatementListNode Parse(string s)
+        {
+            return ParseStatementList(new SqlTokenizer(s));
+        }
+
         private SqlStatementListNode ParseStatementList(SqlTokenizer t)
         {
+            // TODO: If we start with "BEGIN" we should expect (and exit on) "END"
             var statements = new SqlStatementListNode();
             while (true)
             {
@@ -23,14 +29,13 @@ namespace CastIron.SqlParsing
                     break;
             }
 
-            if (statements.Statements.Count == 0)
-                return null;
             return statements;
         }
 
         private SqlNode ParseStatement(SqlTokenizer t)
         {
             t.Skip(SqlTokenType.Whitespace);
+            
             var keyword = t.ExpectPeek(SqlTokenType.Keyword);
             if (keyword.Value == "SELECT")
                 return ParseQueryExpression(t);
@@ -44,8 +49,7 @@ namespace CastIron.SqlParsing
                 return ParseDeleteStatement(t);
             
             // TODO: MERGE
-            // TODO: DECLARE
-            // TODO: SET
+            // TODO: DECLARE/SET
             // TODO: BEGIN/END
             // TODO: CREATE/DROP/ALTER
             throw new Exception($"Cannot parse statement starting with {keyword}");
@@ -69,13 +73,25 @@ namespace CastIron.SqlParsing
             return value;
         }
 
-        private TNode ParseParenthesis<TNode>(SqlTokenizer t, Func<SqlTokenizer, TNode> parse)
+        private SqlParenthesisNode<TNode> ParseParenthesis<TNode>(SqlTokenizer t, Func<SqlTokenizer, TNode> parse)
             where TNode : SqlNode
         {
-            t.Expect(SqlTokenType.Symbol, "(");
+            var openingParen = t.Expect(SqlTokenType.Symbol, "(");
+            if (t.Peek().IsSymbol(")"))
+            {
+                t.GetNext();
+                return new SqlParenthesisNode<TNode>
+                {
+                    Location = openingParen.Location
+                };
+            }
             var value = parse(t);
             t.Expect(SqlTokenType.Symbol, ")");
-            return value;
+            return new SqlParenthesisNode<TNode>
+            {
+                Location = openingParen.Location,
+                Expression = value
+            };
         }
 
         private SqlListNode<TNode> ParseList<TNode>(SqlTokenizer t, Func<SqlTokenizer, TNode> getItem)

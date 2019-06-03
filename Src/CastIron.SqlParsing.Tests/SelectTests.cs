@@ -16,6 +16,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT 'TEST'";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -37,6 +38,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT 'TEST' AS ColumnA";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -62,6 +64,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT 10";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -78,11 +81,66 @@ namespace CastIron.SqlParsing.Tests
         }
 
         [Test]
+        public void Select_NegativeIntegerConstant()
+        {
+            const string s = "SELECT -10";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlPrefixOperationNode
+                        {
+                            Operator = new SqlOperatorNode("-"),
+                            Right = new SqlNumberNode(10)
+                        }
+                    }
+                }
+            );
+        }
+
+        [Test]
+        public void Select_PrefixesIntegerConstant()
+        {
+            const string s = "SELECT ~+-10";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlPrefixOperationNode
+                        {
+                            Operator = new SqlOperatorNode("~"),
+                            Right = new SqlPrefixOperationNode
+                            {
+                                Operator = new SqlOperatorNode("+"),
+                                Right = new SqlPrefixOperationNode
+                                {
+                                    Operator = new SqlOperatorNode("-"),
+                                    Right = new SqlNumberNode(10)
+                                }
+                            }
+                        }
+                    }
+                }
+            );
+        }
+
+        [Test]
         public void Select_DecimalConstant()
         {
             const string s = "SELECT 10.123";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -104,6 +162,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT @value";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -117,11 +176,35 @@ namespace CastIron.SqlParsing.Tests
         }
 
         [Test]
+        public void Select_NegativeVariable()
+        {
+            const string s = "SELECT -@value";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlPrefixOperationNode
+                        {
+                            Operator = new SqlOperatorNode("-"),
+                            Right = new SqlVariableNode("@value")
+                        }
+                    }
+                }
+            );
+        }
+
+        [Test]
         public void Select_VariableAlias()
         {
             const string s = "SELECT @value AS ColumnA";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -139,11 +222,12 @@ namespace CastIron.SqlParsing.Tests
         }
 
         [Test]
-        public void Select_ArithmeticExpression()
+        public void Select_FunctionCall()
         {
-            const string s = "SELECT 1 + 2 * 3 AS ColumnA";
+            const string s = "SELECT GETUTCDATE() AS ColumnA";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -152,19 +236,11 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlAliasNode
                         {
-                            Alias = new SqlIdentifierNode("ColumnA"),
-                            Source = new SqlInfixOperationNode
+                            Source = new SqlFunctionCallNode
                             {
-                                Left = new SqlNumberNode(1),
-                                Operator = new SqlOperatorNode("+"),
-                                Right = new SqlInfixOperationNode
-                                {
-                                    Left = new SqlNumberNode(2),
-                                    Operator = new SqlOperatorNode("*"),
-                                    Right = new SqlNumberNode(3)
-                                }
-                            }
-                            
+                                Name = new SqlIdentifierNode("GETUTCDATE")
+                            },
+                            Alias = new SqlIdentifierNode("ColumnA")
                         }
                     }
                 }
@@ -172,11 +248,12 @@ namespace CastIron.SqlParsing.Tests
         }
 
         [Test]
-        public void Select_ColumnArithmeticExpression()
+        public void Select_FunctionCallArgument()
         {
-            const string s = "SELECT ColumnA + ColumnB * ColumnC AS ColumnD";
+            const string s = "SELECT ABS(1) AS ColumnA";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -185,19 +262,69 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlAliasNode
                         {
-                            Alias = new SqlIdentifierNode("ColumnD"),
-                            Source = new SqlInfixOperationNode
+                            Source = new SqlFunctionCallNode
                             {
-                                Left = new SqlIdentifierNode("ColumnA"),
-                                Operator = new SqlOperatorNode("+"),
-                                Right = new SqlInfixOperationNode
+                                Name = new SqlIdentifierNode("ABS"),
+                                Arguments = new SqlListNode<SqlNode>
                                 {
-                                    Left = new SqlIdentifierNode("ColumnB"),
-                                    Operator = new SqlOperatorNode("*"),
-                                    Right = new SqlIdentifierNode("ColumnC")
+                                    new SqlNumberNode(1)
                                 }
-                            }
+                            },
+                            Alias = new SqlIdentifierNode("ColumnA")
+                        }
+                    }
+                }
+            );
+        }
 
+        [Test]
+        public void Select_FunctionCall2Arguments()
+        {
+            const string s = "SELECT COALESCE(NULL, 0) AS ColumnA";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlAliasNode
+                        {
+                            Source = new SqlFunctionCallNode
+                            {
+                                Name = new SqlIdentifierNode("COALESCE"),
+                                Arguments = new SqlListNode<SqlNode>
+                                {
+                                    new SqlNullNode(),
+                                    new SqlNumberNode(0)
+                                }
+                            },
+                            Alias = new SqlIdentifierNode("ColumnA")
+                        }
+                    }
+                }
+            );
+        }
+
+        [Test]
+        public void Select_Null()
+        {
+            const string s = "SELECT NULL AS ColumnA";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlAliasNode
+                        {
+                            Source = new SqlNullNode(),
+                            Alias = new SqlIdentifierNode("ColumnA")
                         }
                     }
                 }

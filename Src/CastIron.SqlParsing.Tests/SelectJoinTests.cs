@@ -30,13 +30,15 @@ SELECT
             ON t1.Id = t2.Id;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            var output = result.ToString();
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
@@ -85,13 +87,14 @@ SELECT
         Table2 t2;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {

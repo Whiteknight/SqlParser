@@ -1,4 +1,7 @@
-﻿namespace CastIron.SqlParsing.Tokenizing
+﻿using System;
+using System.Linq;
+
+namespace CastIron.SqlParsing.Tokenizing
 {
     public class SqlToken
     {
@@ -91,14 +94,14 @@
             return false;
         }
 
-        public bool IsType(SqlTokenType type)
+        public bool IsType(params SqlTokenType[] types)
         {
-            return Type == type;
+            return types.Any(t => Type == t);
         }
 
-        public bool Is(SqlTokenType type, string value)
+        public bool Is(SqlTokenType type, params string[] values)
         {
-            return IsType(type) && Value == value;
+            return IsType(type) && values.Any(v => Value == v);
         }
 
         // Used primarily for debugging/testing purposes

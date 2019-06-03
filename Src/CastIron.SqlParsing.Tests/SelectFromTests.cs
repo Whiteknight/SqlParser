@@ -16,13 +16,14 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        new SqlStarNode()
+                        new SqlOperatorNode("*")
                     },
                     FromClause = new SqlSelectFromClauseNode
                     {
@@ -38,6 +39,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM dbo.MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -46,7 +48,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         Children = new List<SqlNode>
                         {
-                            new SqlStarNode()
+                            new SqlOperatorNode("*")
                         }
                     },
                     FromClause = new SqlSelectFromClauseNode
@@ -70,6 +72,7 @@ namespace CastIron.SqlParsing.Tests
                     -- INNER JOIN SomeOtherTable ON MyTableId = SomeOtherTableId;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -78,7 +81,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         Children = new List<SqlNode>
                         {
-                            new SqlStarNode()
+                            new SqlOperatorNode("*")
                         }
                     },
                     FromClause = new SqlSelectFromClauseNode
@@ -102,6 +105,7 @@ namespace CastIron.SqlParsing.Tests
                     MyTable /* INNER JOIN SomeOtherTable ON MyTableId = SomeOtherTableId */;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -110,7 +114,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         Children = new List<SqlNode>
                         {
-                            new SqlStarNode()
+                            new SqlOperatorNode("*")
                         }
                     },
                     FromClause = new SqlSelectFromClauseNode
@@ -128,6 +132,7 @@ namespace CastIron.SqlParsing.Tests
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
             result.Should().NotBeNull();
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -137,7 +142,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         Children = new List<SqlNode>
                         {
-                            new SqlStarNode()
+                            new SqlOperatorNode("*")
                         }
                     },
                     FromClause = new SqlSelectFromClauseNode
@@ -154,6 +159,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM @tableVar;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -162,7 +168,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         Children = new List<SqlNode>
                         {
-                            new SqlStarNode()
+                            new SqlOperatorNode("*")
                         }
                     },
                     FromClause = new SqlSelectFromClauseNode
@@ -179,6 +185,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT t1.* FROM MyTable AS t1;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -190,7 +197,7 @@ namespace CastIron.SqlParsing.Tests
                             new SqlQualifiedIdentifierNode
                             {
                                 Qualifier = new SqlIdentifierNode("t1"),
-                                Identifier = new SqlStarNode()
+                                Identifier = new SqlOperatorNode("*")
                             }
                         }
                     },
@@ -212,6 +219,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT t1.MyColumn FROM MyTable AS t1;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -245,6 +253,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT [t1].* FROM [MyTable] AS [t1];";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -256,7 +265,7 @@ namespace CastIron.SqlParsing.Tests
                             new SqlQualifiedIdentifierNode
                             {
                                 Qualifier = new SqlIdentifierNode("t1"),
-                                Identifier = new SqlStarNode()
+                                Identifier = new SqlOperatorNode("*")
                             }
                         }
                     },
@@ -278,6 +287,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT t1.* FROM @myTable AS t1;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -289,7 +299,7 @@ namespace CastIron.SqlParsing.Tests
                             new SqlQualifiedIdentifierNode
                             {
                                 Qualifier = new SqlIdentifierNode("t1"),
-                                Identifier = new SqlStarNode()
+                                Identifier = new SqlOperatorNode("*")
                             }
                         }
                     },
@@ -315,6 +325,8 @@ namespace CastIron.SqlParsing.Tests
                         (SELECT * FROM MyTable) AS t1;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
+            var output = result.ToString();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -326,7 +338,7 @@ namespace CastIron.SqlParsing.Tests
                             new SqlQualifiedIdentifierNode
                             {
                                 Qualifier = new SqlIdentifierNode("t1"),
-                                Identifier = new SqlStarNode()
+                                Identifier = new SqlOperatorNode("*")
                             }
                         }
                     },
@@ -334,15 +346,15 @@ namespace CastIron.SqlParsing.Tests
                     {
                         Source = new SqlAliasNode
                         {
-                            Source = new SqlSelectSubexpressionNode
+                            Source = new SqlParenthesisNode<SqlNode>
                             {
-                                Select = new SqlSelectNode
+                                Expression = new SqlSelectNode
                                 {
                                     Columns = new SqlListNode<SqlNode>
                                     {
                                         Children = new List<SqlNode>
                                         {
-                                            new SqlStarNode()
+                                            new SqlOperatorNode("*")
                                         }
                                     },
                                     FromClause = new SqlSelectFromClauseNode
@@ -364,6 +376,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT ColumnA, ColumnB FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -385,11 +398,39 @@ namespace CastIron.SqlParsing.Tests
         }
 
         [Test]
+        public void Select_NegativeColumnFromTable()
+        {
+            const string s = "SELECT -ColumnA FROM MyTable;";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlPrefixOperationNode
+                        {
+                            Operator = new SqlOperatorNode("-"),
+                            Right = new SqlIdentifierNode("ColumnA")
+                        }
+                    },
+                    FromClause = new SqlSelectFromClauseNode
+                    {
+                        Source = new SqlObjectIdentifierNode("MyTable")
+                    }
+                }
+            );
+        }
+
+        [Test]
         public void Select_IdentityRowGuidFromTable()
         {
             const string s = "SELECT $IDENTITY, $ROWGUID FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -416,6 +457,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT [ColumnA], [ColumnB] FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -442,6 +484,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT [SELECT], [FROM] FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -468,6 +511,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT ColumnA AS ColumnB FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -497,6 +541,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT [ColumnA] AS [ColumnB] FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -526,19 +571,18 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT @value = ColumnA FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
                 {
                     Columns = new SqlListNode<SqlNode>
                     {
-                        Children = new List<SqlNode>
+                        new SqlInfixOperationNode
                         {
-                            new SqlAssignVariableNode
-                            {
-                                Variable = new SqlVariableNode("@value"),
-                                RValue = new SqlIdentifierNode("ColumnA")
-                            }
+                            Left = new SqlVariableNode("@value"),
+                            Operator = new SqlOperatorNode("="),
+                            Right = new SqlIdentifierNode("ColumnA")
                         }
                     },
                     FromClause = new SqlSelectFromClauseNode

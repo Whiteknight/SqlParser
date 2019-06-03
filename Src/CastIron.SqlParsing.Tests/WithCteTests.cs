@@ -20,6 +20,7 @@ Cte1 AS (
 SELECT * FROM Cte1;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlWithNode
@@ -32,7 +33,7 @@ SELECT * FROM Cte1;";
                             {
                                 Columns = new SqlListNode<SqlNode>
                                 {
-                                    new SqlStarNode()
+                                    new SqlOperatorNode("*")
                                 },
                                 FromClause = new SqlSelectFromClauseNode
                                 {
@@ -46,7 +47,7 @@ SELECT * FROM Cte1;";
                     {
                         Columns = new SqlListNode<SqlNode>
                         {
-                            new SqlStarNode()
+                            new SqlOperatorNode("*")
                         },
                         FromClause = new SqlSelectFromClauseNode
                         {
@@ -71,6 +72,8 @@ Cte2 AS (
 SELECT * FROM Cte2;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            var output = result.ToString();
+            result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlWithNode
@@ -83,7 +86,7 @@ SELECT * FROM Cte2;";
                             {
                                 Columns = new SqlListNode<SqlNode>
                                 {
-                                    new SqlStarNode()
+                                    new SqlOperatorNode("*")
                                 },
                                 FromClause = new SqlSelectFromClauseNode
                                 {
@@ -98,7 +101,7 @@ SELECT * FROM Cte2;";
                             {
                                 Columns = new SqlListNode<SqlNode>
                                 {
-                                    new SqlStarNode()
+                                    new SqlOperatorNode("*")
                                 },
                                 FromClause = new SqlSelectFromClauseNode
                                 {
@@ -112,7 +115,7 @@ SELECT * FROM Cte2;";
                     {
                         Columns = new SqlListNode<SqlNode>
                         {
-                            new SqlStarNode()
+                            new SqlOperatorNode("*")
                         },
                         FromClause = new SqlSelectFromClauseNode
                         {

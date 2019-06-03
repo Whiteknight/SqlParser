@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace CastIron.SqlParsing.Ast
+﻿namespace CastIron.SqlParsing.Ast
 {
     public class SqlJoinNode : SqlNode
     {
@@ -9,24 +7,22 @@ namespace CastIron.SqlParsing.Ast
         public SqlNode Right { get; set; }
         public SqlNode OnCondition { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
-            Left.ToString(sb, level);
-            sb.AppendLine();
-            sb.AppendIndent(level);
-            Operator.ToString(sb, level);
-            sb.AppendLine();
-            sb.AppendIndent(level);
-            Right.ToString(sb, level);
+            Left.ToString(sb);
+            sb.AppendLineAndIndent();
+            Operator.ToString(sb);
+            sb.AppendLineAndIndent();
+            Right.ToString(sb);
             
             if (OnCondition != null)
             {
-                sb.AppendLine();
-                sb.AppendIndent(level + 1);
+                sb.IncreaseIndent();
+                sb.AppendLineAndIndent();
                 sb.Append("ON ");
-                OnCondition.ToString(sb, level + 1);
+                OnCondition.ToString(sb);
+                sb.DecreaseIndent();
             }
-            
         }
     }
 }

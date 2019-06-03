@@ -1,19 +1,22 @@
-﻿using System.Text;
-
-namespace CastIron.SqlParsing.Ast
+﻿namespace CastIron.SqlParsing.Ast
 {
     public class SqlWithNode : SqlNode
     {
         public SqlListNode<SqlCteNode> Ctes { get; set; }
         public SqlNode Statement { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
-            sb.AppendIndent(level);
-            sb.AppendLine("WITH");
-            Ctes.ToString(sb, level);
+            sb.Append("WITH");
 
-            Statement.ToString(sb, level);
+            void forEach(SqlStringifier x, SqlCteNode c)
+            {
+                sb.AppendLineAndIndent();
+                c.ToString(x);
+            }
+            Ctes.ToString(sb, forEach, x => x.AppendLineAndIndent(","));
+
+            Statement.ToString(sb);
         }
     }
 
@@ -22,15 +25,16 @@ namespace CastIron.SqlParsing.Ast
         public SqlIdentifierNode Name { get; set; }
         public SqlNode Select { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
-            sb.AppendIndent(level);
-            Name.ToString(sb, level);
-            sb.AppendLine(" AS (");
-            Select.ToString(sb, level + 1);
-            sb.AppendLine();
-            sb.AppendIndent(level);
-            sb.AppendLine(")");
+            Name.ToString(sb);
+            sb.Append(" AS (");
+            sb.IncreaseIndent();
+            sb.AppendLineAndIndent();
+            Select.ToString(sb);
+            sb.AppendLineAndIndent();
+            sb.DecreaseIndent();
+            sb.Append(")");
         }
     }
 }

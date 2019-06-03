@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace CastIron.SqlParsing.Tokenizing
-{ 
+{
     public class SqlTokenizer : IEnumerable<SqlToken>
     {
         private readonly IEnumerator<SqlToken> _enumerator;
@@ -15,10 +15,27 @@ namespace CastIron.SqlParsing.Tokenizing
             _putbacks = new Stack<SqlToken>();
 
             _operators = new SymbolSequence();
+
+            // punctuation
             _operators.Add(".", ",", ";");
+
+            // Parens
             _operators.Add("(", ")");
-            _operators.Add("+", "-", "/", "*");
-            _operators.Add("=", "!=", "<>", ">", "<", ">=", "<=");
+
+            // Arithmetic operators
+            _operators.Add("+", "-", "/", "*", "&", "|", "^");
+
+            // Unary ~. Unary - and + are covered above
+            _operators.Add("~");
+
+            // "=" is both for comparison and assignment
+            _operators.Add("=");
+
+            // Comparison operators
+            _operators.Add("!=", "<>", ">", "<", ">=", "<=");
+
+            // Assignment operators
+            _operators.Add("+=", "-=", "*=", "/=", "%=", "&=", "^=", "|=");
 
             _enumerator = GetEnumerator(new CharSequence(s ?? ""));
         }
@@ -34,14 +51,11 @@ namespace CastIron.SqlParsing.Tokenizing
                 var next = _enumerator.Current;
                 if (next == null)
                     return SqlToken.EndOfInput();
-                if (next.Type == SqlTokenType.Comment)
-                {
-                    if (skipComments)
-                        continue;
-                    return next;
-                }
-                if (next.Type != SqlTokenType.Whitespace)
-                    return next;
+                if (next.Type == SqlTokenType.Comment && skipComments)
+                    continue;
+                if (next.Type == SqlTokenType.Whitespace)
+                    continue;
+                return next;
             }
         }
 
@@ -69,16 +83,23 @@ namespace CastIron.SqlParsing.Tokenizing
         {
             var t = GetNext();
             if (t.Type != type)
-                throw new Exception($"Expecting token with type {type} but found {t.Type}");
+                throw new Exception($"Expecting token with type {type} but found {t}");
             return t;
         }
 
-        public SqlToken Expect(SqlTokenType type, string value)
+        public SqlToken Expect(SqlTokenType type, params string[] values)
         {
             var t = GetNext();
-            if (t.Type != type && t.Value != value)
-                throw new Exception($"Expecting token with type={type}, value={value} but found type={t.Type}, value={value}");
-            return t;
+            if (t.Type == type)
+            {
+                foreach (var value in values)
+                {
+                    if (t.Value == value)
+                        return t;
+                }
+            }
+
+            throw new Exception($"Expecting token with type={type}, value={string.Join(",", values)} but found type={t.Type}, value={t.Value}");
         }
 
         public SqlToken Peek()
@@ -92,7 +113,7 @@ namespace CastIron.SqlParsing.Tokenizing
         {
             var t = Peek();
             if (t.Type != type)
-                throw new Exception($"Expecting token with type {type} but found {t.Type} {t.Value}");
+                throw new Exception($"Expecting token with type {type} but found {t}");
             return t;
         }
 
@@ -151,7 +172,7 @@ namespace CastIron.SqlParsing.Tokenizing
 
         private IEnumerator<SqlToken> GetEnumerator(CharSequence s)
         {
-            while(true)
+            while (true)
             {
                 var c = s.Peek();
                 if (c == '\0')
@@ -166,7 +187,7 @@ namespace CastIron.SqlParsing.Tokenizing
                     yield return SqlToken.Whitespace(w, l);
                     continue;
                 }
-                
+
                 if (char.IsNumber(c))
                 {
                     var l = s.GetLocation();
@@ -244,33 +265,41 @@ namespace CastIron.SqlParsing.Tokenizing
                 }
                 if (char.IsPunctuation(c) || char.IsSymbol(c))
                 {
-                    var op = _operators;
-
                     var l = s.GetLocation();
-                    while (true)
-                    {
-                        var x = s.GetNext();
-                        if (!char.IsPunctuation(x) && !char.IsSymbol(x))
-                        {
-                            s.PutBack(x);
-                            yield return SqlToken.Symbol(op.Operator, l);
-                            break;
-                        }
-                        var nextOp = op.Get(x);
-                        if (nextOp != null)
-                        {
-                            op = nextOp;
-                            continue;
-                        }
-
-                        s.PutBack(x);
-                        yield return SqlToken.Symbol(op.Operator, l);
-                        break;
-                    }
-
+                    var op = ReadOperator(s);
+                    yield return SqlToken.Symbol(op, l);
                     continue;
                 }
             }
+        }
+
+        private string ReadOperator(CharSequence s)
+        {
+            return ReadOperator(s, _operators);
+        }
+
+        private string ReadOperator(CharSequence s, SymbolSequence op)
+        {
+            var x = s.GetNext();
+            if (!char.IsPunctuation(x) && !char.IsSymbol(x))
+            {
+                s.PutBack(x);
+                return op.Operator;
+            }
+            var nextOp = op.Get(x);
+            if (nextOp == null)
+            {
+                s.PutBack(x);
+                return op.Operator;
+            }
+
+            var recurse = ReadOperator(s, nextOp);
+            if (recurse != null)
+                return recurse;
+            s.PutBack(x);
+            if (!string.IsNullOrEmpty(op.Operator))
+                return op.Operator;
+            return null;
         }
 
         private string ReadMultilineComment(CharSequence s)
@@ -302,7 +331,7 @@ namespace CastIron.SqlParsing.Tokenizing
         private string ReadLine(CharSequence s)
         {
             var chars = new List<char>();
-            while(true)
+            while (true)
             {
                 var c = s.GetNext();
                 if (c == '\r' || c == '\n' || c == '\0')
@@ -321,7 +350,7 @@ namespace CastIron.SqlParsing.Tokenizing
         {
             var chars = new List<char>();
             s.Expect('\'');
-            
+
             while (true)
             {
                 var c = s.GetNext();
@@ -347,7 +376,7 @@ namespace CastIron.SqlParsing.Tokenizing
         {
             var chars = new List<char>();
             s.Expect('[');
-            while(true)
+            while (true)
             {
                 var c = s.GetNext();
                 if (c == ']')

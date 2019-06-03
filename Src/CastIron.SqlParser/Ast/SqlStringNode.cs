@@ -1,5 +1,4 @@
-﻿using System.Text;
-using CastIron.SqlParsing.Tokenizing;
+﻿using CastIron.SqlParsing.Tokenizing;
 
 namespace CastIron.SqlParsing.Ast
 {
@@ -22,7 +21,7 @@ namespace CastIron.SqlParsing.Ast
 
         public string Value { get; set; }
 
-        public override void ToString(StringBuilder sb, int level)
+        public override void ToString(SqlStringifier sb)
         {
             sb.Append("'");
             sb.Append(Value.Replace("'", "''"));
