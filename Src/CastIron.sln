@@ -17,10 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{DF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CastIron.Postgres", "CastIron.Postgres\CastIron.Postgres.csproj", "{2F86D8AD-76D2-461B-B711-B5B293511879}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CastIron.SqlParsing", "CastIron.SqlParser\CastIron.SqlParsing.csproj", "{2AA6BC36-651C-4DC3-BAD5-7DCF5B10BA07}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CastIron.SqlParsing.Tests", "CastIron.SqlParsing.Tests\CastIron.SqlParsing.Tests.csproj", "{66F606E6-6F6F-4A46-BD96-7D0B1A9095DE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,14 +47,6 @@ Global
 		{2F86D8AD-76D2-461B-B711-B5B293511879}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F86D8AD-76D2-461B-B711-B5B293511879}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F86D8AD-76D2-461B-B711-B5B293511879}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2AA6BC36-651C-4DC3-BAD5-7DCF5B10BA07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2AA6BC36-651C-4DC3-BAD5-7DCF5B10BA07}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2AA6BC36-651C-4DC3-BAD5-7DCF5B10BA07}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2AA6BC36-651C-4DC3-BAD5-7DCF5B10BA07}.Release|Any CPU.Build.0 = Release|Any CPU
-		{66F606E6-6F6F-4A46-BD96-7D0B1A9095DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{66F606E6-6F6F-4A46-BD96-7D0B1A9095DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{66F606E6-6F6F-4A46-BD96-7D0B1A9095DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{66F606E6-6F6F-4A46-BD96-7D0B1A9095DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
