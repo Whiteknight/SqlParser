@@ -12,5 +12,18 @@
             Source.ToString(sb);
             sb.DecreaseIndent();
         }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitFrom(this);
+
+        public SqlSelectFromClauseNode Update(SqlNode source)
+        {
+            return source == Source
+                ? this
+                : new SqlSelectFromClauseNode
+                {
+                    Location = Location,
+                    Source = source
+                };
+        }
     }
 }

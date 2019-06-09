@@ -18,5 +18,19 @@
             else
                 Right.ToString(sb);
         }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitPrefixOperation(this);
+
+        public SqlPrefixOperationNode Update(SqlOperatorNode op, SqlNode right)
+        {
+            if (op == Operator && right == Right)
+                return this;
+            return new SqlPrefixOperationNode
+            {
+                Location = Location,
+                Operator = op,
+                Right = right
+            };
+        }
     }
 }

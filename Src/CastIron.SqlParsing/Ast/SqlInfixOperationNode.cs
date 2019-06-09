@@ -31,5 +31,20 @@
 
             node.ToString(sb);
         }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitInfixOperation(this);
+
+        public SqlInfixOperationNode Update(SqlNode left, SqlOperatorNode op, SqlNode right)
+        {
+            if (left == Left && op == Operator && right == Right)
+                return this;
+            return new SqlInfixOperationNode
+            {
+                Location = Location,
+                Left = left,
+                Operator = op,
+                Right = right
+            };
+        }
     }
 }

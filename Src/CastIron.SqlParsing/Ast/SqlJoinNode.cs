@@ -24,5 +24,21 @@
                 sb.DecreaseIndent();
             }
         }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitJoin(this);
+
+        public SqlJoinNode Update(SqlNode left, SqlOperatorNode op, SqlNode right, SqlNode cond)
+        {
+            if (left == Left && op == Operator && right == Right && cond == OnCondition)
+                return this;
+            return new SqlJoinNode
+            {
+                Location = Location,
+                Left = left,
+                Operator = op,
+                Right = right,
+                OnCondition = cond
+            };
+        }
     }
 }

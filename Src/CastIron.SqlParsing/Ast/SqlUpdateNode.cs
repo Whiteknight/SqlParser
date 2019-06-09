@@ -35,5 +35,20 @@
 
             sb.DecreaseIndent();
         }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitUpdate(this);
+
+        public SqlUpdateNode Update(SqlNode source, SqlListNode<SqlInfixOperationNode> set, SqlWhereNode where)
+        {
+            if (source == Source && set == SetClause && where == WhereClause)
+                return this;
+            return new SqlUpdateNode
+            {
+                Location = Location,
+                Source = source,
+                SetClause = set,
+                WhereClause = where
+            };
+        }
     }
 }

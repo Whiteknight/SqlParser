@@ -17,5 +17,7 @@ namespace CastIron.SqlParsing.Ast
         {
             sb.Append("NULL");
         }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitNull(this);
     }
 }

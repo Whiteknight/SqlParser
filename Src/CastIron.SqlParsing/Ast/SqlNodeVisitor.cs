@@ -1,0 +1,249 @@
+﻿using System.Collections.Generic;
+
+namespace CastIron.SqlParsing.Ast
+{
+    public abstract class SqlNodeVisitor
+    {
+        public SqlNode Visit(SqlNode n) => n?.Accept(this);
+
+        public virtual SqlNode VisitAlias(SqlAliasNode n)
+        {
+            var source = Visit(n.Source);
+            var alias = Visit(n.Alias) as SqlIdentifierNode;
+            return n.Update(source, alias);
+        }
+
+        public virtual SqlNode VisitBetween(SqlBetweenOperationNode n)
+        {
+            var left = Visit(n.Left);
+            var low = Visit(n.Low);
+            var high = Visit(n.High);
+            return n.Update(n.Not, left, low, high);
+        }
+
+        public virtual SqlNode VisitCase(SqlCaseNode n)
+        {
+            var input = Visit(n.InputExpression);
+            var whens = VisitTypedNodeList(n.WhenExpressions);
+            var e = Visit(n.ElseExpression);
+            return n.Update(input, whens, e);
+        }
+
+        public virtual SqlNode VisitCaseWhen(SqlCaseWhenNode n)
+        {
+            var cond = Visit(n.Condition);
+            var result = Visit(n.Result);
+            return n.Update(cond, result);
+        }
+
+        public virtual SqlNode VisitDelete(SqlDeleteNode n)
+        {
+            var source = Visit(n.Source);
+            var where = Visit(n.WhereClause) as SqlWhereNode;
+            return n.Update(source, where);
+        }
+
+        public virtual SqlNode VisitFrom(SqlSelectFromClauseNode n)
+        {
+            var source = Visit(n.Source);
+            return n.Update(source);
+        }
+
+        public virtual SqlNode VisitFunctionCall(SqlFunctionCallNode n)
+        {
+            var name = Visit(n.Name) as SqlIdentifierNode;
+            var args = Visit(n.Arguments) as SqlListNode<SqlNode>;
+            return n.Update(name, args);
+        }
+
+        public virtual SqlNode VisitGroupBy(SqlSelectGroupByNode n)
+        {
+            var keys = Visit(n.Keys) as SqlListNode<SqlNode>;
+            return n.Update(keys);
+        }
+
+        public virtual SqlNode VisitHaving(SqlSelectHavingClauseNode n)
+        {
+            var search = Visit(n.SearchCondition);
+            return n.Update(search);
+        }
+
+        public virtual SqlNode VisitIdentifier(SqlIdentifierNode n) => n;
+
+        public virtual SqlNode VisitIn(SqlInNode n)
+        {
+            var search = Visit(n.Search);
+            var items = Visit(n.Items) as SqlListNode<SqlNode>;
+            return n.Update(n.Not, search, items);
+        }
+
+        public virtual SqlNode VisitInfixOperation(SqlInfixOperationNode n)
+        {
+            var l = Visit(n.Left);
+            var o = Visit(n.Operator) as SqlOperatorNode;
+            var r = Visit(n.Right);
+            return n.Update(l, o, r);
+        }
+
+        public virtual SqlNode VisitInsert(SqlInsertNode n)
+        {
+            var table = Visit(n.Table);
+            var columns = Visit(n.Columns) as SqlListNode<SqlIdentifierNode>;
+            var source = Visit(n.Source);
+            return n.Update(table, columns, source);
+        }
+
+        public virtual SqlNode VisitInsertValues(SqlInsertValuesNode n)
+        {
+            var values = Visit(n.Values) as SqlListNode<SqlListNode<SqlNode>>;
+            return n.Update(values);
+        }
+
+        public virtual SqlJoinNode VisitJoin(SqlJoinNode n)
+        {
+            var left = Visit(n.Left);
+            var op = Visit(n.Operator) as SqlOperatorNode;
+            var right = Visit(n.Right);
+            var cond = Visit(n.OnCondition);
+            return n.Update(left, op, right, cond);
+        }
+
+        public virtual SqlNode VisitKeyword(SqlKeywordNode n) => n;
+
+        public virtual SqlNode VisitList<TNode>(SqlListNode<TNode> n)
+            where TNode : SqlNode
+        {
+            var list = VisitTypedNodeList(n.Children);
+            return n.Update(list);
+        }
+
+        public virtual SqlNode VisitNull(SqlNullNode n) => n;
+
+        public virtual SqlNode VisitNumber(SqlNumberNode n) => n;
+
+        public virtual SqlNode VisitObjectIdentifier(SqlObjectIdentifierNode n)
+        {
+            var server = Visit(n.Server) as SqlIdentifierNode;
+            var db = Visit(n.Database) as SqlIdentifierNode; ;
+            var schema = Visit(n.Schema) as SqlIdentifierNode; ;
+            var name = Visit(n.Name) as SqlIdentifierNode; ;
+            return n.Update(server, db, schema, name);
+        }
+
+        public virtual SqlNode VisitOperator(SqlOperatorNode n) => n;
+
+        public virtual SqlNode VisitSelectOrderBy(SqlSelectOrderByClauseNode n)
+        {
+            var entries = Visit(n.Entries) as SqlListNode<SqlOrderByEntryNode>;
+            var offset = Visit(n.Offset);
+            var limit = Visit(n.Limit);
+            return n.Update(entries, offset, limit);
+        }
+
+        public virtual SqlNode VisitOrderByEntry(SqlOrderByEntryNode n)
+        {
+            var source = Visit(n.Source);
+            return n.Update(source, n.Direction);
+        }
+
+        public virtual SqlNode VisitParenthesis<TNode>(SqlParenthesisNode<TNode> n)
+            where TNode : SqlNode
+        {
+            var expr = Visit(n.Expression) as TNode;
+            return n.Update(expr);
+        }
+
+        public virtual SqlNode VisitPrefixOperation(SqlPrefixOperationNode n)
+        {
+            var op = Visit(n.Operator) as SqlOperatorNode;
+            var right = Visit(n.Right);
+            return n.Update(op, right);
+        }
+
+        public virtual SqlNode VisitQualifiedIdentifier(SqlQualifiedIdentifierNode n)
+        {
+            var qualifier = Visit(n.Qualifier) as SqlIdentifierNode;
+            var id = Visit(n.Identifier);
+            return n.Update(qualifier, id);
+        }
+
+        public virtual SqlNode VisitSelect(SqlSelectNode n)
+        {
+            var top = Visit(n.TopClause) as SqlSelectTopNode;
+            var columns = Visit(n.Columns) as SqlListNode<SqlNode>;
+            var from = Visit(n.FromClause) as SqlSelectFromClauseNode;
+            var where = Visit(n.WhereClause) as SqlWhereNode;
+            var orderBy = Visit(n.OrderByClause) as SqlSelectOrderByClauseNode;
+            var groupBy = Visit(n.GroupByClause) as SqlSelectGroupByNode;
+            var having = Visit(n.HavingClause) as SqlSelectHavingClauseNode;
+            return n.Update(n.Modifier, top, columns, from, where, orderBy, groupBy, having);
+        }
+        
+        public virtual SqlNode VisitStatementList(SqlStatementListNode n)
+        {
+            var stmts = VisitTypedNodeList(n.Statements);
+            return n.Update(stmts);
+        }
+
+        public virtual SqlNode VisitString(SqlStringNode n) => n;
+
+        public virtual SqlNode VisitTop(SqlSelectTopNode n)
+        {
+            var value = Visit(n.Value);
+            return n.Update(value, n.Percent, n.WithTies);
+        }
+
+        public virtual SqlNode VisitWhere(SqlWhereNode n)
+        {
+            var c = Visit(n.SearchCondition);
+            return n.Update(c);
+        }
+
+        public virtual SqlNode VisitWith(SqlWithNode n)
+        {
+            var ctes = Visit(n.Ctes) as SqlListNode<SqlCteNode>;
+            var stmt = Visit(n.Statement);
+            return n.Update(ctes, stmt);
+        }
+
+        public virtual SqlNode VisitCte(SqlCteNode n)
+        {
+            var name = Visit(n.Name) as SqlIdentifierNode;
+            var select = Visit(n.Name);
+            return n.Update(name, select);
+        }
+
+        public virtual SqlNode VisitUpdate(SqlUpdateNode n)
+        {
+            var source = Visit(n.Source);
+            var sets = Visit(n.SetClause);
+            var where = Visit(n.WhereClause);
+            return n.Update(source, sets as SqlListNode<SqlInfixOperationNode>, where as SqlWhereNode);
+        }
+
+        public virtual SqlNode VisitVariable(SqlVariableNode n) => n;
+
+        private List<T> VisitTypedNodeList<T>(List<T> list)
+            where T : SqlNode
+        {
+            List<T> newNodes = null;
+            for (int i = 0; i < list.Count; i++)
+            {
+                var oldNode = list[i];
+                var newNode = Visit(oldNode) as T;
+                if (newNode != oldNode)
+                {
+                    newNodes = new List<T>();
+                    for (int j = 0; j < i; j++)
+                        newNodes[j] = list[j];
+                }
+
+                if (newNodes != null)
+                    newNodes[i] = newNode;
+            }
+
+            return newNodes ?? list;
+        }
+
+    }
+}

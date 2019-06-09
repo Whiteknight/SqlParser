@@ -5,6 +5,8 @@ namespace CastIron.SqlParsing.Ast
 {
     public abstract class SqlNode
     {
+        public abstract SqlNode Accept(SqlNodeVisitor visitor);
+
         public abstract void ToString(SqlStringifier sb);
 
         public override string ToString()

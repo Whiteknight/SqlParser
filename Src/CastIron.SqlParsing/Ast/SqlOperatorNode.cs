@@ -31,5 +31,7 @@ namespace CastIron.SqlParsing.Ast
         {
             sb.Append(Operator);
         }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitOperator(this);
     }
 }

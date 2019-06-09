@@ -25,5 +25,7 @@ namespace CastIron.SqlParsing.Ast
         {
             sb.Append(Keyword);
         }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitKeyword(this);
     }
 }

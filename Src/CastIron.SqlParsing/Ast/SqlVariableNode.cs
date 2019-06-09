@@ -1,5 +1,4 @@
-﻿using System.Text;
-using CastIron.SqlParsing.Tokenizing;
+﻿using CastIron.SqlParsing.Tokenizing;
 
 namespace CastIron.SqlParsing.Ast
 {
@@ -28,5 +27,7 @@ namespace CastIron.SqlParsing.Ast
                 sb.Append("@");
             sb.Append(Name);
         }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitVariable(this);
     }
 }

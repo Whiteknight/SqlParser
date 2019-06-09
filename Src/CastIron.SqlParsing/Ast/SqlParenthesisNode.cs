@@ -25,5 +25,18 @@
             sb.AppendLineAndIndent();
             sb.Append(")");
         }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitParenthesis(this);
+
+        public SqlParenthesisNode<TNode> Update(TNode expr)
+        {
+            if (expr == Expression)
+                return this;
+            return new SqlParenthesisNode<TNode>
+            {
+                Location = Location,
+                Expression = expr
+            };
+        }
     }
 }

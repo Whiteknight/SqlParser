@@ -27,6 +27,8 @@ namespace CastIron.SqlParsing.Ast
             sb.Append(Name);
             sb.Append("]");
         }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitIdentifier(this);
     }
 
     public class SqlQualifiedIdentifierNode : SqlNode
@@ -53,6 +55,20 @@ namespace CastIron.SqlParsing.Ast
             }
 
             Identifier.ToString(sb);
+        }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitQualifiedIdentifier(this);
+
+        public SqlQualifiedIdentifierNode Update(SqlIdentifierNode qualfier, SqlNode id)
+        {
+            if (qualfier == Qualifier && id == Identifier)
+                return this;
+            return new SqlQualifiedIdentifierNode
+            {
+                Location = Location,
+                Identifier = id,
+                Qualifier = qualfier
+            };
         }
     }
 
@@ -88,10 +104,10 @@ namespace CastIron.SqlParsing.Ast
             Name = new SqlIdentifierNode(name);
         }
 
-        public SqlNode Server { get; set; }
-        public SqlNode Database { get; set; }
-        public SqlNode Schema { get; set; }
-        public SqlNode Name { get; set; }
+        public SqlIdentifierNode Server { get; set; }
+        public SqlIdentifierNode Database { get; set; }
+        public SqlIdentifierNode Schema { get; set; }
+        public SqlIdentifierNode Name { get; set; }
 
         public override void ToString(SqlStringifier sb)
         {
@@ -114,6 +130,23 @@ namespace CastIron.SqlParsing.Ast
             }
 
             Name.ToString(sb);
+        }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitObjectIdentifier(this);
+
+        public SqlObjectIdentifierNode Update(SqlIdentifierNode server, SqlIdentifierNode db, SqlIdentifierNode schema, SqlIdentifierNode name)
+        {
+            if (server == Server && db == Database && schema == Schema && name == Name)
+                return this;
+            return new SqlObjectIdentifierNode
+            {
+                Location = Location,
+                Server = server,
+                Database = db,
+                Schema = schema,
+                Name = name
+            };
+
         }
     }
 }

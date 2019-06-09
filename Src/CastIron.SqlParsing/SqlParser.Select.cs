@@ -18,12 +18,12 @@ namespace CastIron.SqlParsing
 
             unionOperator = t.GetNext();
 
-            return new SqlUnionStatementNode
+            return new SqlInfixOperationNode
             {
                 Location = firstQuery.Location,
-                First = firstQuery,
-                Operator = t.NextIs(SqlTokenType.Keyword, "ALL", true) ? "UNION ALL" : unionOperator.Value,
-                Second = ParseQueryExpression(t)
+                Left = firstQuery,
+                Operator = new SqlOperatorNode(t.NextIs(SqlTokenType.Keyword, "ALL", true) ? "UNION ALL" : unionOperator.Value),
+                Right = ParseQueryExpression(t)
             };
         }
 

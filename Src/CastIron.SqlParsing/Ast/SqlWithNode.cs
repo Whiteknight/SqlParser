@@ -18,6 +18,19 @@
 
             Statement.ToString(sb);
         }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitWith(this);
+        public SqlWithNode Update(SqlListNode<SqlCteNode> ctes, SqlNode stmt)
+        {
+            if (ctes == Ctes && Statement == stmt)
+                return this;
+            return new SqlWithNode
+            {
+                Location = Location,
+                Ctes = ctes,
+                Statement = stmt
+            };
+        }
     }
 
     public class SqlCteNode : SqlNode
@@ -35,6 +48,20 @@
             sb.AppendLineAndIndent();
             sb.DecreaseIndent();
             sb.Append(")");
+        }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitCte(this);
+
+        public SqlCteNode Update(SqlIdentifierNode name, SqlNode select)
+        {
+            if (name == Name && select == Select)
+                return this;
+            return new SqlCteNode
+            {
+                Location = Location,
+                Name = name,
+                Select = select
+            };
         }
     }
 }

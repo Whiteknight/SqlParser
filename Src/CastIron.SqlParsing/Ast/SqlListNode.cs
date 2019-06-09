@@ -12,7 +12,14 @@ namespace CastIron.SqlParsing.Ast
             Children = new List<TNode>();
         }
 
+        public SqlListNode(List<TNode> children)
+        {
+            Children = children ?? new List<TNode>();
+        }
+
         public List<TNode> Children { get; set; }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitList(this);
 
         public override void ToString(SqlStringifier sb)
         {
@@ -38,6 +45,16 @@ namespace CastIron.SqlParsing.Ast
                 between?.Invoke(sb);
                 forEach?.Invoke(sb, Children[i]);
             }
+        }
+
+        public SqlListNode<TNode> Update(List<TNode> children)
+        {
+            if (Children == children)
+                return this;
+            return new SqlListNode<TNode>(children)
+            {
+                Location = Location
+            };
         }
 
         public IEnumerator<TNode> GetEnumerator()

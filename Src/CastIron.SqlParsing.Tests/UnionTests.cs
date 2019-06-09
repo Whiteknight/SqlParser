@@ -22,9 +22,9 @@ namespace CastIron.SqlParsing.Tests
             result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
-                new SqlUnionStatementNode
+                new SqlInfixOperationNode
                 {
-                    First = new SqlSelectNode
+                    Left = new SqlSelectNode
                     {
                         Columns = new SqlListNode<SqlNode>
                         {
@@ -38,8 +38,8 @@ namespace CastIron.SqlParsing.Tests
                             Source = new SqlObjectIdentifierNode("Table1")
                         }
                     },
-                    Operator = op,
-                    Second = new SqlSelectNode
+                    Operator = new SqlOperatorNode(op),
+                    Right = new SqlSelectNode
                     {
                         Columns = new SqlListNode<SqlNode>
                         {
@@ -66,9 +66,9 @@ namespace CastIron.SqlParsing.Tests
             result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(
-                new SqlUnionStatementNode
+                new SqlInfixOperationNode
                 {
-                    First = new SqlSelectNode
+                    Left = new SqlSelectNode
                     {
                         Columns = new SqlListNode<SqlNode>
                         {
@@ -82,10 +82,10 @@ namespace CastIron.SqlParsing.Tests
                             Source = new SqlObjectIdentifierNode("Table1")
                         }
                     },
-                    Operator = "UNION",
-                    Second = new SqlUnionStatementNode
+                    Operator = new SqlOperatorNode("UNION"),
+                    Right = new SqlInfixOperationNode
                     {
-                        First = new SqlSelectNode
+                        Left = new SqlSelectNode
                         {
                             Columns = new SqlListNode<SqlNode>
                             {
@@ -99,8 +99,8 @@ namespace CastIron.SqlParsing.Tests
                                 Source = new SqlObjectIdentifierNode("Table2")
                             }
                         },
-                        Operator = "UNION ALL",
-                        Second = new SqlSelectNode
+                        Operator = new SqlOperatorNode("UNION ALL"),
+                        Right = new SqlSelectNode
                         {
                             Columns = new SqlListNode<SqlNode>
                             {

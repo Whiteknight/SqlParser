@@ -43,6 +43,29 @@
                 child.ToString(sb);
             }
         }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitSelect(this);
+
+        public SqlSelectNode Update(string modifier, SqlSelectTopNode top, SqlListNode<SqlNode> columns, 
+            SqlSelectFromClauseNode from, SqlWhereNode where, SqlSelectOrderByClauseNode orderBy, 
+            SqlSelectGroupByNode groupBy, SqlSelectHavingClauseNode having)
+        {
+            if (modifier == Modifier && top == TopClause && columns == Columns && from == FromClause &&
+                where == WhereClause && orderBy == OrderByClause && groupBy == GroupByClause && having == HavingClause)
+                return this;
+            return new SqlSelectNode
+            {
+                Location = Location,
+                Columns = columns,
+                FromClause = from,
+                GroupByClause = groupBy,
+                HavingClause = having,
+                Modifier = modifier,
+                OrderByClause = orderBy,
+                TopClause = top,
+                WhereClause = where
+            };
+        }
     }
 
     public class SqlSelectHavingClauseNode : SqlNode
@@ -56,6 +79,19 @@
             sb.WriteIndent();
             SearchCondition.ToString(sb);
             sb.DecreaseIndent();
+        }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitHaving(this);
+
+        public SqlSelectHavingClauseNode Update(SqlNode search)
+        {
+            if (search == SearchCondition)
+                return this;
+            return new SqlSelectHavingClauseNode
+            {
+                Location = Location,
+                SearchCondition = search
+            };
         }
     }
 }

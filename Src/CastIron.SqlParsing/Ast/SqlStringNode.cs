@@ -21,6 +21,8 @@ namespace CastIron.SqlParsing.Ast
 
         public string Value { get; set; }
 
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitString(this);
+
         public override void ToString(SqlStringifier sb)
         {
             sb.Append("'");

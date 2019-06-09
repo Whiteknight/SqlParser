@@ -12,5 +12,19 @@
             sb.Append(" ");
             WhereClause?.ToString(sb);
         }
+
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitDelete(this);
+
+        public SqlDeleteNode Update(SqlNode source, SqlWhereNode where)
+        {
+            if (source == Source && where == WhereClause)
+                return this;
+            return new SqlDeleteNode
+            {
+                Location = Location,
+                Source = source,
+                WhereClause = where
+            };
+        }
     }
 }
