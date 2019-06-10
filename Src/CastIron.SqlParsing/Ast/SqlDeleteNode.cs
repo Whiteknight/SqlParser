@@ -1,9 +1,12 @@
-﻿namespace CastIron.SqlParsing.Ast
+﻿using CastIron.SqlParsing.Symbols;
+
+namespace CastIron.SqlParsing.Ast
 {
-    public class SqlDeleteNode : SqlNode
+    public class SqlDeleteNode : SqlNode, ISqlSymbolScopeNode
     {
         public SqlNode Source { get; set; }
         public SqlWhereNode WhereClause { get; set; }
+        public SymbolTable Symbols { get; set; }
 
         public override void ToString(SqlStringifier sb)
         {

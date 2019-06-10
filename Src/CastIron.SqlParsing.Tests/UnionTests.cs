@@ -63,6 +63,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM Table1 UNION SELECT * FROM Table2 UNION ALL SELECT * FROM Table3;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
+            var output = result.ToString();
             result.Should().RoundTrip();
 
             result.Statements.First().Should().MatchAst(

@@ -1,10 +1,13 @@
-﻿namespace CastIron.SqlParsing.Ast
+﻿using CastIron.SqlParsing.Symbols;
+
+namespace CastIron.SqlParsing.Ast
 {
-    public class SqlInsertNode : SqlNode
+    public class SqlInsertNode : SqlNode, ISqlSymbolScopeNode
     {
         public SqlNode Table { get; set; }
         public SqlListNode<SqlIdentifierNode> Columns { get; set; }
         public SqlNode Source { get; set; }
+        public SymbolTable Symbols { get; set; }
 
         public override void ToString(SqlStringifier sb)
         {

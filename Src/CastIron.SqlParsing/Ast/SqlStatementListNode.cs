@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using CastIron.SqlParsing.Symbols;
 
 namespace CastIron.SqlParsing.Ast
 {
-    public class SqlStatementListNode : SqlNode
+    public class SqlStatementListNode : SqlNode, ISqlSymbolScopeNode, ICollection<SqlNode>
     {
         public List<SqlNode> Statements { get; }
+        public SymbolTable Symbols { get; set; }
 
         public SqlStatementListNode()
         {
@@ -36,5 +39,43 @@ namespace CastIron.SqlParsing.Ast
                 Location = Location
             };
         }
+
+        public IEnumerator<SqlNode> GetEnumerator()
+        {
+            return Statements.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public void Add(SqlNode item)
+        {
+            Statements.Add(item);
+        }
+
+        public void Clear()
+        {
+            Statements.Clear();
+        }
+
+        public bool Contains(SqlNode item)
+        {
+            return Statements.Contains(item);
+        }
+
+        public void CopyTo(SqlNode[] array, int arrayIndex)
+        {
+            Statements.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(SqlNode item)
+        {
+            return Statements.Remove(item);
+        }
+
+        public int Count => Statements.Count;
+        public bool IsReadOnly => false;
     }
 }

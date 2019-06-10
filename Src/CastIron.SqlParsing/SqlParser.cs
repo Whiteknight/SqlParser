@@ -47,11 +47,14 @@ namespace CastIron.SqlParsing
                 return ParseUpdateStatement(t);
             if (keyword.Value == "DELETE")
                 return ParseDeleteStatement(t);
+            if (keyword.Value == "DECLARE")
+                return ParseDeclare(t);
+            if (keyword.Value == "SET")
+                return ParseSet(t);
             
             // TODO: MERGE
-            // TODO: DECLARE/SET
             // TODO: BEGIN/END
-            // TODO: CREATE/DROP/ALTER
+            // TODO: CREATE/DROP/ALTER? Do we want to handle DDL statments here?
             throw new Exception($"Cannot parse statement starting with {keyword}");
         }
 

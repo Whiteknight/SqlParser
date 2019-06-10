@@ -4,6 +4,7 @@ namespace CastIron.SqlParsing.Ast
 {
     public abstract class SqlNodeVisitor
     {
+        // TODO: Some kind of ShouldVisit predicate so certain visitors can choose which trees to navigate
         public SqlNode Visit(SqlNode n) => n?.Accept(this);
 
         public virtual SqlNode VisitAlias(SqlAliasNode n)
@@ -34,6 +35,21 @@ namespace CastIron.SqlParsing.Ast
             var cond = Visit(n.Condition);
             var result = Visit(n.Result);
             return n.Update(cond, result);
+        }
+
+        public virtual SqlNode VisitDataType(SqlDataTypeNode n)
+        {
+            var d = Visit(n.DataType) as SqlKeywordNode;
+            var s = Visit(n.Size);
+            return n.Update(d, s);
+        }
+
+        public virtual SqlNode VisitDeclare(SqlDeclareNode n)
+        {
+            var v = Visit(n.Variable) as SqlVariableNode;
+            var d = Visit(n.DataType);
+            var i = Visit(n.Initializer);
+            return n.Update(v, d, i);
         }
 
         public virtual SqlNode VisitDelete(SqlDeleteNode n)
@@ -132,7 +148,7 @@ namespace CastIron.SqlParsing.Ast
 
         public virtual SqlNode VisitOperator(SqlOperatorNode n) => n;
 
-        public virtual SqlNode VisitSelectOrderBy(SqlSelectOrderByClauseNode n)
+        public virtual SqlNode VisitOrderBy(SqlSelectOrderByClauseNode n)
         {
             var entries = Visit(n.Entries) as SqlListNode<SqlOrderByEntryNode>;
             var offset = Visit(n.Offset);
@@ -177,6 +193,13 @@ namespace CastIron.SqlParsing.Ast
             var groupBy = Visit(n.GroupByClause) as SqlSelectGroupByNode;
             var having = Visit(n.HavingClause) as SqlSelectHavingClauseNode;
             return n.Update(n.Modifier, top, columns, from, where, orderBy, groupBy, having);
+        }
+
+        public virtual SqlNode VisitSet(SqlSetNode n)
+        {
+            var v = Visit(n.Variable) as SqlVariableNode;
+            var r = Visit(n.Right);
+            return n.Update(v, r);
         }
         
         public virtual SqlNode VisitStatementList(SqlStatementListNode n)

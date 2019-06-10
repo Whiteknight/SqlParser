@@ -20,24 +20,23 @@ namespace CastIron.SqlParsing
         private SqlNumberNode ParseNumber(SqlTokenizer t)
         {
             var next = t.GetNext();
-            if(next.IsSymbol("-"))
-            {
-                var x = t.Peek();
-                if (x.IsType(SqlTokenType.Number))
-                {
-                    t.GetNext();
-                    return new SqlNumberNode
-                    {
-                        Location = next.Location,
-                        Value = decimal.Parse("-" + x.Value)
-                    };
-                }
-            }
-
             if (next.IsType(SqlTokenType.Number))
                 return new SqlNumberNode(next);
 
             t.PutBack(next);
+            return null;
+        }
+
+        private SqlNode ParseNumberOrKeyword(SqlTokenizer t)
+        {
+            var next = t.GetNext();
+
+            if (next.IsType(SqlTokenType.Number))
+                return new SqlNumberNode(next);
+
+            if (next.IsType(SqlTokenType.Keyword))
+                return new SqlKeywordNode(next);
+
             return null;
         }
 

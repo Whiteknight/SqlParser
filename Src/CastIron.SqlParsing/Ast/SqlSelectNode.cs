@@ -1,6 +1,8 @@
-﻿namespace CastIron.SqlParsing.Ast
+﻿using CastIron.SqlParsing.Symbols;
+
+namespace CastIron.SqlParsing.Ast
 {
-    public class SqlSelectNode : SqlNode
+    public class SqlSelectNode : SqlNode, ISqlSymbolScopeNode
     {
         public string Modifier { get; set; }
         public SqlSelectTopNode TopClause { get; set; }
@@ -11,6 +13,7 @@
         public SqlSelectGroupByNode GroupByClause { get; set; }
 
         public SqlSelectHavingClauseNode HavingClause { get; set; }
+        public SymbolTable Symbols { get; set; }
 
         public override void ToString(SqlStringifier sb)
         {

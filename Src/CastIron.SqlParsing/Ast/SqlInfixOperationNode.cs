@@ -1,10 +1,20 @@
-﻿namespace CastIron.SqlParsing.Ast
+﻿using System.Collections.Generic;
+
+namespace CastIron.SqlParsing.Ast
 {
     public class SqlInfixOperationNode : SqlNode
     {
         public SqlNode Left { get; set; }
         public SqlOperatorNode Operator { get; set; }
         public SqlNode Right { get; set; }
+
+        private static readonly HashSet<string> _operatorsWithoutParens = new HashSet<string>
+        {
+            "UNION",
+            "UNION ALL",
+            "EXCEPT",
+            "INTERSECT"
+        };
 
         public override void ToString(SqlStringifier sb)
         {
@@ -21,7 +31,7 @@
 
         private void ToStringChild(SqlNode node, SqlStringifier sb)
         {
-            if (node is SqlInfixOperationNode)
+            if (node is SqlInfixOperationNode infx && !_operatorsWithoutParens.Contains(infx.Operator.Operator))
             {
                 sb.Append("(");
                 node.ToString(sb);

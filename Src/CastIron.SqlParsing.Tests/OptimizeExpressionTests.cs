@@ -54,7 +54,7 @@ namespace CastIron.SqlParsing.Tests
 
             var target = new ExpressionOptimizeVisitor();
             var result = target.Visit(ast);
-            result.Should().MatchAst(new SqlNumberNode());
+            result.Should().MatchAst(new SqlNumberNode(7));
         }
     }
 }

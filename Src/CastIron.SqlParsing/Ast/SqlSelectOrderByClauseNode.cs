@@ -35,7 +35,7 @@
             }
         }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitSelectOrderBy(this);
+        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitOrderBy(this);
 
         public SqlSelectOrderByClauseNode Update(SqlListNode<SqlOrderByEntryNode> entries, SqlNode offset, SqlNode limit)
         {
