@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CastIron.SqlParsing.Ast;
 using CastIron.SqlParsing.Tokenizing;
@@ -237,7 +236,7 @@ namespace CastIron.SqlParsing
             }
 
             if (joinOperator.Count > 0)
-                throw new Exception("Unknown JOIN operator");
+                throw ParsingException.CouldNotParseRule(nameof(ParseJoinOperator), k);
 
             t.PutBack(k);
             return null;
@@ -271,7 +270,7 @@ namespace CastIron.SqlParsing
                 return subexpression;
             }
 
-            throw new Exception($"Unexpected token {next} when parsing table name");
+            throw ParsingException.CouldNotParseRule(nameof(ParseTableOrSubexpression), next);
         }
 
         private SqlSelectOrderByClauseNode ParseSelectOrderByClause(SqlTokenizer t)
@@ -320,7 +319,7 @@ namespace CastIron.SqlParsing
             }
 
             if (identifier == null)
-                throw new Exception("Expected identifier or number");
+                throw ParsingException.CouldNotParseRule(nameof(ParseOrderTerm), t.Peek());
             var entry = new SqlOrderByEntryNode
             {
                 Location = identifier.Location,
@@ -345,9 +344,9 @@ namespace CastIron.SqlParsing
 
             var groupByNode = new SqlSelectGroupByNode
             {
-                Location = groupByToken.Location
+                Location = groupByToken.Location,
+                Keys = ParseList(t, ParseQualifiedIdentifier)
             };
-            groupByNode.Keys = ParseList(t, ParseQualifiedIdentifier);
             return groupByNode;
         }
     }

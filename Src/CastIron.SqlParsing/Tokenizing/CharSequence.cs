@@ -20,11 +20,11 @@ namespace CastIron.SqlParsing.Tokenizing
             _lineChar = 0;
         }
 
-        public void Expect(char c)
+        public void Expect(char expected)
         {
-            var x = GetNext();
-            if (x != c)
-                throw new Exception($"Expected {c} but found {x}");
+            var found = GetNext();
+            if (found != expected)
+                throw ParsingException.UnexpectedCharacter(expected, found, GetLocation());
         }
 
         public char Peek()

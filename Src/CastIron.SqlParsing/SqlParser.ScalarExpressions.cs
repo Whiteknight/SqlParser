@@ -1,5 +1,4 @@
-﻿using System;
-using CastIron.SqlParsing.Ast;
+﻿using CastIron.SqlParsing.Ast;
 using CastIron.SqlParsing.Tokenizing;
 
 namespace CastIron.SqlParsing
@@ -44,7 +43,7 @@ namespace CastIron.SqlParsing
                     continue;
                 }
 
-                throw new Exception($"Unexpected token {lookahead} in CASE statement at {lookahead.Location}");
+                throw ParsingException.CouldNotParseRule(nameof(ParseCaseExpression), lookahead);
             }
         }
 
@@ -174,14 +173,14 @@ namespace CastIron.SqlParsing
                 return value;
             }
 
-            throw new Exception($"Error parsing expression. Unexpected token {next} at {next.Location}");
+            throw ParsingException.CouldNotParseRule(nameof(ParseScalarExpression0), next);
         }
 
         private SqlNode ParseFunctionCall(SqlTokenizer t)
         {
             var name = t.GetNext();
             if (name.Type != SqlTokenType.Keyword && name.Type != SqlTokenType.Identifier)
-                throw new Exception($"Expecting function name but found {name}");
+                throw ParsingException.UnexpectedToken(SqlTokenType.Identifier, name);
             var arguments = ParseParenthesis(t, x => ParseList(x, ParseScalarExpression)).Expression;
             return new SqlFunctionCallNode
             {

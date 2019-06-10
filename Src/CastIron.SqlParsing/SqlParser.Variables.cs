@@ -1,5 +1,4 @@
-﻿using System;
-using CastIron.SqlParsing.Ast;
+﻿using CastIron.SqlParsing.Ast;
 using CastIron.SqlParsing.Tokenizing;
 
 namespace CastIron.SqlParsing
@@ -45,7 +44,7 @@ namespace CastIron.SqlParsing
                 else if (lookahead.IsType(SqlTokenType.Number))
                     dataType.Size = ParseList(t, ParseNumber);
                 else
-                    throw new Exception($"Unexpected token {lookahead} at {lookahead.Location}");
+                    throw ParsingException.CouldNotParseRule(nameof(ParseDataType), lookahead);
                 t.Expect(SqlTokenType.Symbol, ")");
             }
             return dataType;

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 
 namespace CastIron.SqlParsing.Tokenizing
@@ -81,25 +80,25 @@ namespace CastIron.SqlParsing.Tokenizing
 
         public SqlToken Expect(SqlTokenType type)
         {
-            var t = GetNext();
-            if (t.Type != type)
-                throw new Exception($"Expecting token with type {type} but found {t}");
-            return t;
+            var found = GetNext();
+            if (found.Type != type)
+                throw ParsingException.UnexpectedToken(type, found);
+            return found;
         }
 
         public SqlToken Expect(SqlTokenType type, params string[] values)
         {
-            var t = GetNext();
-            if (t.Type == type)
+            var found = GetNext();
+            if (found.Type == type)
             {
                 foreach (var value in values)
                 {
-                    if (t.Value == value)
-                        return t;
+                    if (found.Value == value)
+                        return found;
                 }
             }
 
-            throw new Exception($"Expecting token with type={type}, value={string.Join(",", values)} but found type={t.Type}, value={t.Value}");
+            throw ParsingException.UnexpectedToken(type, values, found);
         }
 
         public SqlToken Peek()
@@ -111,10 +110,10 @@ namespace CastIron.SqlParsing.Tokenizing
 
         public SqlToken ExpectPeek(SqlTokenType type)
         {
-            var t = Peek();
-            if (t.Type != type)
-                throw new Exception($"Expecting token with type {type} but found {t}");
-            return t;
+            var found = Peek();
+            if (found.Type != type)
+                throw ParsingException.UnexpectedToken(type, found);
+            return found;
         }
 
         public void Skip(SqlTokenType type)

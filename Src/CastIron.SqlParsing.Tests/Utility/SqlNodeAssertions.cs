@@ -35,7 +35,8 @@ namespace CastIron.SqlParsing.Tests.Utility
             {
                 AssertMatchAst(Subject, roundTripped, "ROUNDTRIP");
                 return new AndConstraint<SqlNodeAssertions>(this);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 throw new Exception("Expected\n" + asString + "\n\nBut got\n" + roundTripped.ToString(), e);
             }

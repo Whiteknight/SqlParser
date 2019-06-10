@@ -1,5 +1,4 @@
-﻿using System;
-using CastIron.SqlParsing.Ast;
+﻿using CastIron.SqlParsing.Ast;
 using CastIron.SqlParsing.Tokenizing;
 
 namespace CastIron.SqlParsing
@@ -188,7 +187,7 @@ namespace CastIron.SqlParsing
                 };
             }
 
-            throw new Exception($"Could not parse comparison with operator {operatorToken}");
+            throw ParsingException.CouldNotParseRule(nameof(ParseBooleanExpression1), operatorToken);
         }
     }
 }

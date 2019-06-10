@@ -14,7 +14,7 @@ namespace CastIron.SqlParsing
             if (next.IsType(SqlTokenType.Number))
                 return new SqlNumberNode(next);
 
-            throw new Exception($"Expecting number or variable but found {next}");
+            throw ParsingException.CouldNotParseRule(nameof(ParseNumberOrVariable), next);
         }
 
         private SqlNumberNode ParseNumber(SqlTokenizer t)
@@ -25,37 +25,6 @@ namespace CastIron.SqlParsing
 
             t.PutBack(next);
             return null;
-        }
-
-        private SqlNode ParseNumberOrKeyword(SqlTokenizer t)
-        {
-            var next = t.GetNext();
-
-            if (next.IsType(SqlTokenType.Number))
-                return new SqlNumberNode(next);
-
-            if (next.IsType(SqlTokenType.Keyword))
-                return new SqlKeywordNode(next);
-
-            return null;
-        }
-
-        private SqlNode ParseVariableConstantOrQualifiedIdentifier(SqlTokenizer t)
-        {
-            var next = t.GetNext();
-            if (next.IsType(SqlTokenType.Variable))
-                return new SqlVariableNode(next);
-            if (next.IsType(SqlTokenType.QuotedString))
-                return new SqlStringNode(next);
-            t.PutBack(next);
-            var number = ParseNumber(t);
-            if (number != null)
-                return number;
-            var identifier = ParseQualifiedIdentifier(t);
-            if (identifier != null)
-                return identifier;
-
-            throw new Exception("Cannot parse variable, constant or qualified identifier");
         }
 
         private SqlNode ParseVariableOrConstant(SqlTokenizer t)
@@ -69,7 +38,7 @@ namespace CastIron.SqlParsing
             var number = ParseNumber(t);
             if (number != null)
                 return number;
-            throw new Exception("Cannot parse variable or constant");
+            throw ParsingException.CouldNotParseRule(nameof(ParseVariableOrConstant), next);
         }
 
         private SqlNode ParseVariableOrQualifiedIdentifier(SqlTokenizer t)
@@ -84,7 +53,7 @@ namespace CastIron.SqlParsing
             if (identifier != null)
                 return identifier;
 
-            throw new Exception("Cannot parse variable or identifier");
+            throw ParsingException.CouldNotParseRule(nameof(ParseVariableOrQualifiedIdentifier), next);
         }
 
         private SqlIdentifierNode ParseIdentifier(SqlTokenizer t)

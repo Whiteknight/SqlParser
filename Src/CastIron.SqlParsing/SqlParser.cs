@@ -55,7 +55,7 @@ namespace CastIron.SqlParsing
             // TODO: MERGE
             // TODO: BEGIN/END
             // TODO: CREATE/DROP/ALTER? Do we want to handle DDL statments here?
-            throw new Exception($"Cannot parse statement starting with {keyword}");
+            throw ParsingException.CouldNotParseRule(nameof(ParseStatement), keyword);
         }
 
         private TNode ParseMaybeParenthesis<TNode>(SqlTokenizer t, Func<SqlTokenizer, TNode> parse)
