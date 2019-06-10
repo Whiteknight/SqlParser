@@ -21,7 +21,12 @@ namespace CastIron.SqlParsing.Ast
 
         public void AppendLine(string s = "") => _sb.AppendLine(s);
         public void Append(string s) => _sb.Append(s);
-        public void WriteIndent() => _sb.AppendIndent(_indent);
+        public void WriteIndent()
+        {
+            if (_indent <= 0)
+                return;
+            _sb.Append(new string(' ', _indent * 4));
+        }
         public void IncreaseIndent() => _indent++;
         public void DecreaseIndent() => _indent--;
     }

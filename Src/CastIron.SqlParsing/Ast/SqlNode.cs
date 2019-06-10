@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using CastIron.SqlParsing.Optimizer;
 using CastIron.SqlParsing.Tokenizing;
 
 namespace CastIron.SqlParsing.Ast
@@ -17,5 +18,10 @@ namespace CastIron.SqlParsing.Ast
         }
 
         public Location Location { get; set; }
+
+        public SqlNode Optimize()
+        {
+            return new ExpressionOptimizeVisitor().Visit(this);
+        }
     }
 }
