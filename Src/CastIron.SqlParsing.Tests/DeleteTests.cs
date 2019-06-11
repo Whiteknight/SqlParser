@@ -15,7 +15,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "DELETE FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlDeleteNode
@@ -31,7 +31,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "DELETE FROM MyTable WHERE ColumnA = 1;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlDeleteNode

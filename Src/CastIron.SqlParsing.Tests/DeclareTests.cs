@@ -14,7 +14,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "DECLARE @var BIGINT;";
             var target = new SqlParser();
             var result = target.Parse(s);
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlDeclareNode
@@ -34,7 +34,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "DECLARE @var CHAR(5);";
             var target = new SqlParser();
             var result = target.Parse(s);
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlDeclareNode
@@ -58,7 +58,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "DECLARE @var VARCHAR(MAX);";
             var target = new SqlParser();
             var result = target.Parse(s);
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlDeclareNode

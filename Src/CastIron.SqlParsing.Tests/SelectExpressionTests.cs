@@ -15,7 +15,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT 1 + 2 * 3 AS ColumnA";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -50,7 +50,7 @@ namespace CastIron.SqlParsing.Tests
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
             var output = result.ToString();
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -83,7 +83,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT 1 + 2 * -3 AS ColumnA";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -120,7 +120,7 @@ namespace CastIron.SqlParsing.Tests
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
             var output = result.ToString();
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -149,7 +149,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT ColumnA + ColumnB * ColumnC AS ColumnD";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace CastIron.SqlParsing.Ast
 {
@@ -225,14 +226,14 @@ namespace CastIron.SqlParsing.Ast
         private List<T> VisitTypedNodeList<T>(List<T> list)
             where T : SqlNode
         {
-            List<T> newNodes = null;
+            T[] newNodes = null;
             for (int i = 0; i < list.Count; i++)
             {
                 var oldNode = list[i];
                 var newNode = Visit(oldNode) as T;
                 if (newNode != oldNode)
                 {
-                    newNodes = new List<T>();
+                    newNodes = new T[list.Count];
                     for (int j = 0; j < i; j++)
                         newNodes[j] = list[j];
                 }
@@ -241,8 +242,7 @@ namespace CastIron.SqlParsing.Ast
                     newNodes[i] = newNode;
             }
 
-            return newNodes ?? list;
+            return newNodes?.ToList() ?? list;
         }
-
     }
 }

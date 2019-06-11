@@ -15,7 +15,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP 10 * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -39,7 +39,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP @limit * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -63,7 +63,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (10) * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -87,7 +87,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (@limit) * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -111,7 +111,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (10) PERCENT * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -136,7 +136,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (10) WITH TIES * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -161,7 +161,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT TOP (10) PERCENT WITH TIES * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode

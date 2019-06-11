@@ -16,7 +16,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -36,7 +36,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM dbo.MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -66,7 +66,7 @@ namespace CastIron.SqlParsing.Tests
                     -- INNER JOIN SomeOtherTable ON MyTableId = SomeOtherTableId;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -96,7 +96,7 @@ namespace CastIron.SqlParsing.Tests
                     MyTable /* INNER JOIN SomeOtherTable ON MyTableId = SomeOtherTableId */;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -120,7 +120,7 @@ namespace CastIron.SqlParsing.Tests
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
             result.Should().NotBeNull();
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -144,7 +144,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM @tableVar;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -167,7 +167,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT t1.* FROM MyTable AS t1;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -198,7 +198,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT t1.MyColumn FROM MyTable AS t1;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -229,7 +229,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT [t1].* FROM [MyTable] AS [t1];";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -260,7 +260,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT t1.* FROM @myTable AS t1;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -295,7 +295,7 @@ namespace CastIron.SqlParsing.Tests
                         (SELECT * FROM MyTable) AS t1;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
             var output = result.ToString();
 
             result.Statements.First().Should().MatchAst(
@@ -340,7 +340,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT ColumnA, ColumnB FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -364,7 +364,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT -ColumnA FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -388,7 +388,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT $IDENTITY, $ROWGUID FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -412,7 +412,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT [ColumnA], [ColumnB] FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -436,7 +436,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT [SELECT], [FROM] FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -460,7 +460,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT ColumnA AS ColumnB FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -487,7 +487,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT [ColumnA] AS [ColumnB] FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -514,7 +514,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT @value = ColumnA FROM MyTable;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode

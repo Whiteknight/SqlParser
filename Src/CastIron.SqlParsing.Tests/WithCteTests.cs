@@ -20,7 +20,7 @@ Cte1 AS (
 SELECT * FROM Cte1;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlWithNode
@@ -67,7 +67,7 @@ SELECT * FROM Cte2;";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
             var output = result.ToString();
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlWithNode

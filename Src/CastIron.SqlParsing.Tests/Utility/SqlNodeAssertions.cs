@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using CastIron.SqlParsing.Ast;
 using CastIron.SqlParsing.Tokenizing;
+using CastIron.SqlParsing.Validation;
 using FluentAssertions;
 using FluentAssertions.Primitives;
 
@@ -40,6 +41,12 @@ namespace CastIron.SqlParsing.Tests.Utility
             {
                 throw new Exception("Expected\n" + asString + "\n\nBut got\n" + roundTripped.ToString(), e);
             }
+        }
+
+        public AndConstraint<SqlNodeAssertions> PassValidation()
+        {
+            Subject.Validate().ThrowOnError();
+            return new AndConstraint<SqlNodeAssertions>(this);
         }
 
         private void AssertMatchAst(SqlNode a, SqlNode b, string path)

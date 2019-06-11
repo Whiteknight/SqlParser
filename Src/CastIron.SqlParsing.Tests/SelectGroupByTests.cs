@@ -15,7 +15,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT * FROM TableA GROUP BY Column1";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode

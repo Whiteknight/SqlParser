@@ -19,7 +19,7 @@ namespace CastIron.SqlParsing.Tests
             string s = $"SELECT * FROM Table1 {op} SELECT * FROM Table2";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlInfixOperationNode
@@ -58,7 +58,7 @@ namespace CastIron.SqlParsing.Tests
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
             var output = result.ToString();
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlInfixOperationNode

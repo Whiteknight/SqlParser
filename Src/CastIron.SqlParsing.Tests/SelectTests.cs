@@ -16,7 +16,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT 'TEST'";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -38,7 +38,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT 'TEST' AS ColumnA";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -64,7 +64,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT 10";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -86,7 +86,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT -10";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -109,7 +109,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT ~+-10";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -140,7 +140,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT 10.123";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -162,7 +162,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT @value";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -181,7 +181,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT -@value";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -204,7 +204,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT @value AS ColumnA";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -227,7 +227,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT GETUTCDATE() AS ColumnA";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -253,7 +253,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT ABS(1) AS ColumnA";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -283,7 +283,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT COALESCE(NULL, 0) AS ColumnA";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -314,7 +314,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SELECT NULL AS ColumnA";
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode

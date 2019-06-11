@@ -14,7 +14,7 @@ namespace CastIron.SqlParsing.Tests
             const string s = "SET @var = 5;";
             var target = new SqlParser();
             var result = target.Parse(s);
-            result.Should().RoundTrip();
+            result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
                 new SqlSetNode
