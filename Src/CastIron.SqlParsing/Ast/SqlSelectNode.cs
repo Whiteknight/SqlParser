@@ -7,12 +7,12 @@ namespace CastIron.SqlParsing.Ast
         public string Modifier { get; set; }
         public SqlSelectTopNode TopClause { get; set; }
         public SqlListNode<SqlNode> Columns { get; set; }
-        public SqlSelectFromClauseNode FromClause { get; set; }
-        public SqlWhereNode WhereClause { get; set; }
+        public SqlNode FromClause { get; set; }
+        public SqlNode WhereClause { get; set; }
         public SqlSelectOrderByClauseNode OrderByClause { get; set; }
-        public SqlSelectGroupByNode GroupByClause { get; set; }
+        public SqlNode GroupByClause { get; set; }
 
-        public SqlSelectHavingClauseNode HavingClause { get; set; }
+        public SqlNode HavingClause { get; set; }
         public SymbolTable Symbols { get; set; }
 
         public override void ToString(SqlStringifier sb)
@@ -29,11 +29,44 @@ namespace CastIron.SqlParsing.Ast
             ToString(sb, TopClause);
             sb.AppendLineAndIndent();
             Columns.ToString(sb);
-            ToString(sb, FromClause);
-            ToString(sb, WhereClause);
+            if (FromClause != null)
+            {
+                sb.AppendLine("FROM ");
+                sb.IncreaseIndent();
+                sb.WriteIndent();
+                FromClause.ToString(sb);
+                sb.DecreaseIndent();
+            }
+
+            if (WhereClause != null)
+            {
+                sb.AppendLineAndIndent();
+                sb.AppendLine("WHERE");
+                sb.IncreaseIndent();
+                sb.WriteIndent();
+                WhereClause.ToString(sb);
+                sb.DecreaseIndent();
+            }
+
             ToString(sb, OrderByClause);
-            ToString(sb, GroupByClause);
-            ToString(sb, HavingClause);
+            if (GroupByClause != null)
+            {
+                sb.AppendLineAndIndent();
+                sb.Append("GROUP BY");
+                sb.IncreaseIndent();
+                sb.AppendLineAndIndent();
+                GroupByClause.ToString(sb);
+                sb.DecreaseIndent();
+            }
+            if (HavingClause != null)
+            {
+                sb.AppendLineAndIndent();
+                sb.AppendLine("HAVING");
+                sb.IncreaseIndent();
+                sb.WriteIndent();
+                HavingClause.ToString(sb);
+                sb.DecreaseIndent();
+            }
 
             sb.DecreaseIndent();
         }
@@ -50,8 +83,8 @@ namespace CastIron.SqlParsing.Ast
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitSelect(this);
 
         public SqlSelectNode Update(string modifier, SqlSelectTopNode top, SqlListNode<SqlNode> columns, 
-            SqlSelectFromClauseNode from, SqlWhereNode where, SqlSelectOrderByClauseNode orderBy, 
-            SqlSelectGroupByNode groupBy, SqlSelectHavingClauseNode having)
+            SqlNode from, SqlNode where, SqlSelectOrderByClauseNode orderBy,
+            SqlNode groupBy, SqlNode having)
         {
             if (modifier == Modifier && top == TopClause && columns == Columns && from == FromClause &&
                 where == WhereClause && orderBy == OrderByClause && groupBy == GroupByClause && having == HavingClause)
@@ -67,33 +100,6 @@ namespace CastIron.SqlParsing.Ast
                 OrderByClause = orderBy,
                 TopClause = top,
                 WhereClause = where
-            };
-        }
-    }
-
-    public class SqlSelectHavingClauseNode : SqlNode
-    {
-        public SqlNode SearchCondition { get; set; }
-
-        public override void ToString(SqlStringifier sb)
-        {
-            sb.AppendLine("HAVING");
-            sb.IncreaseIndent();
-            sb.WriteIndent();
-            SearchCondition.ToString(sb);
-            sb.DecreaseIndent();
-        }
-
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitHaving(this);
-
-        public SqlSelectHavingClauseNode Update(SqlNode search)
-        {
-            if (search == SearchCondition)
-                return this;
-            return new SqlSelectHavingClauseNode
-            {
-                Location = Location,
-                SearchCondition = search
             };
         }
     }

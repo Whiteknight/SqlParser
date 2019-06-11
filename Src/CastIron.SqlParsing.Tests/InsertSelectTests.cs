@@ -38,10 +38,7 @@ namespace CastIron.SqlParsing.Tests
                                 new SqlIdentifierNode("ColumnB")
                             }
                         },
-                        FromClause = new SqlSelectFromClauseNode
-                        {
-                            Source = new SqlObjectIdentifierNode("MyTable")
-                        }
+                        FromClause =  new SqlObjectIdentifierNode("MyTable")
                     }
                 }
             );

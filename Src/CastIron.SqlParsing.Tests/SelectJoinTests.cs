@@ -40,36 +40,33 @@ SELECT
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
+                    FromClause = new SqlJoinNode
                     {
-                        Source = new SqlJoinNode
+                        Left = new SqlAliasNode
                         {
-                            Left = new SqlAliasNode
-                            {
-                                Alias = new SqlIdentifierNode("t1"),
-                                Source = new SqlObjectIdentifierNode("Table1")
-                            },
-                            Operator = new SqlOperatorNode(joinType),
-                            Right = new SqlAliasNode
-                            {
-                                Alias = new SqlIdentifierNode("t2"),
-                                Source = new SqlObjectIdentifierNode("Table2")
-                            },
-                            OnCondition = new SqlInfixOperationNode
-                            {
-                                Left = new SqlQualifiedIdentifierNode
-                                {
-                                    Qualifier = new SqlIdentifierNode("t1"),
-                                    Identifier = new SqlIdentifierNode("Id")
-                                },
-                                Operator = new SqlOperatorNode("="),
-                                Right = new SqlQualifiedIdentifierNode
-                                {
-                                    Qualifier = new SqlIdentifierNode("t2"),
-                                    Identifier = new SqlIdentifierNode("Id")
-                                }
-                            }
+                            Alias = new SqlIdentifierNode("t1"),
+                            Source = new SqlObjectIdentifierNode("Table1")
                         },
+                        Operator = new SqlOperatorNode(joinType),
+                        Right = new SqlAliasNode
+                        {
+                            Alias = new SqlIdentifierNode("t2"),
+                            Source = new SqlObjectIdentifierNode("Table2")
+                        },
+                        OnCondition = new SqlInfixOperationNode
+                        {
+                            Left = new SqlQualifiedIdentifierNode
+                            {
+                                Qualifier = new SqlIdentifierNode("t1"),
+                                Identifier = new SqlIdentifierNode("Id")
+                            },
+                            Operator = new SqlOperatorNode("="),
+                            Right = new SqlQualifiedIdentifierNode
+                            {
+                                Qualifier = new SqlIdentifierNode("t2"),
+                                Identifier = new SqlIdentifierNode("Id")
+                            }
+                        }
                     }
                 }
             );
@@ -96,23 +93,20 @@ SELECT
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
+                    FromClause = new SqlJoinNode
                     {
-                        Source = new SqlJoinNode
+                        Left = new SqlAliasNode
                         {
-                            Left = new SqlAliasNode
-                            {
-                                Alias = new SqlIdentifierNode("t1"),
-                                Source = new SqlObjectIdentifierNode("Table1")
-                            },
-                            Operator = new SqlOperatorNode("NATURAL JOIN"),
-                            Right = new SqlAliasNode
-                            {
-                                Alias = new SqlIdentifierNode("t2"),
-                                Source = new SqlObjectIdentifierNode("Table2")
-                            }
+                            Alias = new SqlIdentifierNode("t1"),
+                            Source = new SqlObjectIdentifierNode("Table1")
                         },
-                    }
+                        Operator = new SqlOperatorNode("NATURAL JOIN"),
+                        Right = new SqlAliasNode
+                        {
+                            Alias = new SqlIdentifierNode("t2"),
+                            Source = new SqlObjectIdentifierNode("Table2")
+                        }
+                    },
                 }
             );
         }

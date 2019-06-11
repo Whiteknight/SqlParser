@@ -31,14 +31,11 @@ namespace CastIron.SqlParsing.Tests
                             Right = new SqlNumberNode(1)
                         }
                     },
-                    WhereClause = new SqlWhereNode
+                    WhereClause = new SqlInfixOperationNode
                     {
-                        SearchCondition = new SqlInfixOperationNode
-                        {
-                            Left = new SqlIdentifierNode("ColumnB"),
-                            Operator = new SqlOperatorNode("="),
-                            Right = new SqlNumberNode(2)
-                        }
+                        Left = new SqlIdentifierNode("ColumnB"),
+                        Operator = new SqlOperatorNode("="),
+                        Right = new SqlNumberNode(2)
                     }
                 }
             );

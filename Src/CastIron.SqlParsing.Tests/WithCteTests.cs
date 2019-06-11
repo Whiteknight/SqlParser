@@ -35,10 +35,7 @@ SELECT * FROM Cte1;";
                                 {
                                     new SqlOperatorNode("*")
                                 },
-                                FromClause = new SqlSelectFromClauseNode
-                                {
-                                    Source = new SqlObjectIdentifierNode("MyTable")
-                                }
+                                FromClause = new SqlObjectIdentifierNode("MyTable")
                             },
                             Name = new SqlIdentifierNode("Cte1")
                         }
@@ -49,10 +46,7 @@ SELECT * FROM Cte1;";
                         {
                             new SqlOperatorNode("*")
                         },
-                        FromClause = new SqlSelectFromClauseNode
-                        {
-                            Source = new SqlObjectIdentifierNode("Cte1")
-                        }
+                        FromClause =  new SqlObjectIdentifierNode("Cte1")
                     }
                 }
             );
@@ -88,10 +82,7 @@ SELECT * FROM Cte2;";
                                 {
                                     new SqlOperatorNode("*")
                                 },
-                                FromClause = new SqlSelectFromClauseNode
-                                {
-                                    Source = new SqlObjectIdentifierNode("MyTable")
-                                }
+                                FromClause = new SqlObjectIdentifierNode("MyTable")
                             },
                             Name = new SqlIdentifierNode("Cte1")
                         },
@@ -103,10 +94,7 @@ SELECT * FROM Cte2;";
                                 {
                                     new SqlOperatorNode("*")
                                 },
-                                FromClause = new SqlSelectFromClauseNode
-                                {
-                                    Source = new SqlObjectIdentifierNode("Cte1")
-                                }
+                                FromClause = new SqlObjectIdentifierNode("Cte1")
                             },
                             Name = new SqlIdentifierNode("Cte2")
                         }
@@ -117,10 +105,7 @@ SELECT * FROM Cte2;";
                         {
                             new SqlOperatorNode("*")
                         },
-                        FromClause = new SqlSelectFromClauseNode
-                        {
-                            Source = new SqlObjectIdentifierNode("Cte2")
-                        }
+                        FromClause = new SqlObjectIdentifierNode("Cte2")
                     }
                 }
             );

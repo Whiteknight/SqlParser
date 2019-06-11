@@ -24,18 +24,12 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
+                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    HavingClause = new SqlInfixOperationNode
                     {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
-                    HavingClause = new SqlSelectHavingClauseNode
-                    {
-                        SearchCondition = new SqlInfixOperationNode
-                        {
-                            Left = new SqlIdentifierNode("MyColumn"),
-                            Operator = new SqlOperatorNode("="),
-                            Right = new SqlNumberNode(1)
-                        }
+                        Left = new SqlIdentifierNode("MyColumn"),
+                        Operator = new SqlOperatorNode("="),
+                        Right = new SqlNumberNode(1)
                     }
                 }
             );
@@ -56,27 +50,21 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
+                    FromClause =  new SqlObjectIdentifierNode("MyTable"),
+                    HavingClause = new SqlInfixOperationNode
                     {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
-                    HavingClause = new SqlSelectHavingClauseNode
-                    {
-                        SearchCondition = new SqlInfixOperationNode
+                        Left = new SqlInfixOperationNode
                         {
-                            Left = new SqlInfixOperationNode
-                            {
-                                Left = new SqlIdentifierNode("MyColumn1"),
-                                Operator = new SqlOperatorNode("="),
-                                Right = new SqlNumberNode(1)
-                            },
-                            Operator = new SqlOperatorNode("AND"),
-                            Right = new SqlInfixOperationNode
-                            {
-                                Left = new SqlIdentifierNode("MyColumn2"),
-                                Operator = new SqlOperatorNode("="),
-                                Right = new SqlNumberNode(2)
-                            }
+                            Left = new SqlIdentifierNode("MyColumn1"),
+                            Operator = new SqlOperatorNode("="),
+                            Right = new SqlNumberNode(1)
+                        },
+                        Operator = new SqlOperatorNode("AND"),
+                        Right = new SqlInfixOperationNode
+                        {
+                            Left = new SqlIdentifierNode("MyColumn2"),
+                            Operator = new SqlOperatorNode("="),
+                            Right = new SqlNumberNode(2)
                         }
                     }
                 }
@@ -98,18 +86,12 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
+                    FromClause =  new SqlObjectIdentifierNode("MyTable"),
+                    HavingClause = new SqlBetweenOperationNode
                     {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
-                    HavingClause = new SqlSelectHavingClauseNode
-                    {
-                        SearchCondition = new SqlBetweenOperationNode
-                        {
-                            Left = new SqlIdentifierNode("MyColumn"),
-                            Low = new SqlNumberNode(1),
-                            High = new SqlNumberNode(2)
-                        }
+                        Left = new SqlIdentifierNode("MyColumn"),
+                        Low = new SqlNumberNode(1),
+                        High = new SqlNumberNode(2)
                     }
                 }
             );
@@ -131,21 +113,15 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
+                    FromClause =  new SqlObjectIdentifierNode("MyTable"),
+                    HavingClause = new SqlInNode
                     {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
-                    HavingClause = new SqlSelectHavingClauseNode
-                    {
-                        SearchCondition = new SqlInNode
+                        Search = new SqlIdentifierNode("MyColumn"),
+                        Items = new SqlListNode<SqlNode>
                         {
-                            Search = new SqlIdentifierNode("MyColumn"),
-                            Items = new SqlListNode<SqlNode>
-                            {
-                                new SqlNumberNode(1),
-                                new SqlNumberNode(2),
-                                new SqlNumberNode(3)
-                            }
+                            new SqlNumberNode(1),
+                            new SqlNumberNode(2),
+                            new SqlNumberNode(3)
                         }
                     }
                 }

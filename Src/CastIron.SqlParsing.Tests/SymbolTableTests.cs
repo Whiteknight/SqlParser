@@ -22,10 +22,7 @@ namespace CastIron.SqlParsing.Tests
                         Identifier = new SqlIdentifierNode("ColumnA")
                     }
                 },
-                FromClause = new SqlSelectFromClauseNode
-                {
-                    Source = new SqlIdentifierNode { Name = "MyTable" }
-                }
+                FromClause = new SqlIdentifierNode { Name = "MyTable" }
             };
             ast.BuildSymbolTables();
             ast.Symbols.GetInfoOrThrow("MyTable").DataType.Should().Be("TableExpression");
@@ -45,10 +42,7 @@ namespace CastIron.SqlParsing.Tests
                         Identifier = new SqlIdentifierNode("ColumnA")
                     }
                 },
-                FromClause = new SqlSelectFromClauseNode
-                {
-                    Source = new SqlIdentifierNode { Name = "MyTable1" }
-                }
+                FromClause = new SqlIdentifierNode { Name = "MyTable1" }
             };
             Action act = () => ast.BuildSymbolTables();
             act.Should().Throw<SymbolNotDefinedException>().And.Symbol.Should().Be("MyTable2");
@@ -67,13 +61,11 @@ namespace CastIron.SqlParsing.Tests
                         Identifier = new SqlIdentifierNode("ColumnA")
                     }
                 },
-                FromClause = new SqlSelectFromClauseNode
+                FromClause = new SqlJoinNode
                 {
-                    Source = new SqlJoinNode {
-                        Left = new SqlIdentifierNode { Name = "MyTable" },
-                        Operator = new SqlOperatorNode("NATURAL JOIN"),
-                        Right = new SqlIdentifierNode { Name = "MyTable" }
-                    }
+                    Left = new SqlIdentifierNode { Name = "MyTable" },
+                    Operator = new SqlOperatorNode("NATURAL JOIN"),
+                    Right = new SqlIdentifierNode { Name = "MyTable" }
                 }
             };
             Action act = () => ast.BuildSymbolTables();

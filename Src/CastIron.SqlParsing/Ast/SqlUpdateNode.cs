@@ -6,7 +6,7 @@ namespace CastIron.SqlParsing.Ast
     {
         public SqlNode Source { get; set; }
         public SqlListNode<SqlInfixOperationNode> SetClause { get; set; }
-        public SqlWhereNode WhereClause { get; set; }
+        public SqlNode WhereClause { get; set; }
         public SymbolTable Symbols { get; set; }
 
         public override void ToString(SqlStringifier sb)
@@ -33,7 +33,11 @@ namespace CastIron.SqlParsing.Ast
             if (WhereClause != null)
             {
                 sb.AppendLineAndIndent();
+                sb.AppendLine("WHERE");
+                sb.IncreaseIndent();
+                sb.WriteIndent();
                 WhereClause.ToString(sb);
+                sb.DecreaseIndent();
             }
 
             sb.DecreaseIndent();
@@ -41,7 +45,7 @@ namespace CastIron.SqlParsing.Ast
 
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitUpdate(this);
 
-        public SqlUpdateNode Update(SqlNode source, SqlListNode<SqlInfixOperationNode> set, SqlWhereNode where)
+        public SqlUpdateNode Update(SqlNode source, SqlListNode<SqlInfixOperationNode> set, SqlNode where)
         {
             if (source == Source && set == SetClause && where == WhereClause)
                 return this;

@@ -27,6 +27,12 @@ namespace CastIron.SqlParsing.Symbols
 
         private SymbolTable Current => _tables.Peek();
 
+        public override SqlNode VisitAlias(SqlAliasNode n)
+        {
+            Current.AddSymbol(n.Alias.Name, new SymbolInfo { DataType = "Alias", DefinedAt = n.Location });
+            return base.VisitAlias(n);
+        }
+
         public override SqlNode VisitCte(SqlCteNode n)
         {
             Current.AddSymbol(n.Name.Name, new SymbolInfo { DataType = "TableExpression", DefinedAt = n.Location });
@@ -48,19 +54,6 @@ namespace CastIron.SqlParsing.Symbols
             return n;
         }
 
-        public override SqlNode VisitFrom(SqlSelectFromClauseNode n)
-        {
-            // Identifier is presumed to be table name
-            AddTableIds(n.Source);
-            
-            // table variables should already be defined
-            if (n.Source is SqlVariableNode v)
-                Current.GetInfoOrThrow(v.Name);
-
-            // base will visit subexpressions, such as Joins
-            return base.VisitFrom(n);
-        }
-
         public override SqlJoinNode VisitJoin(SqlJoinNode n)
         {
             AddTableIds(n.Left);
@@ -77,15 +70,13 @@ namespace CastIron.SqlParsing.Symbols
             // Object ID is a table name, only use the name of the table as the symbol, not the full qualification
             if (n is SqlObjectIdentifierNode objId)
                 Current.AddSymbol(objId.Name.Name, new SymbolInfo { DataType = "TableExpression", DefinedAt = objId.Location });
-
-            if (n is SqlAliasNode alias)
-                Current.AddSymbol(alias.Alias.Name, new SymbolInfo { DataType = "TableExpression", DefinedAt = alias.Location });
         }
 
         public override SqlNode VisitSelect(SqlSelectNode n)
         {
             var symbols = PushSymbolTable();
             // Visit the FROM clause to get all the source table expressions
+            AddTableIds(n.FromClause);
             Visit(n.FromClause);
 
             // Visit the columns to get all column names and aliases
@@ -154,6 +145,10 @@ namespace CastIron.SqlParsing.Symbols
             return n;
         }
 
-        
+        public override SqlNode VisitVariable(SqlVariableNode n)
+        {
+            Current.GetInfoOrThrow(n.Name);
+            return n;
+        }
     }
 }

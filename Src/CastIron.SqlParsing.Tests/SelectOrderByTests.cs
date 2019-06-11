@@ -24,10 +24,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
-                    {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
+                    FromClause = new SqlObjectIdentifierNode("MyTable"),
                     OrderByClause = new SqlSelectOrderByClauseNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
@@ -58,10 +55,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
-                    {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
+                    FromClause = new SqlObjectIdentifierNode("MyTable"),
                     OrderByClause = new SqlSelectOrderByClauseNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
@@ -92,10 +86,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
-                    {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
+                    FromClause = new SqlObjectIdentifierNode("MyTable"),
                     OrderByClause = new SqlSelectOrderByClauseNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
@@ -126,10 +117,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
-                    {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
+                    FromClause = new SqlObjectIdentifierNode("MyTable"),
                     OrderByClause = new SqlSelectOrderByClauseNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
@@ -159,10 +147,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
-                    {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
+                    FromClause = new SqlObjectIdentifierNode("MyTable"),
                     OrderByClause = new SqlSelectOrderByClauseNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
@@ -194,10 +179,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
-                    {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
+                    FromClause = new SqlObjectIdentifierNode("MyTable"),
                     OrderByClause = new SqlSelectOrderByClauseNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>

@@ -33,10 +33,7 @@ namespace CastIron.SqlParsing.Tests
                                 new SqlOperatorNode("*")
                             }
                         },
-                        FromClause = new SqlSelectFromClauseNode
-                        {
-                            Source = new SqlObjectIdentifierNode("Table1")
-                        }
+                        FromClause = new SqlObjectIdentifierNode("Table1")
                     },
                     Operator = new SqlOperatorNode(op),
                     Right = new SqlSelectNode
@@ -48,10 +45,7 @@ namespace CastIron.SqlParsing.Tests
                                 new SqlOperatorNode("*")
                             }
                         },
-                        FromClause = new SqlSelectFromClauseNode
-                        {
-                            Source = new SqlObjectIdentifierNode("Table2")
-                        }
+                        FromClause = new SqlObjectIdentifierNode("Table2")
                     }
                 }
             );
@@ -78,10 +72,7 @@ namespace CastIron.SqlParsing.Tests
                                 new SqlOperatorNode("*")
                             }
                         },
-                        FromClause = new SqlSelectFromClauseNode
-                        {
-                            Source = new SqlObjectIdentifierNode("Table1")
-                        }
+                        FromClause = new SqlObjectIdentifierNode("Table1")
                     },
                     Operator = new SqlOperatorNode("UNION"),
                     Right = new SqlInfixOperationNode
@@ -95,10 +86,7 @@ namespace CastIron.SqlParsing.Tests
                                     new SqlOperatorNode("*")
                                 }
                             },
-                            FromClause = new SqlSelectFromClauseNode
-                            {
-                                Source = new SqlObjectIdentifierNode("Table2")
-                            }
+                            FromClause = new SqlObjectIdentifierNode("Table2")
                         },
                         Operator = new SqlOperatorNode("UNION ALL"),
                         Right = new SqlSelectNode
@@ -110,10 +98,7 @@ namespace CastIron.SqlParsing.Tests
                                     new SqlOperatorNode("*")
                                 }
                             },
-                            FromClause = new SqlSelectFromClauseNode
-                            {
-                                Source = new SqlObjectIdentifierNode("Table3")
-                            }
+                            FromClause = new SqlObjectIdentifierNode("Table3")
                         }
                     }
                 }

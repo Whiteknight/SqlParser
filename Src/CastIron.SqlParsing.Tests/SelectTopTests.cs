@@ -24,10 +24,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
-                    {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
+                    FromClause = new SqlObjectIdentifierNode("MyTable"),
                     TopClause = new SqlSelectTopNode
                     {
                         Value = new SqlNumberNode(10)
@@ -51,10 +48,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
-                    {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
+                    FromClause = new SqlObjectIdentifierNode("MyTable"),
                     TopClause = new SqlSelectTopNode
                     {
                         Value = new SqlVariableNode("@limit")
@@ -78,10 +72,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
-                    {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
+                    FromClause = new SqlObjectIdentifierNode("MyTable"),
                     TopClause = new SqlSelectTopNode
                     {
                         Value = new SqlNumberNode(10)
@@ -105,10 +96,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
-                    {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
+                    FromClause = new SqlObjectIdentifierNode("MyTable"),
                     TopClause = new SqlSelectTopNode
                     {
                         Value = new SqlVariableNode("@limit")
@@ -132,10 +120,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
-                    {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
+                    FromClause = new SqlObjectIdentifierNode("MyTable"),
                     TopClause = new SqlSelectTopNode
                     {
                         Value = new SqlNumberNode(10),
@@ -160,10 +145,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
-                    {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
+                    FromClause = new SqlObjectIdentifierNode("MyTable"),
                     TopClause = new SqlSelectTopNode
                     {
                         Value = new SqlNumberNode(10),
@@ -188,10 +170,7 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
-                    {
-                        Source = new SqlObjectIdentifierNode("MyTable")
-                    },
+                    FromClause = new SqlObjectIdentifierNode("MyTable"),
                     TopClause = new SqlSelectTopNode
                     {
                         Value = new SqlNumberNode(10),

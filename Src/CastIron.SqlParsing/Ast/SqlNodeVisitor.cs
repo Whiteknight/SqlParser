@@ -55,14 +55,8 @@ namespace CastIron.SqlParsing.Ast
         public virtual SqlNode VisitDelete(SqlDeleteNode n)
         {
             var source = Visit(n.Source);
-            var where = Visit(n.WhereClause) as SqlWhereNode;
+            var where = Visit(n.WhereClause);
             return n.Update(source, where);
-        }
-
-        public virtual SqlNode VisitFrom(SqlSelectFromClauseNode n)
-        {
-            var source = Visit(n.Source);
-            return n.Update(source);
         }
 
         public virtual SqlNode VisitFunctionCall(SqlFunctionCallNode n)
@@ -70,18 +64,6 @@ namespace CastIron.SqlParsing.Ast
             var name = Visit(n.Name) as SqlIdentifierNode;
             var args = Visit(n.Arguments) as SqlListNode<SqlNode>;
             return n.Update(name, args);
-        }
-
-        public virtual SqlNode VisitGroupBy(SqlSelectGroupByNode n)
-        {
-            var keys = Visit(n.Keys) as SqlListNode<SqlNode>;
-            return n.Update(keys);
-        }
-
-        public virtual SqlNode VisitHaving(SqlSelectHavingClauseNode n)
-        {
-            var search = Visit(n.SearchCondition);
-            return n.Update(search);
         }
 
         public virtual SqlNode VisitIdentifier(SqlIdentifierNode n) => n;
@@ -140,9 +122,9 @@ namespace CastIron.SqlParsing.Ast
         public virtual SqlNode VisitObjectIdentifier(SqlObjectIdentifierNode n)
         {
             var server = Visit(n.Server) as SqlIdentifierNode;
-            var db = Visit(n.Database) as SqlIdentifierNode; ;
-            var schema = Visit(n.Schema) as SqlIdentifierNode; ;
-            var name = Visit(n.Name) as SqlIdentifierNode; ;
+            var db = Visit(n.Database) as SqlIdentifierNode; 
+            var schema = Visit(n.Schema) as SqlIdentifierNode; 
+            var name = Visit(n.Name) as SqlIdentifierNode; 
             return n.Update(server, db, schema, name);
         }
 
@@ -187,11 +169,11 @@ namespace CastIron.SqlParsing.Ast
         {
             var top = Visit(n.TopClause) as SqlSelectTopNode;
             var columns = Visit(n.Columns) as SqlListNode<SqlNode>;
-            var from = Visit(n.FromClause) as SqlSelectFromClauseNode;
-            var where = Visit(n.WhereClause) as SqlWhereNode;
+            var from = Visit(n.FromClause);
+            var where = Visit(n.WhereClause);
             var orderBy = Visit(n.OrderByClause) as SqlSelectOrderByClauseNode;
-            var groupBy = Visit(n.GroupByClause) as SqlSelectGroupByNode;
-            var having = Visit(n.HavingClause) as SqlSelectHavingClauseNode;
+            var groupBy = Visit(n.GroupByClause);
+            var having = Visit(n.HavingClause);
             return n.Update(n.Modifier, top, columns, from, where, orderBy, groupBy, having);
         }
 
@@ -216,12 +198,6 @@ namespace CastIron.SqlParsing.Ast
             return n.Update(value, n.Percent, n.WithTies);
         }
 
-        public virtual SqlNode VisitWhere(SqlWhereNode n)
-        {
-            var c = Visit(n.SearchCondition);
-            return n.Update(c);
-        }
-
         public virtual SqlNode VisitWith(SqlWithNode n)
         {
             var ctes = Visit(n.Ctes) as SqlListNode<SqlCteNode>;
@@ -241,7 +217,7 @@ namespace CastIron.SqlParsing.Ast
             var source = Visit(n.Source);
             var sets = Visit(n.SetClause);
             var where = Visit(n.WhereClause);
-            return n.Update(source, sets as SqlListNode<SqlInfixOperationNode>, where as SqlWhereNode);
+            return n.Update(source, sets as SqlListNode<SqlInfixOperationNode>, where);
         }
 
         public virtual SqlNode VisitVariable(SqlVariableNode n) => n;

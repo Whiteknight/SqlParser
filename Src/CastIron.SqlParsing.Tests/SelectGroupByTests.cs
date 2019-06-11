@@ -24,16 +24,10 @@ namespace CastIron.SqlParsing.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlSelectFromClauseNode
+                    FromClause = new SqlObjectIdentifierNode("TableA"),
+                    GroupByClause = new SqlListNode<SqlNode>
                     {
-                        Source = new SqlObjectIdentifierNode("TableA")
-                    },
-                    GroupByClause = new SqlSelectGroupByNode
-                    {
-                        Keys = new SqlListNode<SqlNode>
-                        {
-                            new SqlIdentifierNode("Column1")
-                        }
+                        new SqlIdentifierNode("Column1")
                     }
                 }
             );

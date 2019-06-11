@@ -37,14 +37,11 @@ namespace CastIron.SqlParsing.Tests
                 new SqlDeleteNode
                 {
                     Source = new SqlObjectIdentifierNode("MyTable"),
-                    WhereClause = new SqlWhereNode
+                    WhereClause = new SqlInfixOperationNode
                     {
-                        SearchCondition = new SqlInfixOperationNode
-                        {
-                            Left = new SqlIdentifierNode("ColumnA"),
-                            Operator = new SqlOperatorNode("="),
-                            Right = new SqlNumberNode(1)
-                        }
+                        Left = new SqlIdentifierNode("ColumnA"),
+                        Operator = new SqlOperatorNode("="),
+                        Right = new SqlNumberNode(1)
                     }
                 }
             );

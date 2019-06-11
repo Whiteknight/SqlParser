@@ -30,8 +30,10 @@ namespace CastIron.SqlParsing
         {
             // "SELECT" ...
             var selectToken = t.Expect(SqlTokenType.Keyword, "SELECT");
-            var selectNode = new SqlSelectNode();
-            selectNode.Location = selectToken.Location;
+            var selectNode = new SqlSelectNode
+            {
+                Location = selectToken.Location
+            };
 
             var modifier = t.Peek();
             if (modifier.IsKeyword("ALL") || modifier.IsKeyword("DISTINCT"))
@@ -50,32 +52,22 @@ namespace CastIron.SqlParsing
             return selectNode;
         }
 
-        private SqlWhereNode ParseWhereClause(SqlTokenizer t)
+        private SqlNode ParseWhereClause(SqlTokenizer t)
         {
             if (!t.NextIs(SqlTokenType.Keyword, "WHERE"))
                 return null;
 
-            var whereToken = t.GetNext();
-            var expression = ParseBooleanExpression(t);
-            return new SqlWhereNode
-            {
-                Location = whereToken.Location,
-                SearchCondition = expression
-            };
+            t.GetNext();
+            return ParseBooleanExpression(t);
         }
 
-        private SqlSelectHavingClauseNode ParseSelectHavingClause(SqlTokenizer t)
+        private SqlNode ParseSelectHavingClause(SqlTokenizer t)
         {
             if (!t.NextIs(SqlTokenType.Keyword, "HAVING"))
                 return null;
 
-            var whereToken = t.GetNext();
-            var expression = ParseBooleanExpression(t);
-            return new SqlSelectHavingClauseNode
-            {
-                Location = whereToken.Location,
-                SearchCondition = expression
-            };
+            t.GetNext();
+            return ParseBooleanExpression(t);
         }
 
         private SqlSelectTopNode ParseSelectTopClause(SqlTokenizer t)
@@ -137,18 +129,13 @@ namespace CastIron.SqlParsing
             return ParseMaybeAliased(t, ParseScalarExpression);
         }
 
-        private SqlSelectFromClauseNode ParseSelectFromClause(SqlTokenizer t)
+        private SqlNode ParseSelectFromClause(SqlTokenizer t)
         {
             // (FROM <join>)?
             if (!t.NextIs(SqlTokenType.Keyword, "FROM"))
                 return null;
-            var from = t.GetNext();
-            var source = ParseJoin(t);
-            return new SqlSelectFromClauseNode
-            {
-                Location = from.Location,
-                Source = source
-            };
+            t.GetNext();
+            return ParseJoin(t);
         }
 
         private SqlNode ParseJoin(SqlTokenizer t)
@@ -335,19 +322,14 @@ namespace CastIron.SqlParsing
             return entry;
         }
 
-        private SqlSelectGroupByNode ParseSelectGroupByClause(SqlTokenizer t)
+        private SqlNode ParseSelectGroupByClause(SqlTokenizer t)
         {
             if (!t.NextIs(SqlTokenType.Keyword, "GROUP"))
                 return null;
-            var groupByToken = t.GetNext();
+            t.GetNext();
             t.Expect(SqlTokenType.Keyword, "BY");
 
-            var groupByNode = new SqlSelectGroupByNode
-            {
-                Location = groupByToken.Location,
-                Keys = ParseList(t, ParseQualifiedIdentifier)
-            };
-            return groupByNode;
+            return ParseList(t, ParseQualifiedIdentifier);
         }
     }
 }
