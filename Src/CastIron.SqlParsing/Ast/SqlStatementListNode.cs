@@ -4,10 +4,12 @@ using CastIron.SqlParsing.Symbols;
 
 namespace CastIron.SqlParsing.Ast
 {
-    public class SqlStatementListNode : SqlNode, ISqlSymbolScopeNode, ICollection<SqlNode>
+    public class SqlStatementListNode : SqlNode, ISqlSymbolScopeNode, IList<SqlNode>
     {
         public List<SqlNode> Statements { get; }
+        public bool UseBeginEnd { get; set; }
         public SymbolTable Symbols { get; set; }
+        
 
         public SqlStatementListNode()
         {
@@ -21,22 +23,38 @@ namespace CastIron.SqlParsing.Ast
 
         public override void ToString(SqlStringifier sb)
         {
+            if (UseBeginEnd)
+            {
+                sb.WriteIndent();
+                sb.AppendLine("BEGIN");
+                sb.IncreaseIndent();
+            }
+
             foreach (var statement in Statements)
             {
+                sb.WriteIndent();
                 statement.ToString(sb);
                 sb.AppendLine(";");
+            }
+
+            if (UseBeginEnd)
+            {
+                sb.DecreaseIndent();
+                sb.WriteIndent();
+                sb.AppendLine("END");
             }
         }
 
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitStatementList(this);
 
-        public SqlStatementListNode Update(List<SqlNode> stmts)
+        public SqlStatementListNode Update(List<SqlNode> stmts, bool isBeginEnd)
         {
-            if (stmts == Statements)
+            if (stmts == Statements && isBeginEnd == UseBeginEnd)
                 return this;
             return new SqlStatementListNode(stmts)
             {
-                Location = Location
+                Location = Location,
+                UseBeginEnd = isBeginEnd
             };
         }
 
@@ -77,5 +95,25 @@ namespace CastIron.SqlParsing.Ast
 
         public int Count => Statements.Count;
         public bool IsReadOnly => false;
+        public int IndexOf(SqlNode item)
+        {
+            return Statements.IndexOf(item);
+        }
+
+        public void Insert(int index, SqlNode item)
+        {
+            Statements.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            Statements.RemoveAt(index);
+        }
+
+        public SqlNode this[int index]
+        {
+            get => Statements[index];
+            set => Statements[index] = value;
+        }
     }
 }

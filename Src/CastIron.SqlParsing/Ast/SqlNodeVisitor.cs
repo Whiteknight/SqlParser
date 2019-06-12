@@ -69,12 +69,21 @@ namespace CastIron.SqlParsing.Ast
 
         public virtual SqlNode VisitIdentifier(SqlIdentifierNode n) => n;
 
+        public virtual SqlNode VisitIf(SqlIfNode n)
+        {
+            var cond = Visit(n.Condition);
+            var then = Visit(n.Then);
+            var e = Visit(n.Else);
+            return n.Update(cond, then, e);
+        }
+
         public virtual SqlNode VisitIn(SqlInNode n)
         {
             var search = Visit(n.Search);
             var items = Visit(n.Items) as SqlListNode<SqlNode>;
             return n.Update(n.Not, search, items);
         }
+
 
         public virtual SqlNode VisitInfixOperation(SqlInfixOperationNode n)
         {
@@ -188,7 +197,7 @@ namespace CastIron.SqlParsing.Ast
         public virtual SqlNode VisitStatementList(SqlStatementListNode n)
         {
             var stmts = VisitTypedNodeList(n.Statements);
-            return n.Update(stmts);
+            return n.Update(stmts, n.UseBeginEnd);
         }
 
         public virtual SqlNode VisitString(SqlStringNode n) => n;

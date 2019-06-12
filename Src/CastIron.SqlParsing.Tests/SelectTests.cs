@@ -330,5 +330,75 @@ namespace CastIron.SqlParsing.Tests
                 }
             );
         }
+
+        [Test]
+        public void Select_TwoStatementsUnseparated()
+        {
+            const string s = "SELECT 'TEST1' SELECT 'TEST2'";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Should().MatchAst(
+                new SqlStatementListNode
+                {
+                    new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            Children = new List<SqlNode>
+                            {
+                                new SqlStringNode("TEST1")
+                            }
+                        }
+                    },
+                    new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            Children = new List<SqlNode>
+                            {
+                                new SqlStringNode("TEST2")
+                            }
+                        }
+                    }
+                }
+            );
+        }
+
+        [Test]
+        public void Select_TwoStatementsSeparated()
+        {
+            const string s = "SELECT 'TEST1'; SELECT 'TEST2'";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Should().MatchAst(
+                new SqlStatementListNode
+                {
+                    new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            Children = new List<SqlNode>
+                            {
+                                new SqlStringNode("TEST1")
+                            }
+                        }
+                    },
+                    new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<SqlNode>
+                        {
+                            Children = new List<SqlNode>
+                            {
+                                new SqlStringNode("TEST2")
+                            }
+                        }
+                    }
+                }
+            );
+        }
     }
 }

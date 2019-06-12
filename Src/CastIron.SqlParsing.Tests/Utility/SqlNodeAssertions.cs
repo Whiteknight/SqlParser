@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CastIron.SqlParsing.Ast;
+using CastIron.SqlParsing.Symbols;
 using CastIron.SqlParsing.Tokenizing;
 using CastIron.SqlParsing.Validation;
 using FluentAssertions;
+using FluentAssertions.Common;
 using FluentAssertions.Primitives;
 
 namespace CastIron.SqlParsing.Tests.Utility
@@ -59,6 +61,10 @@ namespace CastIron.SqlParsing.Tests.Utility
             foreach (var property in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
             {   
                 if (property.Name == nameof(SqlNode.Location) && property.PropertyType == typeof(Location))
+                    continue;
+                if (property.Name == nameof(ISqlSymbolScopeNode.Symbols) && property.PropertyType == typeof(SymbolTable))
+                    continue;
+                if (property.IsIndexer())
                     continue;
 
                 var childPath = path + "/" + property.Name;

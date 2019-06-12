@@ -18,13 +18,13 @@ namespace CastIron.SqlParsing
 
         private SqlStatementListNode ParseStatementList(SqlTokenizer t)
         {
-            // TODO: If we start with "BEGIN" we should expect (and exit on) "END"
             var statements = new SqlStatementListNode();
             while (true)
             {
                 var statement = ParseStatement(t);
+                if (statement == null)
+                    throw ParsingException.CouldNotParseRule(nameof(ParseStatement), t.Peek());
                 statements.Statements.Add(statement);
-                t.NextIs(SqlTokenType.Symbol, ";", true);
                 if (t.Peek().IsType(SqlTokenType.EndOfInput))
                     break;
             }
@@ -32,8 +32,43 @@ namespace CastIron.SqlParsing
             return statements;
         }
 
+        private SqlStatementListNode ParseBeginEndStatementList(SqlTokenizer t)
+        {
+            t.Expect(SqlTokenType.Keyword, "BEGIN");
+            var statements = new SqlStatementListNode {
+                UseBeginEnd = true
+            };
+            while (true)
+            {
+                var lookahead = t.Peek();
+                if (lookahead.IsType(SqlTokenType.EndOfInput))
+                    throw ParsingException.CouldNotParseRule(nameof(ParseBeginEndStatementList), lookahead);
+                if (lookahead.Is(SqlTokenType.Keyword, "END"))
+                {
+                    t.GetNext();
+                    break;
+                }
+
+                var statement = ParseStatement(t);
+                if (statement == null)
+                    throw ParsingException.CouldNotParseRule(nameof(ParseBeginEndStatementList), t.Peek());
+
+                statements.Statements.Add(statement);
+            }
+
+            return statements;
+        }
+
         private SqlNode ParseStatement(SqlTokenizer t)
         {
+            while (t.NextIs(SqlTokenType.Symbol, ";", true)) ;
+            var stmt = ParseUnterminatedStatement(t);
+            t.NextIs(SqlTokenType.Symbol, ";", true);
+            return stmt;
+        }
+
+        private SqlNode ParseUnterminatedStatement(SqlTokenizer t)
+        { 
             t.Skip(SqlTokenType.Whitespace);
             
             var keyword = t.ExpectPeek(SqlTokenType.Keyword);
@@ -51,11 +86,14 @@ namespace CastIron.SqlParsing
                 return ParseDeclare(t);
             if (keyword.Value == "SET")
                 return ParseSet(t);
+            if (keyword.Value == "BEGIN")
+                return ParseBeginEndStatementList(t);
+            if (keyword.Value == "IF")
+                return ParseIf(t);
             
             // TODO: MERGE
-            // TODO: BEGIN/END
             // TODO: CREATE/DROP/ALTER? Do we want to handle DDL statments here?
-            throw ParsingException.CouldNotParseRule(nameof(ParseStatement), keyword);
+            return null;
         }
 
         private TNode ParseMaybeParenthesis<TNode>(SqlTokenizer t, Func<SqlTokenizer, TNode> parse)
