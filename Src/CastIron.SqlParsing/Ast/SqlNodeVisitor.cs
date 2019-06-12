@@ -6,7 +6,7 @@ namespace CastIron.SqlParsing.Ast
     public abstract class SqlNodeVisitor
     {
         // TODO: Some kind of ShouldVisit predicate so certain visitors can choose which trees to navigate
-        public SqlNode Visit(SqlNode n) => n?.Accept(this);
+        public virtual SqlNode Visit(SqlNode n) => n?.Accept(this);
 
         public virtual SqlNode VisitAlias(SqlAliasNode n)
         {
@@ -232,7 +232,7 @@ namespace CastIron.SqlParsing.Ast
 
         public virtual SqlNode VisitVariable(SqlVariableNode n) => n;
 
-        private List<T> VisitTypedNodeList<T>(List<T> list)
+        protected List<T> VisitTypedNodeList<T>(List<T> list)
             where T : SqlNode
         {
             T[] newNodes = null;

@@ -13,29 +13,6 @@ namespace CastIron.SqlParsing.Ast
         public List<SqlCaseWhenNode> WhenExpressions { get; set; }
         public SqlNode ElseExpression { get; set; }
 
-        public override void ToString(SqlStringifier sb)
-        {
-            sb.Append("CASE ");
-            InputExpression.ToString(sb);
-            sb.IncreaseIndent();
-            
-            foreach (var when in WhenExpressions)
-            {
-                sb.AppendLineAndIndent();
-                when.ToString(sb);
-            }
-            if (ElseExpression != null)
-            {
-                sb.AppendLineAndIndent();
-                sb.Append("ELSE ");
-                ElseExpression.ToString(sb);
-            }
-
-            sb.DecreaseIndent();
-            sb.AppendLineAndIndent();
-            sb.Append("END");
-        }
-
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitCase(this);
 
         public SqlCaseNode Update(SqlNode input, List<SqlCaseWhenNode> whens, SqlNode e)
@@ -58,14 +35,6 @@ namespace CastIron.SqlParsing.Ast
         public SqlNode Result { get; set; }
 
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitCaseWhen(this);
-
-        public override void ToString(SqlStringifier sb)
-        {
-            sb.Append("WHEN ");
-            Condition.ToString(sb);
-            sb.Append(" THEN ");
-            Result.ToString(sb);
-        }
 
         public SqlCaseWhenNode Update(SqlNode cond, SqlNode result)
         {

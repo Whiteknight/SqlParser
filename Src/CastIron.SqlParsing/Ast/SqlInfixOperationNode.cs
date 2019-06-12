@@ -8,14 +8,6 @@ namespace CastIron.SqlParsing.Ast
         public SqlOperatorNode Operator { get; set; }
         public SqlNode Right { get; set; }
 
-        private static readonly HashSet<string> _operatorsWithoutParens = new HashSet<string>
-        {
-            "UNION",
-            "UNION ALL",
-            "EXCEPT",
-            "INTERSECT"
-        };
-
         private static readonly HashSet<string> _queryUnionOperators = new HashSet<string>
         {
             "UNION",
@@ -44,32 +36,6 @@ namespace CastIron.SqlParsing.Ast
         {
             "ALL", "ANY", "SOME"
         };
-
-        public override void ToString(SqlStringifier sb)
-        {
-            ToStringChild(Left, sb);
-            if (Operator.Operator == "AND" || Operator.Operator == "OR")
-                sb.AppendLineAndIndent();
-            else
-                sb.Append(" ");
-
-            Operator.ToString(sb);
-            sb.Append(" ");
-            ToStringChild(Right, sb);
-        }
-
-        private void ToStringChild(SqlNode node, SqlStringifier sb)
-        {
-            if (node is SqlInfixOperationNode infx && !_operatorsWithoutParens.Contains(infx.Operator.Operator))
-            {
-                sb.Append("(");
-                node.ToString(sb);
-                sb.Append(")");
-                return;
-            }
-
-            node.ToString(sb);
-        }
 
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitInfixOperation(this);
 

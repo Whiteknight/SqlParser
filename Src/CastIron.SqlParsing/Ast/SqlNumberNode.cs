@@ -21,11 +21,6 @@ namespace CastIron.SqlParsing.Ast
 
         public decimal Value { get; set; }
 
-        public override void ToString(SqlStringifier sb)
-        {
-            sb.Append(Value.ToString());
-        }
-
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitNumber(this);
     }
 }

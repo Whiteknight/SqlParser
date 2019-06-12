@@ -21,13 +21,6 @@ namespace CastIron.SqlParsing.Ast
 
         public string Name { get; set; }
 
-        public override void ToString(SqlStringifier sb)
-        {
-            if (!Name.StartsWith("@"))
-                sb.Append("@");
-            sb.Append(Name);
-        }
-
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitVariable(this);
     }
 }

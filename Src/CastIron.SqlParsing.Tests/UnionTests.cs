@@ -20,6 +20,7 @@ namespace CastIron.SqlParsing.Tests
             var target = new SqlParser();
             var result = target.Parse(new SqlTokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
+            var o1 = result.ToString();
 
             result.Statements.First().Should().MatchAst(
                 new SqlInfixOperationNode

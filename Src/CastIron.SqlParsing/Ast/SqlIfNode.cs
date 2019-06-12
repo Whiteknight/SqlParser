@@ -19,26 +19,5 @@
                 Else = e
             };
         }
-
-        public override void ToString(SqlStringifier sb)
-        {
-            sb.Append("IF (");
-            Condition.ToString(sb);
-            sb.AppendLine(")");
-            sb.IncreaseIndent();
-            sb.WriteIndent();
-            Then.ToString(sb);
-            sb.AppendLine();
-            sb.DecreaseIndent();
-            if (Else != null)
-            {
-                sb.AppendLine("ELSE");
-                sb.IncreaseIndent();
-                sb.WriteIndent();
-                Else.ToString(sb);
-                sb.AppendLine();
-                sb.DecreaseIndent();
-            }
-        }
     }
 }

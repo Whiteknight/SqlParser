@@ -21,13 +21,6 @@ namespace CastIron.SqlParsing.Ast
 
         public string Name { get; set; }
 
-        public override void ToString(SqlStringifier sb)
-        {
-            sb.Append("[");
-            sb.Append(Name);
-            sb.Append("]");
-        }
-
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitIdentifier(this);
     }
 
@@ -45,17 +38,6 @@ namespace CastIron.SqlParsing.Ast
 
         public SqlIdentifierNode Qualifier { get; set; }
         public SqlNode Identifier { get; set; }
-
-        public override void ToString(SqlStringifier sb)
-        {
-            if (Qualifier != null)
-            {
-                Qualifier.ToString(sb);
-                sb.Append(".");
-            }
-
-            Identifier.ToString(sb);
-        }
 
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitQualifiedIdentifier(this);
 
@@ -109,29 +91,6 @@ namespace CastIron.SqlParsing.Ast
         public SqlIdentifierNode Schema { get; set; }
         public SqlIdentifierNode Name { get; set; }
 
-        public override void ToString(SqlStringifier sb)
-        {
-            if (Server != null)
-            {
-                Server.ToString(sb);
-                sb.Append(".");
-            }
-
-            if (Database != null)
-            {
-                Database.ToString(sb);
-                sb.Append(".");
-            }
-
-            if (Schema != null)
-            {
-                Schema.ToString(sb);
-                sb.Append(".");
-            }
-
-            Name.ToString(sb);
-        }
-
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitObjectIdentifier(this);
 
         public SqlObjectIdentifierNode Update(SqlIdentifierNode server, SqlIdentifierNode db, SqlIdentifierNode schema, SqlIdentifierNode name)
@@ -146,7 +105,6 @@ namespace CastIron.SqlParsing.Ast
                 Schema = schema,
                 Name = name
             };
-
         }
     }
 }

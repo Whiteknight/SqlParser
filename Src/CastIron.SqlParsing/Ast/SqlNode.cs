@@ -7,12 +7,11 @@ namespace CastIron.SqlParsing.Ast
     {
         public abstract SqlNode Accept(SqlNodeVisitor visitor);
 
-        public abstract void ToString(SqlStringifier sb);
-
         public override string ToString()
         {
             var sb = new StringBuilder();
-            ToString(new SqlStringifier(sb));
+            var visitor = new SqlStringifyVisitor(sb);
+            visitor.Visit(this);
             return sb.ToString();
         }
 

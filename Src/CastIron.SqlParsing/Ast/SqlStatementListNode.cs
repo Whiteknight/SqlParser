@@ -21,30 +21,6 @@ namespace CastIron.SqlParsing.Ast
             Statements = statements ?? new List<SqlNode>();
         }
 
-        public override void ToString(SqlStringifier sb)
-        {
-            if (UseBeginEnd)
-            {
-                sb.WriteIndent();
-                sb.AppendLine("BEGIN");
-                sb.IncreaseIndent();
-            }
-
-            foreach (var statement in Statements)
-            {
-                sb.WriteIndent();
-                statement.ToString(sb);
-                sb.AppendLine(";");
-            }
-
-            if (UseBeginEnd)
-            {
-                sb.DecreaseIndent();
-                sb.WriteIndent();
-                sb.AppendLine("END");
-            }
-        }
-
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitStatementList(this);
 
         public SqlStatementListNode Update(List<SqlNode> stmts, bool isBeginEnd)

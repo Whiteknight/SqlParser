@@ -6,17 +6,6 @@
         public bool Percent { get; set; }
         public bool WithTies { get; set; }
 
-        public override void ToString(SqlStringifier sb)
-        {
-            sb.Append("TOP (");
-            Value.ToString(sb);
-            sb.Append(")");
-            if (Percent)
-                sb.Append(" PERCENT");
-            if (WithTies)
-                sb.Append(" WITH TIES");
-        }
-
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitTop(this);
 
         public SqlSelectTopNode Update(SqlNode value, bool percent, bool withTies)

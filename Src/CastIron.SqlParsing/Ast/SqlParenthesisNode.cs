@@ -15,17 +15,6 @@
 
         public TNode Expression { get; set; }
 
-        public override void ToString(SqlStringifier sb)
-        {
-            sb.AppendLine("(");
-            sb.IncreaseIndent();
-            sb.WriteIndent();
-            Expression?.ToString(sb);
-            sb.DecreaseIndent();
-            sb.AppendLineAndIndent();
-            sb.Append(")");
-        }
-
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitParenthesis(this);
 
         public SqlParenthesisNode<TNode> Update(TNode expr)

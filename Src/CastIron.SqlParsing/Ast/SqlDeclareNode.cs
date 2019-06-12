@@ -9,20 +9,6 @@
 
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitDeclare(this);
 
-
-        public override void ToString(SqlStringifier sb)
-        {
-            sb.Append("DECLARE ");
-            Variable.ToString(sb);
-            sb.Append(" ");
-            DataType.ToString(sb);
-            if (Initializer != null)
-            {
-                sb.Append(" = ");
-                Initializer.ToString(sb);
-            }
-        }
-
         public SqlDeclareNode Update(SqlVariableNode v, SqlNode dataType, SqlNode init)
         {
             if (v == Variable && dataType == DataType && init == Initializer)

@@ -21,11 +21,6 @@ namespace CastIron.SqlParsing.Ast
 
         public string Keyword { get; set; }
 
-        public override void ToString(SqlStringifier sb)
-        {
-            sb.Append(Keyword);
-        }
-
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitKeyword(this);
     }
 }

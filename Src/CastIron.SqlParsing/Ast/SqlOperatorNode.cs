@@ -27,11 +27,6 @@ namespace CastIron.SqlParsing.Ast
 
         public string Operator { get; set; }
 
-        public override void ToString(SqlStringifier sb)
-        {
-            sb.Append(Operator);
-        }
-
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitOperator(this);
     }
 }

@@ -8,22 +8,6 @@ namespace CastIron.SqlParsing.Ast
         public SqlNode WhereClause { get; set; }
         public SymbolTable Symbols { get; set; }
 
-        public override void ToString(SqlStringifier sb)
-        {
-            sb.Append("DELETE FROM ");
-            Source.ToString(sb);
-            sb.Append(" ");
-            if (WhereClause != null)
-            {
-                sb.AppendLineAndIndent();
-                sb.AppendLine("WHERE");
-                sb.IncreaseIndent();
-                sb.WriteIndent();
-                WhereClause.ToString(sb);
-                sb.DecreaseIndent();
-            }
-        }
-
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitDelete(this);
 
         public SqlDeleteNode Update(SqlNode source, SqlNode where)

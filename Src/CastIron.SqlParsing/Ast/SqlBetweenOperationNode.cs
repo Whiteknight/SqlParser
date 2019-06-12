@@ -7,17 +7,6 @@
         public SqlNode Low { get; set; }
         public SqlNode High { get; set; }
 
-        public override void ToString(SqlStringifier sb)
-        {
-            Left.ToString(sb);
-            if (Not)
-                sb.Append(" NOT");
-            sb.Append(" BETWEEN ");
-            Low.ToString(sb);
-            sb.Append(" AND ");
-            High.ToString(sb);
-        }
-
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitBetween(this);
 
         public SqlBetweenOperationNode Update(bool not, SqlNode left, SqlNode low, SqlNode high)

@@ -13,11 +13,6 @@ namespace CastIron.SqlParsing.Ast
             Location = t.Location;
         }
 
-        public override void ToString(SqlStringifier sb)
-        {
-            sb.Append("NULL");
-        }
-
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitNull(this);
     }
 }

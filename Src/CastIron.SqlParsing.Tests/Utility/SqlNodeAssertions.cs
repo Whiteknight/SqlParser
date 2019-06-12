@@ -33,15 +33,19 @@ namespace CastIron.SqlParsing.Tests.Utility
         public AndConstraint<SqlNodeAssertions> RoundTrip()
         {
             var asString = Subject.ToString();
-            var roundTripped = new SqlParser().Parse(asString);
+            SqlNode roundTripped = null;
             try
             {
+                roundTripped = new SqlParser().Parse(asString);
                 AssertMatchAst(Subject, roundTripped, "ROUNDTRIP");
                 return new AndConstraint<SqlNodeAssertions>(this);
             }
             catch (Exception e)
             {
-                throw new Exception("Expected\n" + asString + "\n\nBut got\n" + roundTripped.ToString(), e);
+                var message = "Expected\n" + asString;
+                if (roundTripped != null)
+                    message += "\n\nBut got\n" + roundTripped.ToString();
+                throw new Exception(message, e);
             }
         }
 

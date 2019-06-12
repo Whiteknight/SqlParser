@@ -55,6 +55,7 @@ namespace CastIron.SqlParsing
             var setToken = t.Expect(SqlTokenType.Keyword, "SET");
             var v = t.Expect(SqlTokenType.Variable);
             t.Expect(SqlTokenType.Symbol, "=");
+            // TODO: SET @var = (SELECT ...)
             var expr = ParseScalarExpression(t);
 
             return new SqlSetNode
