@@ -169,10 +169,17 @@ namespace CastIron.SqlParsing
 
             if (next.IsSymbol("("))
             {
-                t.GetNext();
-                var value = ParseScalarExpression(t);
-                t.Expect(SqlTokenType.Symbol, ")");
-                return value;
+                // "(" (<QueryExpression> | <ScalarExpression>) ")"
+                // e.g. SET @x = (select 5) or INSERT INTO x(num) VALUES (1, 2, (select 3))
+                var value = ParseParenthesis(t, x =>
+                {
+                    if (x.Peek().IsKeyword("SELECT"))
+                        return ParseQueryExpression(t);
+                    return ParseScalarExpression(t);
+                });
+                if (value.Expression is SqlSelectNode)
+                    return value;
+                return value.Expression;
             }
 
             throw ParsingException.CouldNotParseRule(nameof(ParseScalarExpression0), next);

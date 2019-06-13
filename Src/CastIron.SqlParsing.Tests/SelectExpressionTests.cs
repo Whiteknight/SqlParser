@@ -176,5 +176,33 @@ namespace CastIron.SqlParsing.Tests
                 }
             );
         }
+
+        [Test]
+        public void Select_SelectExpression()
+        {
+            const string s = "SELECT (SELECT 5)";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlParenthesisNode<SqlNode>
+                        {
+                            Expression = new SqlSelectNode
+                            {
+                                Columns = new SqlListNode<SqlNode>
+                                {
+                                    new SqlNumberNode(5)
+                                }
+                            }
+                        }
+                    }
+                }
+            );
+        }
     }
 }
