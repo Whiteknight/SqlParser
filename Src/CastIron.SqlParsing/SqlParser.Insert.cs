@@ -7,6 +7,7 @@ namespace CastIron.SqlParsing
     {
         private SqlNode ParseInsertStatement(SqlTokenizer t)
         {
+            // "INSERT" "INTO" <ObjectIdOrVariable> "(" <ColumnList> ")" <ValuesOrSelect>
             var insertToken = t.Expect(SqlTokenType.Keyword, "INSERT");
             t.Expect(SqlTokenType.Keyword, "INTO");
 
@@ -36,6 +37,7 @@ namespace CastIron.SqlParsing
 
         private SqlNode ParseInsertValues(SqlTokenizer t)
         {
+            // "VALUES" "(" <ValueList> ")" ("," "(" <ValueList> ")")*
             var valuesToken = t.Expect(SqlTokenType.Keyword, "VALUES");
             return new SqlInsertValuesNode
             {

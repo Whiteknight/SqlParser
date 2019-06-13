@@ -7,6 +7,7 @@ namespace CastIron.SqlParsing
     {
         private SqlNode ParseCaseExpression(SqlTokenizer t)
         {
+            // "CASE" <Expression> <When>+ <Else>? "END"
             var caseToken = t.Expect(SqlTokenType.Keyword, "CASE");
             var caseNode = new SqlCaseNode
             {
@@ -49,6 +50,7 @@ namespace CastIron.SqlParsing
 
         private SqlNode ParseScalarExpression(SqlTokenizer t)
         {
+            // Top-level expression parsing method, redirects to the appropriate precidence level
             return ParseScalarExpression4(t);
         }
 

@@ -7,6 +7,7 @@ namespace CastIron.SqlParsing
     {
         private SqlDeclareNode ParseDeclare(SqlTokenizer t)
         {
+            // "DECLARE" <variable> <DataType> ("=" <Expression>)?
             var declare = t.Expect(SqlTokenType.Keyword, "DECLARE");
             var v = t.Expect(SqlTokenType.Variable);
             // TODO: Improve data type parsing
@@ -24,6 +25,7 @@ namespace CastIron.SqlParsing
 
         private SqlNode ParseDataType(SqlTokenizer t)
         {
+            // <Keyword> ("(" ("MAX" | <SizeList>)? ")")?
             var next = t.GetNext();
 
             // TODO: Should we add TABLE declaration parsing?
@@ -52,6 +54,7 @@ namespace CastIron.SqlParsing
 
         private SqlSetNode ParseSet(SqlTokenizer t)
         {
+            // "SET" <variable> "=" <Expression>
             var setToken = t.Expect(SqlTokenType.Keyword, "SET");
             var v = t.Expect(SqlTokenType.Variable);
             t.Expect(SqlTokenType.Symbol, "=");

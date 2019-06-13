@@ -46,14 +46,16 @@ namespace CastIron.SqlParsing
             selectNode.Columns = ParseList(t, ParseSelectColumn);
             selectNode.FromClause = ParseSelectFromClause(t);
             selectNode.WhereClause = ParseWhereClause(t);
-            selectNode.OrderByClause = ParseSelectOrderByClause(t);
             selectNode.GroupByClause = ParseSelectGroupByClause(t);
             selectNode.HavingClause = ParseSelectHavingClause(t);
+            selectNode.OrderByClause = ParseSelectOrderByClause(t);
+            // TODO: MySql-style LIMIT clause
             return selectNode;
         }
 
         private SqlNode ParseWhereClause(SqlTokenizer t)
         {
+            // "WHERE" <BooleanExpression>
             if (!t.NextIs(SqlTokenType.Keyword, "WHERE"))
                 return null;
 
@@ -63,6 +65,7 @@ namespace CastIron.SqlParsing
 
         private SqlNode ParseSelectHavingClause(SqlTokenizer t)
         {
+            // "HAVING" <BooleanExpression>
             if (!t.NextIs(SqlTokenType.Keyword, "HAVING"))
                 return null;
 
@@ -131,7 +134,7 @@ namespace CastIron.SqlParsing
 
         private SqlNode ParseSelectFromClause(SqlTokenizer t)
         {
-            // (FROM <join>)?
+            // ("FROM" <join>)?
             if (!t.NextIs(SqlTokenType.Keyword, "FROM"))
                 return null;
             t.GetNext();
@@ -170,7 +173,7 @@ namespace CastIron.SqlParsing
         private SqlOperatorNode ParseJoinOperator(SqlTokenizer t)
         {
             // "CROSS" ("APPLY" | "JOIN")
-            //  "NATURAL" "JOIN"
+            // "NATURAL" "JOIN"
             // "INNER" "JOIN"
             // ("LEFT" | "RIGHT")?  "OUTER"? "JOIN"
             
@@ -262,6 +265,7 @@ namespace CastIron.SqlParsing
 
         private SqlSelectOrderByClauseNode ParseSelectOrderByClause(SqlTokenizer t)
         {
+            // "ORDER" "BY" <OrderTerm>+ ("OFFSET" <NumberOrVariable> "ROWS")? ("FETCH" "NEXT" <NumberOrVariable> "ROWS" "ONLY")?
             if (!t.NextIs(SqlTokenType.Keyword, "ORDER"))
                 return null;
 
@@ -324,6 +328,7 @@ namespace CastIron.SqlParsing
 
         private SqlNode ParseSelectGroupByClause(SqlTokenizer t)
         {
+            // "GROUP" "BY" <IdentifierList>
             if (!t.NextIs(SqlTokenType.Keyword, "GROUP"))
                 return null;
             t.GetNext();
