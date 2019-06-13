@@ -12,7 +12,8 @@ namespace CastIron.SqlParsing.Ast
         {
             var source = Visit(n.Source);
             var alias = Visit(n.Alias) as SqlIdentifierNode;
-            return n.Update(source, alias);
+            var columns = Visit(n.ColumnNames) as SqlListNode<SqlIdentifierNode>;
+            return n.Update(source, alias, columns);
         }
 
         public virtual SqlNode VisitBetween(SqlBetweenOperationNode n)
@@ -101,7 +102,7 @@ namespace CastIron.SqlParsing.Ast
             return n.Update(table, columns, source);
         }
 
-        public virtual SqlNode VisitInsertValues(SqlInsertValuesNode n)
+        public virtual SqlNode VisitValues(SqlValuesNode n)
         {
             var values = Visit(n.Values) as SqlListNode<SqlListNode<SqlNode>>;
             return n.Update(values);
@@ -210,16 +211,17 @@ namespace CastIron.SqlParsing.Ast
 
         public virtual SqlNode VisitWith(SqlWithNode n)
         {
-            var ctes = Visit(n.Ctes) as SqlListNode<SqlCteNode>;
+            var ctes = Visit(n.Ctes) as SqlListNode<SqlWithCteNode>;
             var stmt = Visit(n.Statement);
             return n.Update(ctes, stmt);
         }
 
-        public virtual SqlNode VisitCte(SqlCteNode n)
+        public virtual SqlNode VisitWithCte(SqlWithCteNode n)
         {
             var name = Visit(n.Name) as SqlIdentifierNode;
+            var columns = Visit(n.ColumnNames) as SqlListNode<SqlIdentifierNode>;
             var select = Visit(n.Name);
-            return n.Update(name, select);
+            return n.Update(name, columns, select);
         }
 
         public virtual SqlNode VisitUpdate(SqlUpdateNode n)

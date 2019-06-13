@@ -141,7 +141,7 @@ namespace CastIron.SqlParsing
             };
         }
 
-        private SqlNode ParseMaybeAliased(SqlTokenizer t, Func<SqlTokenizer, SqlNode> parse)
+        private SqlNode ParseMaybeAliasedScalar(SqlTokenizer t, Func<SqlTokenizer, SqlNode> parse)
         {
             var node = parse(t);
 
@@ -169,6 +169,38 @@ namespace CastIron.SqlParsing
             }
 
             return node;
+        }
+
+        private SqlNode ParseMaybeAliasedTable(SqlTokenizer t, Func<SqlTokenizer, SqlNode> parse)
+        {
+            var node = parse(t);
+
+            var next = t.Peek();
+            SqlToken aliasToken = null;
+            Location location = null;
+            if (next.IsKeyword("AS"))
+            {
+                location = t.GetNext().Location;
+                aliasToken = t.Expect(SqlTokenType.Identifier);
+            }
+            else if (next.IsType(SqlTokenType.Identifier))
+                aliasToken = t.GetNext();
+
+            if (aliasToken == null)
+                return node;
+
+            var alias = new SqlAliasNode
+            {
+                Location = location ?? aliasToken.Location,
+                Source = node,
+                Alias = new SqlIdentifierNode(aliasToken)
+            };
+
+
+            if (t.Peek().IsSymbol("("))
+                alias.ColumnNames = ParseParenthesis(t, x => ParseList(x, ParseIdentifier)).Expression;
+
+            return alias;
         }
 
         private SqlStringNode ParseString(SqlTokenizer t)

@@ -27,7 +27,7 @@ namespace CastIron.SqlParsing.Tests
                         new SqlIdentifierNode("Column1"),
                         new SqlIdentifierNode("Column2")
                     },
-                    Source = new SqlInsertValuesNode
+                    Source = new SqlValuesNode
                     {
                         Values = new SqlListNode<SqlListNode<SqlNode>>
                         {
@@ -60,7 +60,7 @@ namespace CastIron.SqlParsing.Tests
                         new SqlIdentifierNode("Column1"),
                         new SqlIdentifierNode("Column2")
                     },
-                    Source = new SqlInsertValuesNode
+                    Source = new SqlValuesNode
                     {
                         Values = new SqlListNode<SqlListNode<SqlNode>>
                         {

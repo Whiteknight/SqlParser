@@ -129,7 +129,7 @@ namespace CastIron.SqlParsing
             t.PutBack(next);
 
             // <SelectColumnExpression> (AS <Alias>)?
-            return ParseMaybeAliased(t, ParseScalarExpression);
+            return ParseMaybeAliasedScalar(t, ParseScalarExpression);
         }
 
         private SqlNode ParseSelectFromClause(SqlTokenizer t)
@@ -145,12 +145,12 @@ namespace CastIron.SqlParsing
         {
             // <TableExpression> (<JoinOperator> <TableExpression> "ON" <JoinCondition>)?
             // TODO: <TableExpression> ("WITH" <Hint>)?
-            var tableExpression1 = ParseMaybeAliased(t, ParseTableOrSubexpression);
+            var tableExpression1 = ParseMaybeAliasedTable(t, ParseTableOrSubexpression);
 
             var join = ParseJoinOperator(t);
             if (join == null)
                 return tableExpression1;
-            var tableExpression2 = ParseMaybeAliased(t, ParseTableOrSubexpression);
+            var tableExpression2 = ParseMaybeAliasedTable(t, ParseTableOrSubexpression);
 
             SqlNode condition = null;
             if (join.Operator != "NATURAL JOIN")
@@ -234,33 +234,37 @@ namespace CastIron.SqlParsing
 
         private SqlNode ParseTableOrSubexpression(SqlTokenizer t)
         {
-            // TODO: select * from (VALUES (1), (2), (3)) x(id)
-            // <QualifiedIdentifier> | <tableVariable> | "(" <Subexpression> ")"
+            // <ObjectIdentifier> | <tableVariable> | "(" <QueryExpression> ")" | "(" <ValuesExpression> ")"
+            var lookahead = t.Peek();
 
-            if (t.Peek().IsType(SqlTokenType.Identifier))
+            // <ObjectIdentifier>
+            if (lookahead.IsType(SqlTokenType.Identifier))
                 return ParseObjectIdentifier(t);
 
-            var next = t.GetNext();
-
             // <tableVariable>
-
-            if (next.IsType(SqlTokenType.Variable))
-                return new SqlVariableNode(next);
+            if (lookahead.IsType(SqlTokenType.Variable))
+                return new SqlVariableNode(t.GetNext());
 
             // "(" <Subexpression> ")"
-            if (next.Is(SqlTokenType.Symbol, "("))
-            {
-                var expr = ParseQueryExpression(t);
-                var subexpression = new SqlParenthesisNode<SqlNode>
-                {
-                    Location = expr.Location,
-                    Expression = expr
-                };
-                t.Expect(SqlTokenType.Symbol, ")");
-                return subexpression;
-            }
+            if (lookahead.Is(SqlTokenType.Symbol, "("))
+                return ParseParenthesis(t, ParseSubexpression);
 
-            throw ParsingException.CouldNotParseRule(nameof(ParseTableOrSubexpression), next);
+            throw ParsingException.CouldNotParseRule(nameof(ParseTableOrSubexpression), lookahead);
+        }
+
+        private SqlNode ParseSubexpression(SqlTokenizer t)
+        {
+            // <QueryExpresion> | <Values>
+            var lookahead = t.Peek();
+            SqlNode expr = null;
+            if (lookahead.IsKeyword("SELECT"))
+                expr = ParseQueryExpression(t);
+            else if (lookahead.IsKeyword("VALUES"))
+                expr = ParseValues(t);
+            if (expr != null)
+                return expr;
+
+            throw ParsingException.CouldNotParseRule(nameof(ParseSubexpression), lookahead);
         }
 
         private SqlSelectOrderByClauseNode ParseSelectOrderByClause(SqlTokenizer t)

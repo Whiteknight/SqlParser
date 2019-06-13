@@ -33,10 +33,10 @@ namespace CastIron.SqlParsing.Symbols
             return base.VisitAlias(n);
         }
 
-        public override SqlNode VisitCte(SqlCteNode n)
+        public override SqlNode VisitWithCte(SqlWithCteNode n)
         {
             Current.AddSymbol(n.Name.Name, new SymbolInfo { DataType = "TableExpression", DefinedAt = n.Location });
-            return base.VisitCte(n);
+            return base.VisitWithCte(n);
         }
 
         public override SqlNode VisitDeclare(SqlDeclareNode n)

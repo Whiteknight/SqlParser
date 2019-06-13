@@ -125,9 +125,9 @@ namespace CastIron.SqlParsing.Validation
             return base.VisitInsert(n);
         }
 
-        public override SqlNode VisitInsertValues(SqlInsertValuesNode n)
+        public override SqlNode VisitValues(SqlValuesNode n)
         {
-            return base.VisitInsertValues(n);
+            return base.VisitValues(n);
         }
 
         public override SqlJoinNode VisitJoin(SqlJoinNode n)
@@ -187,6 +187,7 @@ namespace CastIron.SqlParsing.Validation
 
         public override SqlNode VisitSelect(SqlSelectNode n)
         {
+            // TODO: If the FROM clause contains a VALUES expression, it MUST be aliased and have ColumnNames
             return base.VisitSelect(n);
         }
 
@@ -210,9 +211,9 @@ namespace CastIron.SqlParsing.Validation
             return base.VisitWith(n);
         }
 
-        public override SqlNode VisitCte(SqlCteNode n)
+        public override SqlNode VisitWithCte(SqlWithCteNode n)
         {
-            return base.VisitCte(n);
+            return base.VisitWithCte(n);
         }
 
         public override SqlNode VisitUpdate(SqlUpdateNode n)

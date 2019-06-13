@@ -10,7 +10,7 @@ namespace CastIron.SqlParsing
             // "UPDATE" <TopClause>? "SET" <SetList> <WhereClause>?
             var updateToken = t.Expect(SqlTokenType.Keyword, "UPDATE");
             // TODO: TOP clause
-            var table = ParseMaybeAliased(t, ParseVariableOrObjectIdentifier);
+            var table = ParseMaybeAliasedScalar(t, ParseVariableOrObjectIdentifier);
             t.Expect(SqlTokenType.Keyword, "SET");
             var setList = ParseList(t, ParseUpdateColumnAssignExpression);
             // TODO: OUTPUT clause

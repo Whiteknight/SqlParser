@@ -16,18 +16,23 @@ namespace CastIron.SqlParsing
             return with;
         }
 
-        private SqlCteNode ParseCte(SqlTokenizer t)
+        private SqlWithCteNode ParseCte(SqlTokenizer t)
         {
-            // <identifier> ("(" <columnList> ")")? "AS"? "(" <SelectStatement> ")"
+            // <identifier> ("(" <columnList> ")")? "AS" "(" <SelectStatement> ")"
             var name = t.Expect(SqlTokenType.Identifier);
-            // TODO: ColumnList
-            t.NextIs(SqlTokenType.Keyword, "AS", true);
-            var selectStatement = ParseParenthesis(t, ParseQueryExpression).Expression;
-            return new SqlCteNode
+            var cteNode = new SqlWithCteNode
             {
-                Name = new SqlIdentifierNode { Name = name.Value },
-                Select = selectStatement
+                Location = name.Location,
+                Name = new SqlIdentifierNode(name)
             };
+
+            var lookahead = t.Peek();
+            if (lookahead.IsSymbol("("))
+                cteNode.ColumnNames = ParseParenthesis(t, x => ParseList(x, ParseIdentifier)).Expression;
+
+            t.Expect(SqlTokenType.Keyword, "AS");
+            cteNode.Select = ParseParenthesis(t, ParseQueryExpression).Expression;
+            return cteNode;
         }
     }
 }

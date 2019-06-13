@@ -193,6 +193,41 @@ namespace CastIron.SqlParsing.Tests
         }
 
         [Test]
+        public void Select_TableAliasColumnNames()
+        {
+            const string s = "SELECT t1.* FROM MyTable AS t1(ColumnA);";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        Children = new List<SqlNode>
+                        {
+                            new SqlQualifiedIdentifierNode
+                            {
+                                Qualifier = new SqlIdentifierNode("t1"),
+                                Identifier = new SqlOperatorNode("*")
+                            }
+                        }
+                    },
+                    FromClause = new SqlAliasNode
+                    {
+                        Alias = new SqlIdentifierNode("t1"),
+                        Source = new SqlObjectIdentifierNode("MyTable"),
+                        ColumnNames = new SqlListNode<SqlIdentifierNode>
+                        {
+                            new SqlIdentifierNode("ColumnA")
+                        }
+                    }
+                }
+            );
+        }
+
+        [Test]
         public void Select_TableAliasColumn()
         {
             const string s = "SELECT t1.MyColumn FROM MyTable AS t1;";
@@ -329,6 +364,106 @@ namespace CastIron.SqlParsing.Tests
                             }
                         },
                         Alias = new SqlIdentifierNode("t1")
+                    }
+                }
+            );
+        }
+
+        [Test]
+        public void Select_TableExpressionColumnNames()
+        {
+            const string s = @"
+                SELECT 
+                    t1.* 
+                    FROM 
+                        (SELECT * FROM MyTable) AS t1(ColumnA);";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().PassValidation().And.RoundTrip();
+            var output = result.ToString();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlQualifiedIdentifierNode
+                        {
+                            Qualifier = new SqlIdentifierNode("t1"),
+                            Identifier = new SqlOperatorNode("*")
+                        }
+                    },
+                    FromClause = new SqlAliasNode
+                    {
+                        Source = new SqlParenthesisNode<SqlNode>
+                        {
+                            Expression = new SqlSelectNode
+                            {
+                                Columns = new SqlListNode<SqlNode>
+                                {
+                                    new SqlOperatorNode("*")
+                                },
+                                FromClause = new SqlObjectIdentifierNode("MyTable")
+                            }
+                        },
+                        Alias = new SqlIdentifierNode("t1"),
+                        ColumnNames = new SqlListNode<SqlIdentifierNode>
+                        {
+                            new SqlIdentifierNode("ColumnA")
+                        }
+                    }
+                }
+            );
+        }
+
+        [Test]
+        public void Select_ValuesExpression()
+        {
+            const string s = @"
+                SELECT 
+                    t1.* 
+                    FROM 
+                        (VALUES (1), (2)) AS t1(ColumnA);";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().PassValidation().And.RoundTrip();
+            var output = result.ToString();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlQualifiedIdentifierNode
+                        {
+                            Qualifier = new SqlIdentifierNode("t1"),
+                            Identifier = new SqlOperatorNode("*")
+                        }
+                    },
+                    FromClause = new SqlAliasNode
+                    {
+                        Source = new SqlParenthesisNode<SqlNode>
+                        {
+                            Expression = new SqlValuesNode
+                            {
+                                Values = new SqlListNode<SqlListNode<SqlNode>>
+                                {
+                                    new SqlListNode<SqlNode>
+                                    {
+                                        new SqlNumberNode(1)
+                                    },
+                                    new SqlListNode<SqlNode>
+                                    {
+                                        new SqlNumberNode(2)
+                                    }
+                                }
+                            }
+                        },
+                        Alias = new SqlIdentifierNode("t1"),
+                        ColumnNames = new SqlListNode<SqlIdentifierNode>
+                        {
+                            new SqlIdentifierNode("ColumnA")
+                        }
                     }
                 }
             );

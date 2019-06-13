@@ -36,6 +36,12 @@ namespace CastIron.SqlParsing.Ast
             Visit(n.Source);
             Append(" AS ");
             Visit(n.Alias);
+            if (n.ColumnNames != null && n.ColumnNames.Any())
+            {
+                Append("(");
+                Visit(n.ColumnNames);
+                Append(")");
+            }
             return n;
         }
 
@@ -240,7 +246,7 @@ namespace CastIron.SqlParsing.Ast
             return n;
         }
 
-        public override SqlNode VisitInsertValues(SqlInsertValuesNode n)
+        public override SqlNode VisitValues(SqlValuesNode n)
         {
             void forEach(SqlListNode<SqlNode> child)
             {
@@ -553,9 +559,15 @@ namespace CastIron.SqlParsing.Ast
             return n;
         }
 
-        public override SqlNode VisitCte(SqlCteNode n)
+        public override SqlNode VisitWithCte(SqlWithCteNode n)
         {
             Visit(n.Name);
+            if (n.ColumnNames != null && n.ColumnNames.Any())
+            {
+                Append("(");
+                Visit(n.ColumnNames);
+                Append(")");
+            }
             Append(" AS (");
             IncreaseIndent();
             AppendLineAndIndent();

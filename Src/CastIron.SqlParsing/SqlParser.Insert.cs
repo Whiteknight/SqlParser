@@ -22,7 +22,7 @@ namespace CastIron.SqlParsing
 
             var next = t.Peek();
             if (next.IsKeyword("VALUES"))
-                insertNode.Source = ParseInsertValues(t);
+                insertNode.Source = ParseValues(t);
             else if (next.IsKeyword("SELECT"))
                 insertNode.Source = ParseQueryExpression(t);
             else if (next.IsKeyword("DEFAULT"))
@@ -35,11 +35,11 @@ namespace CastIron.SqlParsing
             return insertNode;
         }
 
-        private SqlNode ParseInsertValues(SqlTokenizer t)
+        private SqlNode ParseValues(SqlTokenizer t)
         {
             // "VALUES" "(" <ValueList> ")" ("," "(" <ValueList> ")")*
             var valuesToken = t.Expect(SqlTokenType.Keyword, "VALUES");
-            return new SqlInsertValuesNode
+            return new SqlValuesNode
             {
                 Location = valuesToken.Location,
                 Values = ParseList(t, a => ParseParenthesis(a, b => ParseList(b, ParseVariableOrConstant)).Expression)

@@ -24,22 +24,4 @@ namespace CastIron.SqlParsing.Ast
             };
         }
     }
-
-    public class SqlInsertValuesNode : SqlNode
-    {
-        public SqlListNode<SqlListNode<SqlNode>> Values { get; set; }
-
-        public SqlInsertValuesNode Update(SqlListNode<SqlListNode<SqlNode>> values)
-        {
-            if (values == Values)
-                return this;
-            return new SqlInsertValuesNode
-            {
-                Location = Location,
-                Values = values
-            };
-        }
-
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitInsertValues(this);
-    }
 }
