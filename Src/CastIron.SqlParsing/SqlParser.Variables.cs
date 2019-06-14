@@ -23,7 +23,7 @@ namespace CastIron.SqlParsing
             return declareNode;
         }
 
-        private SqlNode ParseDataType(SqlTokenizer t)
+        private SqlDataTypeNode ParseDataType(SqlTokenizer t)
         {
             // <Keyword> ("(" ("MAX" | <SizeList>)? ")")?
             var next = t.GetNext();

@@ -51,11 +51,11 @@ namespace CastIron.SqlParsing.Validation
             else if (n.Size is SqlKeywordNode isMax)
                 _result.AssertIsValue(n, nameof(n.Size), isMax.Keyword, "MAX");
             else if (n.Size is SqlNumberNode asNumber)
-                _result.AssertIsPositiveNumber(n, nameof(n.Size), asNumber.Value);
+                _result.AssertIsPositiveNumber(n, nameof(n.Size), asNumber.Numeric);
             else if (n.Size is SqlListNode<SqlNumberNode> asList)
             {
                 _result.AssertIsNotEmpty(n, nameof(n.Size), asList);
-                asList.Select((i, x) => _result.AssertIsPositiveNumber(asList, x.ToString(), i.Value)).All(x => x);
+                asList.Select((i, x) => _result.AssertIsPositiveNumber(asList, x.ToString(), i.Numeric)).All(x => x);
             }
             else
                 _result.UnexpectedNodeType(n, nameof(n.Size), n.Size);
@@ -187,6 +187,7 @@ namespace CastIron.SqlParsing.Validation
 
         public override SqlNode VisitSelect(SqlSelectNode n)
         {
+            // TODO: If the FROM clause contains a SELECT or values subquery, it MUST be in a parenthesis node
             // TODO: If the FROM clause contains a VALUES expression, it MUST be aliased and have ColumnNames
             return base.VisitSelect(n);
         }

@@ -204,5 +204,91 @@ namespace CastIron.SqlParsing.Tests
                 }
             );
         }
+
+        [Test]
+        public void Select_CastVarcharMax()
+        {
+            const string s = "SELECT CAST(5 AS VARCHAR(MAX))";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlCastNode
+                        {
+                            Expression = new SqlNumberNode(5),
+                            DataType = new SqlDataTypeNode
+                            {
+                                DataType = new SqlKeywordNode("VARCHAR"),
+                                Size = new SqlKeywordNode("MAX")
+                            }
+                        }
+                    }
+                }
+            );
+        }
+
+        [Test]
+        public void Select_CastVarcharNumber()
+        {
+            const string s = "SELECT CAST(5 AS VARCHAR(3))";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlCastNode
+                        {
+                            Expression = new SqlNumberNode(5),
+                            DataType = new SqlDataTypeNode
+                            {
+                                DataType = new SqlKeywordNode("VARCHAR"),
+                                Size = new SqlListNode<SqlNumberNode> {
+                                    new SqlNumberNode(3),
+                                }
+                            }
+                        }
+                    }
+                }
+            );
+        }
+
+        [Test]
+        public void Select_CastNumericPS()
+        {
+            const string s = "SELECT CAST(5 AS NUMERIC(10, 5))";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlCastNode
+                        {
+                            Expression = new SqlNumberNode(5),
+                            DataType = new SqlDataTypeNode
+                            {
+                                DataType = new SqlKeywordNode("NUMERIC"),
+                                Size = new SqlListNode<SqlNumberNode> {
+                                    new SqlNumberNode(10),
+                                    new SqlNumberNode(5)
+                                }
+                            }
+                        }
+                    }
+                }
+            );
+        }
     }
 }

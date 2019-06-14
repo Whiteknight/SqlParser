@@ -90,6 +90,16 @@ namespace CastIron.SqlParsing.Ast
             return n;
         }
 
+        public override SqlNode VisitCast(SqlCastNode n)
+        {
+            Append("CAST(");
+            Visit(n.Expression);
+            Append(" AS ");
+            Visit(n.DataType);
+            Append(")");
+            return n;
+        }
+
         public override SqlNode VisitDataType(SqlDataTypeNode n)
         {
             Visit(n.DataType);
@@ -313,7 +323,7 @@ namespace CastIron.SqlParsing.Ast
 
         public override SqlNode VisitNumber(SqlNumberNode n)
         {
-            Append(n.Value.ToString());
+            Append(n.ToString());
             return n;
         }
 

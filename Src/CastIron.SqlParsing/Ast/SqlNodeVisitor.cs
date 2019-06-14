@@ -39,6 +39,13 @@ namespace CastIron.SqlParsing.Ast
             return n.Update(cond, result);
         }
 
+        public virtual SqlNode VisitCast(SqlCastNode n)
+        {
+            var expr = Visit(n.Expression);
+            var type = Visit(n.DataType) as SqlDataTypeNode;
+            return n.Update(expr, type);
+        }
+
         public virtual SqlNode VisitDataType(SqlDataTypeNode n)
         {
             var d = Visit(n.DataType) as SqlKeywordNode;

@@ -1,4 +1,5 @@
-﻿using CastIron.SqlParsing.Ast;
+﻿using System;
+using CastIron.SqlParsing.Ast;
 using CastIron.SqlParsing.Tokenizing;
 
 namespace CastIron.SqlParsing
@@ -187,15 +188,32 @@ namespace CastIron.SqlParsing
 
         private SqlNode ParseFunctionCall(SqlTokenizer t)
         {
+            // <Name> "(" <ScalarExpressionList> ")"
+            // "CAST" "(" <ScalarExpression> "AS" <DataType> ")"
             var name = t.GetNext();
             if (name.Type != SqlTokenType.Keyword && name.Type != SqlTokenType.Identifier)
                 throw ParsingException.UnexpectedToken(SqlTokenType.Identifier, name);
-            var arguments = ParseParenthesis(t, x => ParseList(x, ParseScalarExpression)).Expression;
+            
+            if (name.IsKeyword("CAST"))
+            {
+                t.Expect(SqlTokenType.Symbol, "(");
+                var first = ParseScalarExpression(t);
+                t.Expect(SqlTokenType.Keyword, "AS");
+                var type = ParseDataType(t);
+                t.Expect(SqlTokenType.Symbol, ")");
+                return new SqlCastNode
+                {
+                    Location = name.Location,
+                    Expression = first,
+                    DataType = type
+                };
+            }
+
             return new SqlFunctionCallNode
             {
                 Location = name.Location,
                 Name = new SqlIdentifierNode(name),
-                Arguments = arguments 
+                Arguments = ParseParenthesis(t, x => ParseList(x, ParseScalarExpression)).Expression
             };
         }
     }
