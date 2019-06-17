@@ -198,8 +198,9 @@ namespace CastIron.SqlParsing.Ast
         public virtual SqlNode VisitSet(SqlSetNode n)
         {
             var v = Visit(n.Variable) as SqlVariableNode;
+            var op = Visit(n.Operator) as SqlOperatorNode;
             var r = Visit(n.Right);
-            return n.Update(v, r);
+            return n.Update(v, op, r);
         }
         
         public virtual SqlNode VisitStatementList(SqlStatementListNode n)

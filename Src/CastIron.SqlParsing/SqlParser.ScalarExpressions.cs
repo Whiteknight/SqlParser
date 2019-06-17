@@ -193,6 +193,8 @@ namespace CastIron.SqlParsing
             var name = t.GetNext();
             if (name.Type != SqlTokenType.Keyword && name.Type != SqlTokenType.Identifier)
                 throw ParsingException.UnexpectedToken(SqlTokenType.Identifier, name);
+
+            // TODO: "COUNT" "(" "*" ")"
             
             if (name.IsKeyword("CAST"))
             {

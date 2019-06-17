@@ -8,6 +8,7 @@ namespace CastIron.SqlParsing
         private SqlDeclareNode ParseDeclare(SqlTokenizer t)
         {
             // "DECLARE" <variable> <DataType> ("=" <Expression>)?
+            // TODO: "DECLARE" <variable> <DataType> ("=" <Expression>)? ("," <variable> <DataType> ("=" <Expression>)?)*
             var declare = t.Expect(SqlTokenType.Keyword, "DECLARE");
             var v = t.Expect(SqlTokenType.Variable);
             // TODO: Improve data type parsing
@@ -54,17 +55,17 @@ namespace CastIron.SqlParsing
 
         private SqlSetNode ParseSet(SqlTokenizer t)
         {
-            // "SET" <variable> "=" <Expression>
+            // "SET" <variable> <assignOp> <Expression>
             var setToken = t.Expect(SqlTokenType.Keyword, "SET");
             var v = t.Expect(SqlTokenType.Variable);
-            t.Expect(SqlTokenType.Symbol, "=");
-            // TODO: SET @var = (SELECT ...)
+            var op = t.Expect(SqlTokenType.Symbol, "=", "+=", "-=", "*=", "/=", "%=", "&=", "^=", "|=");
             var expr = ParseScalarExpression(t);
 
             return new SqlSetNode
             {
                 Location = setToken.Location,
                 Variable = new SqlVariableNode(v),
+                Operator = new SqlOperatorNode(op),
                 Right = expr
             };
         }

@@ -507,7 +507,9 @@ namespace CastIron.SqlParsing.Ast
         {
             Append("SET ");
             Visit(n.Variable);
-            Append(" = ");
+            Append(" ");
+            Visit(n.Operator);
+            Append(" ");
             Visit(n.Right);
             return n;
         }

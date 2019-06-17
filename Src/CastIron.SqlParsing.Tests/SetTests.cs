@@ -20,6 +20,7 @@ namespace CastIron.SqlParsing.Tests
                 new SqlSetNode
                 {
                     Variable = new SqlVariableNode("@var"),
+                    Operator = new SqlOperatorNode("="),
                     Right = new SqlNumberNode(5)
                 }
             );
@@ -37,6 +38,7 @@ namespace CastIron.SqlParsing.Tests
                 new SqlSetNode
                 {
                     Variable = new SqlVariableNode("@var"),
+                    Operator = new SqlOperatorNode("="),
                     Right = new SqlParenthesisNode<SqlNode>
                     {
                         Expression = new SqlSelectNode
@@ -47,6 +49,24 @@ namespace CastIron.SqlParsing.Tests
                             }
                         }
                     }
+                }
+            );
+        }
+
+        [Test]
+        public void Set_CompoundOperator()
+        {
+            const string s = "SET @var += 5;";
+            var target = new SqlParser();
+            var result = target.Parse(s);
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSetNode
+                {
+                    Variable = new SqlVariableNode("@var"),
+                    Operator = new SqlOperatorNode("+="),
+                    Right = new SqlNumberNode(5)
                 }
             );
         }

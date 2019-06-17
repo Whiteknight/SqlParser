@@ -16,6 +16,8 @@ namespace CastIron.SqlParsing
             return ParseStatementList(new SqlTokenizer(s));
         }
 
+        // TODO: "GO" which starts a new logical block and also sets scope limits for variables
+
         private SqlStatementListNode ParseStatementList(SqlTokenizer t)
         {
             var statements = new SqlStatementListNode();

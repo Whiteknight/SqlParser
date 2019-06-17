@@ -176,6 +176,25 @@ namespace CastIron.SqlParsing.Tests
         }
 
         [Test]
+        public void Select_VariableAllChars()
+        {
+            const string s = "SELECT @$#_abc123@";
+            var target = new SqlParser();
+            var result = target.Parse(new SqlTokenizer(s));
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlVariableNode("@$#_abc123@")
+                    }
+                }
+            );
+        }
+
+        [Test]
         public void Select_NegativeVariable()
         {
             const string s = "SELECT -@value";

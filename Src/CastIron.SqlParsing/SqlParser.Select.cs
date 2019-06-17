@@ -175,7 +175,7 @@ namespace CastIron.SqlParsing
             // "CROSS" ("APPLY" | "JOIN")
             // "NATURAL" "JOIN"
             // "INNER" "JOIN"
-            // ("LEFT" | "RIGHT")?  "OUTER"? "JOIN"
+            // ("LEFT" | "RIGHT")?  "OUTER"?  "JOIN"
             
             var k = t.GetNext();
             if (!k.IsKeyword())
@@ -217,6 +217,8 @@ namespace CastIron.SqlParsing
                 if (k.Value == "APPLY")
                     return new SqlOperatorNode("OUTER APPLY");
             }
+
+            // TODO: hints: "MERGE" | "HASH" | "REDISTRIBUTE" | "REPLICATE" | "REDUCE"
 
             if (k.Value == "JOIN")
             {
@@ -286,14 +288,14 @@ namespace CastIron.SqlParsing
             {
                 t.GetNext();
                 orderByNode.Offset = ParseNumberOrVariable(t);
-                t.Expect(SqlTokenType.Keyword, "ROWS");
+                t.Expect(SqlTokenType.Keyword, "ROWS"); // TODO: Can also be "ROW"
             }
             if (t.NextIs(SqlTokenType.Keyword, "FETCH"))
             {
                 t.GetNext();
-                t.Expect(SqlTokenType.Keyword, "NEXT");
+                t.Expect(SqlTokenType.Keyword, "NEXT"); // TODO: can also be "FIRST"
                 orderByNode.Limit = ParseNumberOrVariable(t);
-                t.Expect(SqlTokenType.Keyword, "ROWS");
+                t.Expect(SqlTokenType.Keyword, "ROWS"); // TODO: Can also be "ROW"
                 t.Expect(SqlTokenType.Keyword, "ONLY");
             }
 

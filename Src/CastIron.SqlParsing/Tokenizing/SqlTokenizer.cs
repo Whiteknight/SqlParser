@@ -443,7 +443,7 @@ namespace CastIron.SqlParsing.Tokenizing
             while (true)
             {
                 var c = s.GetNext();
-                if (char.IsLetterOrDigit(c) || c == '@' || c == '$')
+                if (char.IsLetterOrDigit(c) || c == '@' || c == '$' || c == '#' || c == '_')
                 {
                     chars.Add(c);
                     continue;
