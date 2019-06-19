@@ -5,7 +5,7 @@ namespace SqlParser
 {
     public partial class Parser
     {
-        private SqlNode ParseUpdateStatement(SqlTokenizer t)
+        private SqlNode ParseUpdateStatement(Tokenizer t)
         {
             // "UPDATE" <TopClause>? "SET" <SetList> <WhereClause>?
             var updateToken = t.Expect(SqlTokenType.Keyword, "UPDATE");
@@ -24,7 +24,7 @@ namespace SqlParser
             };
         }
 
-        private SqlInfixOperationNode ParseUpdateColumnAssignExpression(SqlTokenizer t)
+        private SqlInfixOperationNode ParseUpdateColumnAssignExpression(Tokenizer t)
         {
             // (<Column> | <Variable>) <CompareOp> ("DEFAULT" | <Expression>)
             var columnName = ParseVariableOrQualifiedIdentifier(t);

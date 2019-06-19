@@ -15,7 +15,7 @@ namespace SqlParser.Tests
         {
             const string s = @"IF 5 = 6 SELECT 'TEST';";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -46,7 +46,7 @@ namespace SqlParser.Tests
         {
             const string s = @"IF (5 = 6) SELECT 'TEST';";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -82,7 +82,7 @@ BEGIN
     SELECT 'TEST2';
 END";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             var thenStatementList = new SqlStatementListNode
@@ -130,7 +130,7 @@ END";
             const string s = @"IF 5 = 6 SELECT 'TEST1'; ELSE SELECT 'TEST2';";
             
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -181,7 +181,7 @@ BEGIN
     SELECT 'TEST4';
 END";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             var thenStatementList = new SqlStatementListNode

@@ -5,7 +5,7 @@ namespace SqlParser
 {
     public partial class Parser
     {
-        private SqlNode ParseWithStatement(SqlTokenizer t)
+        private SqlNode ParseWithStatement(Tokenizer t)
         {
             // "WITH" <CTE> ("," <CTE>)* <Statement>
             var with = new SqlWithNode();
@@ -16,7 +16,7 @@ namespace SqlParser
             return with;
         }
 
-        private SqlWithCteNode ParseCte(SqlTokenizer t)
+        private SqlWithCteNode ParseCte(Tokenizer t)
         {
             // <identifier> ("(" <columnList> ")")? "AS" "(" <SelectStatement> ")"
             var name = t.Expect(SqlTokenType.Identifier);

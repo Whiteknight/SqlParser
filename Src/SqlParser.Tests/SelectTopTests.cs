@@ -14,7 +14,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT TOP 10 * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -38,7 +38,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT TOP @limit * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -62,7 +62,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT TOP (10) * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -86,7 +86,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT TOP (@limit) * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -110,7 +110,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT TOP (10) PERCENT * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -135,7 +135,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT TOP (10) WITH TIES * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -160,7 +160,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT TOP (10) PERCENT WITH TIES * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(

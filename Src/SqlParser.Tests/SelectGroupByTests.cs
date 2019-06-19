@@ -14,7 +14,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT * FROM TableA GROUP BY Column1";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(

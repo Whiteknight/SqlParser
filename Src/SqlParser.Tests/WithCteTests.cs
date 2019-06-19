@@ -19,7 +19,7 @@ Cte1 AS (
 )
 SELECT * FROM Cte1;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -62,7 +62,7 @@ Cte1(ColumnA) AS (
 )
 SELECT * FROM Cte1;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -112,7 +112,7 @@ Cte2 AS (
 )
 SELECT * FROM Cte2;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             var output = result.ToString();
             result.Should().PassValidation().And.RoundTrip();
 

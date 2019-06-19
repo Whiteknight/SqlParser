@@ -5,12 +5,12 @@ namespace SqlParser
 {
     public partial class Parser
     {
-        private SqlNode ParseBooleanExpression(SqlTokenizer t)
+        private SqlNode ParseBooleanExpression(Tokenizer t)
         {
             return ParseBooleanExpression5(t);
         }
 
-        private SqlNode ParseBooleanExpression5(SqlTokenizer t)
+        private SqlNode ParseBooleanExpression5(Tokenizer t)
         {
             // <BooleanExpression3> ("AND" | "OR") <BooleanExpression3>
             var left = ParseBooleanExpression4(t);
@@ -30,7 +30,7 @@ namespace SqlParser
             return left;
         }
 
-        private SqlNode ParseBooleanExpression4(SqlTokenizer t)
+        private SqlNode ParseBooleanExpression4(Tokenizer t)
         {
             // "NOT"? <BooleanExpression4>
             if (t.Peek().IsKeyword("NOT"))
@@ -48,7 +48,7 @@ namespace SqlParser
             return ParseBooleanExpression3(t);
         }
 
-        private SqlNode ParseBooleanExpression3(SqlTokenizer t)
+        private SqlNode ParseBooleanExpression3(Tokenizer t)
         {
             // "(" <BooleanExpression> ")
             // <BooleanExpression2>
@@ -64,7 +64,7 @@ namespace SqlParser
             return ParseBooleanExpression2(t);
         }
 
-        private SqlNode ParseBooleanExpression2(SqlTokenizer t)
+        private SqlNode ParseBooleanExpression2(Tokenizer t)
         {
             // "EXISTS" "(" <QueryExpression> ")"
             // <BooleanExpression1>
@@ -84,7 +84,7 @@ namespace SqlParser
             return ParseBooleanExpression1(t);
         }
 
-        private SqlNode ParseBooleanExpression1(SqlTokenizer t)
+        private SqlNode ParseBooleanExpression1(Tokenizer t)
         {
             // <ScalarExpression> <ComparisonOperator> <ScalarExpression>
             // <ScalarExpression> "IS" "NOT"? "NULL"

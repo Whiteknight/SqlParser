@@ -6,7 +6,7 @@ namespace SqlParser
 {
     public partial class Parser
     {
-        private SqlNode ParseNumberOrVariable(SqlTokenizer t)
+        private SqlNode ParseNumberOrVariable(Tokenizer t)
         {
             var next = t.GetNext();
             if (next.IsType(SqlTokenType.Variable))
@@ -17,7 +17,7 @@ namespace SqlParser
             throw ParsingException.CouldNotParseRule(nameof(ParseNumberOrVariable), next);
         }
 
-        private SqlNumberNode ParseNumber(SqlTokenizer t)
+        private SqlNumberNode ParseNumber(Tokenizer t)
         {
             var next = t.GetNext();
             if (next.IsType(SqlTokenType.Number))
@@ -27,7 +27,7 @@ namespace SqlParser
             return null;
         }
 
-        private SqlNode ParseVariableOrConstant(SqlTokenizer t)
+        private SqlNode ParseVariableOrConstant(Tokenizer t)
         {
             var next = t.GetNext();
             if (next.IsType(SqlTokenType.Variable))
@@ -41,7 +41,7 @@ namespace SqlParser
             throw ParsingException.CouldNotParseRule(nameof(ParseVariableOrConstant), next);
         }
 
-        private SqlNode ParseVariableOrQualifiedIdentifier(SqlTokenizer t)
+        private SqlNode ParseVariableOrQualifiedIdentifier(Tokenizer t)
         {
             var next = t.GetNext();
 
@@ -56,13 +56,13 @@ namespace SqlParser
             throw ParsingException.CouldNotParseRule(nameof(ParseVariableOrQualifiedIdentifier), next);
         }
 
-        private SqlIdentifierNode ParseIdentifier(SqlTokenizer t)
+        private SqlIdentifierNode ParseIdentifier(Tokenizer t)
         {
             var next = t.Expect(SqlTokenType.Identifier);
             return new SqlIdentifierNode(next);
         }
 
-        private SqlNode ParseQualifiedIdentifier(SqlTokenizer t)
+        private SqlNode ParseQualifiedIdentifier(Tokenizer t)
         {
             // ( <Qualifier> "." )? <Identifier>
             
@@ -83,7 +83,7 @@ namespace SqlParser
             };
         }
 
-        private SqlNode ParseVariableOrObjectIdentifier(SqlTokenizer t)
+        private SqlNode ParseVariableOrObjectIdentifier(Tokenizer t)
         {
             var next = t.GetNext();
 
@@ -94,7 +94,7 @@ namespace SqlParser
             return ParseObjectIdentifier(t);
         }
 
-        private SqlObjectIdentifierNode ParseObjectIdentifier(SqlTokenizer t)
+        private SqlObjectIdentifierNode ParseObjectIdentifier(Tokenizer t)
         {
             // (((<ServerName> ".")? <DatabaseName> ".")? <Schema> ".")? <Identifier>
             var item1 = t.Expect(SqlTokenType.Identifier);
@@ -141,7 +141,7 @@ namespace SqlParser
             };
         }
 
-        private SqlNode ParseMaybeAliasedScalar(SqlTokenizer t, Func<SqlTokenizer, SqlNode> parse)
+        private SqlNode ParseMaybeAliasedScalar(Tokenizer t, Func<Tokenizer, SqlNode> parse)
         {
             var node = parse(t);
 
@@ -171,7 +171,7 @@ namespace SqlParser
             return node;
         }
 
-        private SqlNode ParseMaybeAliasedTable(SqlTokenizer t, Func<SqlTokenizer, SqlNode> parse)
+        private SqlNode ParseMaybeAliasedTable(Tokenizer t, Func<Tokenizer, SqlNode> parse)
         {
             var node = parse(t);
 
@@ -203,7 +203,7 @@ namespace SqlParser
             return alias;
         }
 
-        private SqlStringNode ParseString(SqlTokenizer t)
+        private SqlStringNode ParseString(Tokenizer t)
         {
             var s = t.Expect(SqlTokenType.QuotedString);
             return new SqlStringNode(s);

@@ -16,7 +16,7 @@ namespace SqlParser.Tests
             const string s = @"INSERT INTO MyTable(Column1, Column2) SELECT ColumnA, ColumnB FROM MyTable
 ;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(

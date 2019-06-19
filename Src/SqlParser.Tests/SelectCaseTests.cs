@@ -16,7 +16,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT CASE 5 WHEN 6 THEN 'A' ELSE 'B' END;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
             var output = result.ToString();
 
@@ -48,7 +48,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT CASE ValueA WHEN 6 THEN 'A' ELSE 'B' END AS ColumnA, ColumnB;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(

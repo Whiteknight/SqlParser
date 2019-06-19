@@ -14,7 +14,7 @@ namespace SqlParser.Tests
         {
             const string s = "UPDATE MyTable SET ColumnA = 1 WHERE ColumnB = 2;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             var output = result.ToString();
             result.Should().PassValidation().And.RoundTrip();
 
@@ -46,7 +46,7 @@ namespace SqlParser.Tests
         {
             const string s = "UPDATE MyTable SET ColumnA = NULL;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -71,7 +71,7 @@ namespace SqlParser.Tests
         {
             const string s = "UPDATE MyTable SET ColumnA = DEFAULT;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(

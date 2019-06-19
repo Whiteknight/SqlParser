@@ -5,7 +5,7 @@ namespace SqlParser
 {
     public partial class Parser
     {
-        private SqlNode ParseDeleteStatement(SqlTokenizer t)
+        private SqlNode ParseDeleteStatement(Tokenizer t)
         {
             var deleteToken = t.Expect(SqlTokenType.Keyword, "DELETE");
             // TODO: TOP clause

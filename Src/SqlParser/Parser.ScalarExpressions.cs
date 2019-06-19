@@ -5,7 +5,7 @@ namespace SqlParser
 {
     public partial class Parser
     {
-        private SqlNode ParseCaseExpression(SqlTokenizer t)
+        private SqlNode ParseCaseExpression(Tokenizer t)
         {
             // "CASE" <Expression> <When>+ <Else>? "END"
             var caseToken = t.Expect(SqlTokenType.Keyword, "CASE");
@@ -48,13 +48,13 @@ namespace SqlParser
             }
         }
 
-        private SqlNode ParseScalarExpression(SqlTokenizer t)
+        private SqlNode ParseScalarExpression(Tokenizer t)
         {
             // Top-level expression parsing method, redirects to the appropriate precidence level
             return ParseScalarExpression4(t);
         }
 
-        private SqlNode ParseScalarExpression4(SqlTokenizer t)
+        private SqlNode ParseScalarExpression4(Tokenizer t)
         {
             // <CaseExpression> | <Expression3>
             if (t.Peek().IsKeyword("CASE"))
@@ -63,7 +63,7 @@ namespace SqlParser
             return ParseScalarExpression3(t);
         }
 
-        private SqlNode ParseScalarExpression3(SqlTokenizer t)
+        private SqlNode ParseScalarExpression3(Tokenizer t)
         {
             // Operators with + - precidence
             // <Expression2> (<op> <Expression2>)+
@@ -84,7 +84,7 @@ namespace SqlParser
             return left;
         }
 
-        private SqlNode ParseScalarExpression2(SqlTokenizer t)
+        private SqlNode ParseScalarExpression2(Tokenizer t)
         {
             // Operators with * / % precidence
             // <Expression1> (<op> <Expression1>)+
@@ -105,7 +105,7 @@ namespace SqlParser
             return left;
         }
 
-        private SqlNode ParseScalarExpression1(SqlTokenizer t)
+        private SqlNode ParseScalarExpression1(Tokenizer t)
         {
             // "NULL" | ("-" | "+" | "~") <Expression0> | <Expression0>
             var next = t.Peek();
@@ -129,7 +129,7 @@ namespace SqlParser
             return ParseScalarExpression0(t);
         }
 
-        private SqlNode ParseScalarExpression0(SqlTokenizer t)
+        private SqlNode ParseScalarExpression0(Tokenizer t)
         {
             // Terminal expression
             // <MethodCall> | <Identifier> | <Variable> | <String> | <Number> | "(" <Expression> ")"
@@ -185,7 +185,7 @@ namespace SqlParser
             throw ParsingException.CouldNotParseRule(nameof(ParseScalarExpression0), next);
         }
 
-        private SqlNode ParseFunctionCall(SqlTokenizer t)
+        private SqlNode ParseFunctionCall(Tokenizer t)
         {
             // <Name> "(" <ScalarExpressionList> ")"
             // "CAST" "(" <ScalarExpression> "AS" <DataType> ")"

@@ -2,6 +2,8 @@
 
 namespace SqlParser.Tokenizing
 {
+    // TODO: Create an ICharSequence so we can have alternate implementations
+    // TODO: Implementation to pull chars out of a file stream instead of a string
     public class CharSequence
     {
         private readonly string _s;

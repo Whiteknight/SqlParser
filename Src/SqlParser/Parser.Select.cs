@@ -7,7 +7,7 @@ namespace SqlParser
 {
     public partial class Parser
     {
-        private SqlNode ParseQueryExpression(SqlTokenizer t)
+        private SqlNode ParseQueryExpression(Tokenizer t)
         {
             // <querySpecification> ( <UnionOperator> <querySpecification> )*
             var firstQuery = ParseQuerySpecificiation(t);
@@ -26,7 +26,7 @@ namespace SqlParser
             };
         }
 
-        private SqlNode ParseQuerySpecificiation(SqlTokenizer t)
+        private SqlNode ParseQuerySpecificiation(Tokenizer t)
         {
             // "SELECT" ...
             var selectToken = t.Expect(SqlTokenType.Keyword, "SELECT");
@@ -53,7 +53,7 @@ namespace SqlParser
             return selectNode;
         }
 
-        private SqlNode ParseWhereClause(SqlTokenizer t)
+        private SqlNode ParseWhereClause(Tokenizer t)
         {
             // "WHERE" <BooleanExpression>
             if (!t.NextIs(SqlTokenType.Keyword, "WHERE"))
@@ -63,7 +63,7 @@ namespace SqlParser
             return ParseBooleanExpression(t);
         }
 
-        private SqlNode ParseSelectHavingClause(SqlTokenizer t)
+        private SqlNode ParseSelectHavingClause(Tokenizer t)
         {
             // "HAVING" <BooleanExpression>
             if (!t.NextIs(SqlTokenType.Keyword, "HAVING"))
@@ -73,7 +73,7 @@ namespace SqlParser
             return ParseBooleanExpression(t);
         }
 
-        private SqlSelectTopNode ParseSelectTopClause(SqlTokenizer t)
+        private SqlSelectTopNode ParseSelectTopClause(Tokenizer t)
         {
             // "TOP" "(" <Number> | <Variable> ")" "PERCENT"? "WITH TIES"?
             // "TOP" <Number> | <Variable> "PERCENT"? "WITH TIES"?
@@ -100,7 +100,7 @@ namespace SqlParser
             };
         }
 
-        private SqlNode ParseSelectColumn(SqlTokenizer t)
+        private SqlNode ParseSelectColumn(Tokenizer t)
         {
             var next = t.GetNext();
 
@@ -132,7 +132,7 @@ namespace SqlParser
             return ParseMaybeAliasedScalar(t, ParseScalarExpression);
         }
 
-        private SqlNode ParseSelectFromClause(SqlTokenizer t)
+        private SqlNode ParseSelectFromClause(Tokenizer t)
         {
             // ("FROM" <join>)?
             if (!t.NextIs(SqlTokenType.Keyword, "FROM"))
@@ -141,7 +141,7 @@ namespace SqlParser
             return ParseJoin(t);
         }
 
-        private SqlNode ParseJoin(SqlTokenizer t)
+        private SqlNode ParseJoin(Tokenizer t)
         {
             // <TableExpression> (<JoinOperator> <TableExpression> "ON" <JoinCondition>)?
             // TODO: <TableExpression> ("WITH" <Hint>)?
@@ -170,7 +170,7 @@ namespace SqlParser
             };
         }
 
-        private SqlOperatorNode ParseJoinOperator(SqlTokenizer t)
+        private SqlOperatorNode ParseJoinOperator(Tokenizer t)
         {
             // "CROSS" ("APPLY" | "JOIN")
             // "NATURAL" "JOIN"
@@ -234,7 +234,7 @@ namespace SqlParser
             return null;
         }
 
-        private SqlNode ParseTableOrSubexpression(SqlTokenizer t)
+        private SqlNode ParseTableOrSubexpression(Tokenizer t)
         {
             // <ObjectIdentifier> | <tableVariable> | "(" <QueryExpression> ")" | "(" <ValuesExpression> ")"
             var lookahead = t.Peek();
@@ -254,7 +254,7 @@ namespace SqlParser
             throw ParsingException.CouldNotParseRule(nameof(ParseTableOrSubexpression), lookahead);
         }
 
-        private SqlNode ParseSubexpression(SqlTokenizer t)
+        private SqlNode ParseSubexpression(Tokenizer t)
         {
             // <QueryExpresion> | <Values>
             var lookahead = t.Peek();
@@ -269,7 +269,7 @@ namespace SqlParser
             throw ParsingException.CouldNotParseRule(nameof(ParseSubexpression), lookahead);
         }
 
-        private SqlSelectOrderByClauseNode ParseSelectOrderByClause(SqlTokenizer t)
+        private SqlSelectOrderByClauseNode ParseSelectOrderByClause(Tokenizer t)
         {
             // "ORDER" "BY" <OrderTerm>+ ("OFFSET" <NumberOrVariable> "ROWS")? ("FETCH" "NEXT" <NumberOrVariable> "ROWS" "ONLY")?
             if (!t.NextIs(SqlTokenType.Keyword, "ORDER"))
@@ -302,7 +302,7 @@ namespace SqlParser
             return orderByNode;
         }
 
-        private SqlOrderByEntryNode ParseOrderTerm(SqlTokenizer t)
+        private SqlOrderByEntryNode ParseOrderTerm(Tokenizer t)
         {
             // ( <QualifiedIdentifier> | <Number> ) ("ASC" | "DESC")?
             var identifier = ParseQualifiedIdentifier(t);
@@ -332,7 +332,7 @@ namespace SqlParser
             return entry;
         }
 
-        private SqlNode ParseSelectGroupByClause(SqlTokenizer t)
+        private SqlNode ParseSelectGroupByClause(Tokenizer t)
         {
             // "GROUP" "BY" <IdentifierList>
             if (!t.NextIs(SqlTokenType.Keyword, "GROUP"))

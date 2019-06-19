@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace SqlParser.Tokenizing
 {
-    public class SqlTokenizer : IEnumerable<SqlToken>
+    public class Tokenizer : IEnumerable<SqlToken>
     {
         private readonly IEnumerator<SqlToken> _enumerator;
         private readonly Stack<SqlToken> _putbacks;
         private readonly SymbolSequence _operators;
 
-        public SqlTokenizer(string s)
+        public Tokenizer(string s)
         {
             _putbacks = new Stack<SqlToken>();
 

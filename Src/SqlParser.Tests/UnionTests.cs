@@ -18,7 +18,7 @@ namespace SqlParser.Tests
         {
             string s = $"SELECT * FROM Table1 {op} SELECT * FROM Table2";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
             var o1 = result.ToString();
 
@@ -57,7 +57,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT * FROM Table1 UNION SELECT * FROM Table2 UNION ALL SELECT * FROM Table3;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             var output = result.ToString();
             result.Should().PassValidation().And.RoundTrip();
 

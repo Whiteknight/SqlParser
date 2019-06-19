@@ -12,7 +12,7 @@ namespace SqlParser.Tests
         public void Tokenize_WithLocation()
         {
             const string s = "SELECT * FROM MyTable";
-            var target = new SqlTokenizer(s);
+            var target = new Tokenizer(s);
             var result = target.ToList();
 
             result[0].Type.Should().Be(SqlTokenType.Keyword);

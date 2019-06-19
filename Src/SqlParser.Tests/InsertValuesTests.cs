@@ -14,7 +14,7 @@ namespace SqlParser.Tests
         {
             const string s = "INSERT INTO MyTable(Column1, Column2) VALUES (1, 'TEST');";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             var output = result.ToString();
             result.Should().PassValidation().And.RoundTrip();
 
@@ -47,7 +47,7 @@ namespace SqlParser.Tests
         {
             const string s = "INSERT INTO MyTable(Column1, Column2) VALUES (1, 'TESTA'), (2, 'TESTB');";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             var output = result.ToString();
             result.Should().PassValidation().And.RoundTrip();
 
@@ -85,7 +85,7 @@ namespace SqlParser.Tests
         {
             const string s = "INSERT INTO MyTable(Column1, Column2) DEFAULT VALUES;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(

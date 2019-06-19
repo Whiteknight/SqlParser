@@ -5,7 +5,7 @@ namespace SqlParser
 {
     public partial class Parser
     {
-        private SqlNode ParseInsertStatement(SqlTokenizer t)
+        private SqlNode ParseInsertStatement(Tokenizer t)
         {
             // "INSERT" "INTO" <ObjectIdOrVariable> "(" <ColumnList> ")" <ValuesOrSelect>
             var insertToken = t.Expect(SqlTokenType.Keyword, "INSERT");
@@ -35,7 +35,7 @@ namespace SqlParser
             return insertNode;
         }
 
-        private SqlNode ParseValues(SqlTokenizer t)
+        private SqlNode ParseValues(Tokenizer t)
         {
             // "VALUES" "(" <ValueList> ")" ("," "(" <ValueList> ")")*
             var valuesToken = t.Expect(SqlTokenType.Keyword, "VALUES");

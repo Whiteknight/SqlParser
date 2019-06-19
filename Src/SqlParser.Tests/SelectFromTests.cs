@@ -15,7 +15,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -35,7 +35,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT * FROM dbo.MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -65,7 +65,7 @@ namespace SqlParser.Tests
                     MyTable
                     -- INNER JOIN SomeOtherTable ON MyTableId = SomeOtherTableId;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -95,7 +95,7 @@ namespace SqlParser.Tests
                 FROM 
                     MyTable /* INNER JOIN SomeOtherTable ON MyTableId = SomeOtherTableId */;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -118,7 +118,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT DISTINCT * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().NotBeNull();
             result.Should().PassValidation().And.RoundTrip();
 
@@ -143,7 +143,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT * FROM @tableVar;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -166,7 +166,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT t1.* FROM MyTable AS t1;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -197,7 +197,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT t1.* FROM MyTable AS t1(ColumnA);";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -232,7 +232,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT t1.MyColumn FROM MyTable AS t1;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -263,7 +263,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT [t1].* FROM [MyTable] AS [t1];";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -294,7 +294,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT t1.* FROM @myTable AS t1;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -329,7 +329,7 @@ namespace SqlParser.Tests
                     FROM 
                         (SELECT * FROM MyTable) AS t1;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
             var output = result.ToString();
 
@@ -378,7 +378,7 @@ namespace SqlParser.Tests
                     FROM 
                         (SELECT * FROM MyTable) AS t1(ColumnA);";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
             var output = result.ToString();
 
@@ -425,7 +425,7 @@ namespace SqlParser.Tests
                     FROM 
                         (VALUES (1), (2)) AS t1(ColumnA);";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
             var output = result.ToString();
 
@@ -474,7 +474,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT ColumnA, ColumnB FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -498,7 +498,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT -ColumnA FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -522,7 +522,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT $IDENTITY, $ROWGUID FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -546,7 +546,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT [ColumnA], [ColumnB] FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -570,7 +570,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT [SELECT], [FROM] FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -594,7 +594,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT ColumnA AS ColumnB FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -621,7 +621,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT [ColumnA] AS [ColumnB] FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -648,7 +648,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT @value = ColumnA FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(

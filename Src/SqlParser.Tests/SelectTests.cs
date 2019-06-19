@@ -15,7 +15,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT 'TEST'";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -37,7 +37,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT 'TEST' AS ColumnA";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -63,7 +63,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT 10";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -85,7 +85,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT -10";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -108,7 +108,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT ~+-10";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -139,7 +139,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT 10.123";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -161,7 +161,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT @value";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -180,7 +180,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT @$#_abc123@";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -199,7 +199,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT -@value";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -222,7 +222,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT @value AS ColumnA";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -245,7 +245,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT GETUTCDATE() AS ColumnA";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -271,7 +271,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT ABS(1) AS ColumnA";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -301,7 +301,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT COALESCE(NULL, 0) AS ColumnA";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -332,7 +332,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT NULL AS ColumnA";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -355,7 +355,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT 'TEST1' SELECT 'TEST2'";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Should().MatchAst(
@@ -390,7 +390,7 @@ namespace SqlParser.Tests
         {
             const string s = "SELECT 'TEST1'; SELECT 'TEST2'";
             var target = new Parser();
-            var result = target.Parse(new SqlTokenizer(s));
+            var result = target.Parse(new Tokenizer(s));
             result.Should().PassValidation().And.RoundTrip();
 
             result.Should().MatchAst(
