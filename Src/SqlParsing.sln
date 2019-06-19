@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CastIron.FileQuery", "CastIron.FileQuery\CastIron.FileQuery.csproj", "{8105AB0A-D137-4D91-B450-2C759A2A6D40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlParser.FileQuery", "SqlParser.FileQuery\SqlParser.FileQuery.csproj", "{8105AB0A-D137-4D91-B450-2C759A2A6D40}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CastIron.SqlParsing", "CastIron.SqlParsing\CastIron.SqlParsing.csproj", "{A2159BF6-6FBC-4E43-9B09-61ABBA4E9A9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlParser", "SqlParser\SqlParser.csproj", "{A2159BF6-6FBC-4E43-9B09-61ABBA4E9A9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CastIron.SqlParsing.Tests", "CastIron.SqlParsing.Tests\CastIron.SqlParsing.Tests.csproj", "{F4A5050F-3488-4845-89B6-70C5E41BAACB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlParser.Tests", "SqlParser.Tests\SqlParser.Tests.csproj", "{F4A5050F-3488-4845-89B6-70C5E41BAACB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
