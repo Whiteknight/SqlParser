@@ -1,1 +1,0 @@
-dotnet test --verbosity normal Src/CastIron.SqlParsing.Tests/CastIron.SqlParsing.Tests.csproj
