@@ -194,7 +194,7 @@ namespace SqlParser.Tokenizing
                     yield return SqlToken.Number(n, l);
                     continue;
                 }
-                if (char.IsLetter(c))
+                if (char.IsLetter(c) || c == '_')
                 {
                     var l = s.GetLocation();
                     var x = ReadWord(s);
@@ -424,7 +424,7 @@ namespace SqlParser.Tokenizing
             while (true)
             {
                 var c = s.GetNext();
-                if (!char.IsLetterOrDigit(c))
+                if (!char.IsLetterOrDigit(c) && c != '_')
                 {
                     s.PutBack(c);
                     break;

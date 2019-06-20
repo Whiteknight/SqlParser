@@ -397,6 +397,32 @@ namespace SqlParser.Stringify
             return n;
         }
 
+        public override SqlNode VisitOver(SqlOverNode n)
+        {
+            Visit(n.Expression);
+            if (n.PartitionBy == null && n.OrderBy == null && n.RowsRange == null)
+                return n;
+            Append(" OVER (");
+            if (n.PartitionBy != null)
+            {
+                Append("PARTITION BY ");
+                Visit(n.PartitionBy);
+            }
+            if (n.OrderBy != null)
+            {
+                Append(" ORDER BY ");
+                Visit(n.OrderBy);
+            }
+            if (n.RowsRange != null)
+            {
+                Append(" ROWS ");
+                Visit(n.RowsRange);
+            }
+
+            Append(")");
+            return n;
+        }
+
         public override SqlNode VisitParenthesis<TNode>(SqlParenthesisNode<TNode> n)
         {
             AppendLine("(");

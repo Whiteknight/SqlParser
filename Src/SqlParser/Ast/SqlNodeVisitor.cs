@@ -70,7 +70,7 @@ namespace SqlParser.Ast
 
         public virtual SqlNode VisitFunctionCall(SqlFunctionCallNode n)
         {
-            var name = Visit(n.Name) as SqlIdentifierNode;
+            var name = Visit(n.Name);
             var args = Visit(n.Arguments) as SqlListNode<SqlNode>;
             return n.Update(name, args);
         }
@@ -160,6 +160,15 @@ namespace SqlParser.Ast
         {
             var source = Visit(n.Source);
             return n.Update(source, n.Direction);
+        }
+
+        public virtual SqlNode VisitOver(SqlOverNode n)
+        {
+            var e = Visit(n.Expression);
+            var p = Visit(n.PartitionBy);
+            var o = Visit(n.OrderBy);
+            var r = Visit(n.RowsRange);
+            return n.Update(e, p, o, r);
         }
 
         public virtual SqlNode VisitParenthesis<TNode>(SqlParenthesisNode<TNode> n)

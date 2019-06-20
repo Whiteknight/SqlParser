@@ -167,6 +167,11 @@ namespace SqlParser.Validation
             return base.VisitOrderByEntry(n);
         }
 
+        public override SqlNode VisitOver(SqlOverNode n)
+        {
+            return base.VisitOver(n);
+        }
+
         public override SqlNode VisitParenthesis<TNode>(SqlParenthesisNode<TNode> n)
         {
             _result.AssertNotNull(n, nameof(n.Expression), n.Expression);

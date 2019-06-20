@@ -129,7 +129,58 @@ namespace SqlParser
             t.PutBack(next);
 
             // <SelectColumnExpression> (AS <Alias>)?
-            return ParseMaybeAliasedScalar(t, ParseScalarExpression);
+            return ParseMaybeAliasedScalar(t, ParseSelectColumnExpression);
+        }
+
+        private SqlNode ParseSelectColumnExpression(Tokenizer t)
+        {
+            var expr = ParseScalarExpression(t);
+            var lookahead = t.Peek();
+            if (lookahead.IsKeyword("OVER"))
+            {
+                // "OVER" "(" <OverPartitionBy>? <OverOrderBy>? <OverRows>? ")"
+                var overToken = t.GetNext();
+                t.Expect(SqlTokenType.Symbol, "(");
+                var overNode = new SqlOverNode
+                {
+                    Location = overToken.Location,
+                    Expression = expr,
+                    PartitionBy = ParseOverPartitionBy(t),
+                    OrderBy = ParseOverOrderBy(t),
+                    RowsRange = ParseOverRows(t)
+                };
+                t.Expect(SqlTokenType.Symbol, ")");
+                return overNode;
+            }
+
+            return expr;
+        }
+
+        private SqlNode ParseOverPartitionBy(Tokenizer t)
+        {
+            // "PARTITION" "BY" <Expr> ("," <Expr>)* 
+            if (!t.NextIs(SqlTokenType.Keyword, "PARTITION", true))
+                return null;
+            t.Expect(SqlTokenType.Keyword, "BY");
+            return ParseList(t, ParseScalarExpression);
+        }
+
+        private SqlNode ParseOverOrderBy(Tokenizer t)
+        {
+            // "ORDER" "BY" <OrderByTerm> ("," <OrderByTerm>)*
+            if (!t.NextIs(SqlTokenType.Keyword, "ORDER", true))
+                return null;
+            t.Expect(SqlTokenType.Keyword, "BY");
+            return ParseList(t, ParseOrderTerm);
+        }
+
+        private SqlNode ParseOverRows(Tokenizer t)
+        {
+            var lookahead = t.Peek();
+            if (!lookahead.IsKeyword("ROWS") && !lookahead.IsKeyword("RANGE"))
+                return null;
+            // TODO: this
+            return null;
         }
 
         private SqlNode ParseSelectFromClause(Tokenizer t)

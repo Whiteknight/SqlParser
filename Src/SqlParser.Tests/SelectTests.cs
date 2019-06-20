@@ -267,6 +267,36 @@ namespace SqlParser.Tests
         }
 
         [Test]
+        public void Select_CountStar()
+        {
+            const string s = "SELECT COUNT(*) AS ColumnA";
+            var target = new Parser();
+            var result = target.Parse(new Tokenizer(s));
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<SqlNode>
+                    {
+                        new SqlAliasNode
+                        {
+                            Source = new SqlFunctionCallNode
+                            {
+                                Name = new SqlKeywordNode("COUNT"),
+                                Arguments = new SqlListNode<SqlNode>
+                                {
+                                    new SqlOperatorNode("*")
+                                }
+                            },
+                            Alias = new SqlIdentifierNode("ColumnA")
+                        }
+                    }
+                }
+            );
+        }
+
+        [Test]
         public void Select_FunctionCallArgument()
         {
             const string s = "SELECT ABS(1) AS ColumnA";

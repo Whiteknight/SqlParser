@@ -50,7 +50,8 @@ namespace SqlParser
 
         private SqlNode ParseScalarExpression(Tokenizer t)
         {
-            // Top-level expression parsing method, redirects to the appropriate precidence level
+            // Top-level general-purpose expression parsing method, redirects to the appropriate
+            // precidence level
             return ParseScalarExpression4(t);
         }
 
@@ -187,14 +188,33 @@ namespace SqlParser
 
         private SqlNode ParseFunctionCall(Tokenizer t)
         {
-            // <Name> "(" <ScalarExpressionList> ")"
-            // "CAST" "(" <ScalarExpression> "AS" <DataType> ")"
             var name = t.GetNext();
             if (name.Type != SqlTokenType.Keyword && name.Type != SqlTokenType.Identifier)
                 throw ParsingException.UnexpectedToken(SqlTokenType.Identifier, name);
 
-            // TODO: "COUNT" "(" "*" ")"
-            
+            // "COUNT" "(" "*" ")"
+            if (name.IsKeyword("COUNT"))
+            {
+                var openParen = t.Expect(SqlTokenType.Symbol, "(");
+                var maybeStar = t.Peek();
+                if (maybeStar.IsSymbol("*"))
+                {
+                    t.GetNext();
+                    t.Expect(SqlTokenType.Symbol, ")");
+                    return new SqlFunctionCallNode
+                    {
+                        Location = name.Location,
+                        Name = new SqlKeywordNode(name),
+                        Arguments = new SqlListNode<SqlNode> { new SqlOperatorNode(maybeStar)}
+                    };
+                }
+
+                // It's not *, so put everything back, fallthrough, and let the rest of the parsing happen
+                t.PutBack(openParen);
+            }
+
+            // TODO: "CONVERT" "(" <DataType>, <ScalarExpression> ("," <int>)? ")"
+            // "CAST" "(" <ScalarExpression> "AS" <DataType> ")"
             if (name.IsKeyword("CAST"))
             {
                 t.Expect(SqlTokenType.Symbol, "(");
@@ -210,6 +230,7 @@ namespace SqlParser
                 };
             }
 
+            // <Name> "(" <ScalarExpressionList> ")"
             return new SqlFunctionCallNode
             {
                 Location = name.Location,
