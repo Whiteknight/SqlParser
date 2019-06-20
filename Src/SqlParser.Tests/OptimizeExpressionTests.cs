@@ -76,7 +76,7 @@ namespace SqlParser.Tests
         [Test]
         public void Optimize_CastNumberToVarcharMax()
         {
-            // "A" + "B" => "AB"
+            // CAST(5 as VARCHAR(MAX)) => "5"
             var ast = new SqlCastNode
             {
                 Expression = new SqlNumberNode(5),
@@ -95,7 +95,7 @@ namespace SqlParser.Tests
         [Test]
         public void Optimize_CastNumberToVarchar3()
         {
-            // "A" + "B" => "AB"
+            // CAST(12345 as VARCHAR(3)) => "123"
             var ast = new SqlCastNode
             {
                 Expression = new SqlNumberNode(12345),
@@ -114,7 +114,7 @@ namespace SqlParser.Tests
         [Test]
         public void Optimize_CastStringToVarchar3()
         {
-            // "A" + "B" => "AB"
+            // CAST("12345" as VARCHAR(3)) => "123"
             var ast = new SqlCastNode
             {
                 Expression = new SqlStringNode("12345"),
@@ -131,9 +131,47 @@ namespace SqlParser.Tests
         }
 
         [Test]
+        public void Optimize_CastStringToCharPadRight()
+        {
+            // CAST("12345" as VARCHAR(3)) => "123"
+            var ast = new SqlCastNode
+            {
+                Expression = new SqlStringNode("ab"),
+                DataType = new SqlDataTypeNode
+                {
+                    DataType = new SqlKeywordNode("CHAR"),
+                    Size = new SqlNumberNode(4)
+                }
+            };
+
+            var target = new ExpressionOptimizeVisitor();
+            var result = target.Visit(ast);
+            result.Should().MatchAst(new SqlStringNode("ab  "));
+        }
+
+        [Test]
+        public void Optimize_CastStringToVarcharNoPadRight()
+        {
+            // CAST("12345" as VARCHAR(3)) => "123"
+            var ast = new SqlCastNode
+            {
+                Expression = new SqlStringNode("ab"),
+                DataType = new SqlDataTypeNode
+                {
+                    DataType = new SqlKeywordNode("VARCHAR"),
+                    Size = new SqlNumberNode(4)
+                }
+            };
+
+            var target = new ExpressionOptimizeVisitor();
+            var result = target.Visit(ast);
+            result.Should().MatchAst(new SqlStringNode("ab"));
+        }
+
+        [Test]
         public void Optimize_CastStringToInt()
         {
-            // "A" + "B" => "AB"
+            // CAST("12345" as INT) => 12345
             var ast = new SqlCastNode
             {
                 Expression = new SqlStringNode("12345"),
@@ -151,7 +189,7 @@ namespace SqlParser.Tests
         [Test]
         public void Optimize_CastStringToBigint()
         {
-            // "A" + "B" => "AB"
+            // CAST("12345" as BIGINT) => 12345L
             var ast = new SqlCastNode
             {
                 Expression = new SqlStringNode("12345"),
@@ -169,7 +207,7 @@ namespace SqlParser.Tests
         [Test]
         public void Optimize_CastStringToNumeric()
         {
-            // "A" + "B" => "AB"
+            // CAST("123.45" as NUMERIC) => 123.45M
             var ast = new SqlCastNode
             {
                 Expression = new SqlStringNode("123.45"),

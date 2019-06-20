@@ -72,9 +72,14 @@ namespace SqlParser.Ast
         {
             if (Expression is SqlStringNode asString)
             {
-                if (asString.Value.Length <= size)
+                var strValue = asString.Value;
+                if (DataType.DataType.Keyword == "CHAR" && strValue.Length < size)
+                    strValue = strValue.PadRight(size);
+                if (strValue.Length > size)
+                    strValue = strValue.Substring(0, size);
+                if (strValue == asString.Value)
                     return asString;
-                return new SqlStringNode(asString.Value.Substring(0, size)) { Location = Location };
+                return new SqlStringNode(strValue) { Location = Location };
             }
 
             if (Expression is SqlNumberNode asNumber)
@@ -82,9 +87,12 @@ namespace SqlParser.Ast
                 var strValue = asNumber.ToString();
                 if (strValue.Length > size)
                     strValue = strValue.Substring(0, size);
+                if (DataType.DataType.Keyword == "CHAR" && strValue.Length < size)
+                    strValue = strValue.PadRight(size);
+
                 return new SqlStringNode(strValue) { Location = Location };
+               
             }
-                // TODO: If it's CHAR(N), do we pad or error on wrong size?
             return this;
         }
     }
