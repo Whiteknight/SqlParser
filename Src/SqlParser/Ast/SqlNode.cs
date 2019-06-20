@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using SqlParser.Stringify;
 using SqlParser.Tokenizing;
 
 namespace SqlParser.Ast
@@ -10,7 +11,7 @@ namespace SqlParser.Ast
         public override string ToString()
         {
             var sb = new StringBuilder();
-            var visitor = new SqlStringifyVisitor(sb);
+            var visitor = new SqlServerStringifyVisitor(sb);
             visitor.Visit(this);
             return sb.ToString();
         }

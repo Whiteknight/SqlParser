@@ -214,6 +214,7 @@ namespace SqlParser.Validation
 
         public override SqlNode VisitWithCte(SqlWithCteNode n)
         {
+            // TODO: Detect recursive CTE and validate correct structure
             return base.VisitWithCte(n);
         }
 

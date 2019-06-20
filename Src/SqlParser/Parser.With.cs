@@ -7,23 +7,25 @@ namespace SqlParser
     {
         private SqlNode ParseWithStatement(Tokenizer t)
         {
-            // "WITH" <CTE> ("," <CTE>)* <Statement>
+            // "WITH" <Cte> ("," <Cte>)* <WithChildStatement>
             var with = new SqlWithNode();
             t.Expect(SqlTokenType.Keyword, "WITH");
             with.Ctes = ParseList(t, ParseCte);
-            var statement = ParseStatement(t);
+            var statement = ParseWithChildStatement(t);
             with.Statement = statement;
             return with;
         }
 
         private SqlWithCteNode ParseCte(Tokenizer t)
         {
-            // <identifier> ("(" <columnList> ")")? "AS" "(" <SelectStatement> ")"
+            // "RECURSIVE"? <identifier> ("(" <columnList> ")")? "AS" "(" <QueryExpression> ")"
+            bool isRecursive = t.NextIs(SqlTokenType.Keyword, "RECURSIVE", true);
             var name = t.Expect(SqlTokenType.Identifier);
             var cteNode = new SqlWithCteNode
             {
                 Location = name.Location,
-                Name = new SqlIdentifierNode(name)
+                Name = new SqlIdentifierNode(name),
+                Recursive = isRecursive
             };
 
             var lookahead = t.Peek();
@@ -33,6 +35,31 @@ namespace SqlParser
             t.Expect(SqlTokenType.Keyword, "AS");
             cteNode.Select = ParseParenthesis(t, ParseQueryExpression).Expression;
             return cteNode;
+        }
+
+        private SqlNode ParseWithChildStatement(Tokenizer t)
+        {
+            while (t.NextIs(SqlTokenType.Symbol, ";", true)) ;
+            var stmt = ParseUnterminatedWithChildStatement(t);
+            t.NextIs(SqlTokenType.Symbol, ";", true);
+            return stmt;
+        }
+
+        private SqlNode ParseUnterminatedWithChildStatement(Tokenizer t)
+        {
+            t.Skip(SqlTokenType.Whitespace);
+
+            var keyword = t.ExpectPeek(SqlTokenType.Keyword);
+            if (keyword.Value == "SELECT")
+                return ParseQueryExpression(t);
+            if (keyword.Value == "INSERT")
+                return ParseInsertStatement(t);
+            if (keyword.Value == "UPDATE")
+                return ParseUpdateStatement(t);
+            if (keyword.Value == "DELETE")
+                return ParseDeleteStatement(t);
+
+            return null;
         }
     }
 }

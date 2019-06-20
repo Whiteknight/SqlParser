@@ -1,14 +1,15 @@
 ﻿using System.Linq;
 using System.Text;
+using SqlParser.Ast;
 
-namespace SqlParser.Ast
+namespace SqlParser.Stringify
 {
-    public class SqlStringifyVisitor : SqlNodeVisitor
+    public class SqlServerStringifyVisitor : SqlNodeVisitor
     {
         private readonly StringBuilder _sb;
         private int _indent;
 
-        public SqlStringifyVisitor(StringBuilder sb)
+        public SqlServerStringifyVisitor(StringBuilder sb)
         {
             _sb = sb;
             _indent = 0;

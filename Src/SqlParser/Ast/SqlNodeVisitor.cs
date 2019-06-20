@@ -229,7 +229,7 @@ namespace SqlParser.Ast
             var name = Visit(n.Name) as SqlIdentifierNode;
             var columns = Visit(n.ColumnNames) as SqlListNode<SqlIdentifierNode>;
             var select = Visit(n.Name);
-            return n.Update(name, columns, select);
+            return n.Update(name, columns, select, n.Recursive);
         }
 
         public virtual SqlNode VisitUpdate(SqlUpdateNode n)
