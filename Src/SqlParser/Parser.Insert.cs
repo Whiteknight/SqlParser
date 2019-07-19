@@ -25,12 +25,16 @@ namespace SqlParser
                 insertNode.Source = ParseValues(t);
             else if (next.IsKeyword("SELECT"))
                 insertNode.Source = ParseQueryExpression(t);
+            else if (next.IsKeyword("EXEC", "EXECUTE"))
+                insertNode.Source = ParseExecute(t);
             else if (next.IsKeyword("DEFAULT"))
             {
                 t.GetNext();
                 t.Expect(SqlTokenType.Keyword, "VALUES");
                 insertNode.Source = new SqlKeywordNode("DEFAULT VALUES");
             }
+            else
+                throw new ParsingException("INSERT INTO statement does not have a source");
 
             return insertNode;
         }

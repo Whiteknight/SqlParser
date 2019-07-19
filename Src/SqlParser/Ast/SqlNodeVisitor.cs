@@ -68,6 +68,20 @@ namespace SqlParser.Ast
             return n.Update(source, where);
         }
 
+        public virtual SqlNode VisitExecute(SqlExecuteNode n)
+        {
+            var name = Visit(n.Name);
+            var args = Visit(n.Arguments) as SqlListNode<SqlExecuteArgumentNode>;
+            return n.Update(name, args);
+        }
+
+        public virtual SqlNode VisitExecuteArgument(SqlExecuteArgumentNode n)
+        {
+            var assign = Visit(n.AssignVariable) as SqlVariableNode;
+            var value = Visit(n.Value);
+            return n.Update(assign, value, n.IsOut);
+        }
+
         public virtual SqlNode VisitFunctionCall(SqlFunctionCallNode n)
         {
             var name = Visit(n.Name);

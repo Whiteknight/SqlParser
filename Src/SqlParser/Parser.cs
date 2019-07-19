@@ -23,12 +23,13 @@ namespace SqlParser
             var statements = new SqlStatementListNode();
             while (true)
             {
+                while (t.NextIs(SqlTokenType.Symbol, ";", true)) ;
+                if (t.Peek().IsType(SqlTokenType.EndOfInput))
+                    break;
                 var statement = ParseStatement(t);
                 if (statement == null)
                     throw ParsingException.CouldNotParseRule(nameof(ParseStatement), t.Peek());
                 statements.Statements.Add(statement);
-                if (t.Peek().IsType(SqlTokenType.EndOfInput))
-                    break;
             }
 
             return statements;
@@ -63,7 +64,6 @@ namespace SqlParser
 
         private SqlNode ParseStatement(Tokenizer t)
         {
-            while (t.NextIs(SqlTokenType.Symbol, ";", true)) ;
             var stmt = ParseUnterminatedStatement(t);
             t.NextIs(SqlTokenType.Symbol, ";", true);
             return stmt;
@@ -88,6 +88,8 @@ namespace SqlParser
                 return ParseDeclare(t);
             if (keyword.Value == "SET")
                 return ParseSet(t);
+            if (keyword.Value == "EXEC" || keyword.Value == "EXECUTE")
+                return ParseExecute(t);
             if (keyword.Value == "BEGIN")
                 return ParseBeginEndStatementList(t);
             if (keyword.Value == "IF")
@@ -140,17 +142,23 @@ namespace SqlParser
         private SqlListNode<TNode> ParseList<TNode>(Tokenizer t, Func<Tokenizer, TNode> getItem)
             where TNode : SqlNode
         {
+            if (t.Peek().IsType(SqlTokenType.EndOfInput))
+                return null;
             // <Item> ("," <Item>)*
             var list = new SqlListNode<TNode>();
             while (true)
             {
                 var item = getItem(t);
+                if (item == null)
+                    break;
                 list.Children.Add(item);
                 if (t.NextIs(SqlTokenType.Symbol, ",", true))
                     continue;
                 break;
             }
 
+            if (list.Children.Count == 0)
+                return null;
             list.Location = list.Children[0].Location;
             return list;
         }

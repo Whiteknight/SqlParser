@@ -147,6 +147,29 @@ namespace SqlParser.Stringify
             return n;
         }
 
+        public override SqlNode VisitExecute(SqlExecuteNode n)
+        {
+            Append("EXECUTE ");
+            Visit(n.Name);
+            Append(" ");
+            Visit(n.Arguments);
+            return n;
+        }
+
+        public override SqlNode VisitExecuteArgument(SqlExecuteArgumentNode n)
+        {
+            if (n.AssignVariable != null)
+            {
+                Visit(n.AssignVariable);
+                Append(" = ");
+            }
+
+            Visit(n.Value);
+            if (n.IsOut)
+                Append(" OUTPUT");
+            return n;
+        }
+
         public override SqlNode VisitFunctionCall(SqlFunctionCallNode n)
         {
             Visit(n.Name);

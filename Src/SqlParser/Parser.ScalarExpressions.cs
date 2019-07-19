@@ -55,6 +55,12 @@ namespace SqlParser
             return ParseScalarExpression4(t);
         }
 
+        private SqlNode ParseScalarTerm(Tokenizer t)
+        {
+            // Parses only a single term
+            return ParseScalarExpression0(t);
+        }
+
         private SqlNode ParseScalarExpression4(Tokenizer t)
         {
             // <CaseExpression> | <Expression3>

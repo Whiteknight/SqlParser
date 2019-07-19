@@ -45,7 +45,7 @@ namespace SqlParser.Validation
             {
                 typeof(SqlNumberNode), typeof(SqlNullNode), typeof(SqlInfixOperationNode),
                 typeof(SqlPrefixOperationNode), typeof(SqlStringNode),
-                typeof(SqlIdentifierNode), typeof(SqlQualifiedIdentifierNode)
+                typeof(SqlIdentifierNode), typeof(SqlQualifiedIdentifierNode), typeof(SqlVariableNode)
             }.Contains(childType))
                 return AddError(parent, name, "Is not an acceptable scalar expression node");
 
