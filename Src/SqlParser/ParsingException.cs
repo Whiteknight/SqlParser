@@ -30,6 +30,11 @@ namespace SqlParser
             return new ParsingException($"Expected {expected} but found {found} at {l}");
         }
 
+        public static ParsingException UnexpectedCharacter(char found, Location l)
+        {
+            return new ParsingException($"Unexpected character {found} at {l}");
+        }
+
         public static ParsingException UnexpectedToken(SqlTokenType type, SqlToken found)
         {
             return new ParsingException($"Expecting token with type={type} but found type={found.Type}, value={found.Value} at {found.Location}");
