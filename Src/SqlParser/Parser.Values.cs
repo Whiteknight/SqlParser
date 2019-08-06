@@ -67,7 +67,7 @@ namespace SqlParser
             // ( <Qualifier> "." )? <Identifier>
             
             var next = t.Peek();
-            if (!next.IsType(SqlTokenType.Identifier))
+            if (!next.IsType(SqlTokenType.Identifier) && !next.IsType(SqlTokenType.Keyword))
                 return null;
             t.GetNext();
             if (!t.Peek().Is(SqlTokenType.Symbol, "."))
@@ -181,7 +181,7 @@ namespace SqlParser
             if (next.IsKeyword("AS"))
             {
                 location = t.GetNext().Location;
-                aliasToken = t.Expect(SqlTokenType.Identifier);
+                aliasToken = t.GetIdentifierOrKeyword();
             }
             else if (next.IsType(SqlTokenType.Identifier))
                 aliasToken = t.GetNext();
@@ -195,7 +195,6 @@ namespace SqlParser
                 Source = node,
                 Alias = new SqlIdentifierNode(aliasToken)
             };
-
 
             if (t.Peek().IsSymbol("("))
                 alias.ColumnNames = ParseParenthesis(t, x => ParseList(x, ParseIdentifier)).Expression;

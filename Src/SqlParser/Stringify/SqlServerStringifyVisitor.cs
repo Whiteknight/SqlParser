@@ -280,25 +280,6 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitValues(SqlValuesNode n)
-        {
-            void forEach(SqlListNode<SqlNode> child)
-            {
-                Append("(");
-                Visit(child);
-                Append(")");
-            }
-
-            Append("VALUES ");
-            forEach(n.Values.First());
-            foreach(var child in n.Values.Skip(1))
-            {
-                Append(", ");
-                forEach(child);
-            }
-            return n;
-        }
-
         public override SqlJoinNode VisitJoin(SqlJoinNode n)
         {
             Visit(n.Left);
@@ -336,6 +317,70 @@ namespace SqlParser.Stringify
                 Visit(n.Children[i]);
             }
 
+            return n;
+        }
+
+        public override SqlNode VisitMerge(SqlMergeNode n)
+        {
+            Append("MERGE");
+            IncreaseIndent();
+            AppendLineAndIndent();
+            Visit(n.Target);
+            AppendLineAndIndent();
+            Append("USING ");
+            Visit(n.Source);
+            AppendLineAndIndent();
+            Append("ON ");
+            Visit(n.MergeCondition);
+            if (n.Matched != null)
+            {
+                AppendLineAndIndent();
+                Append("WHEN MATCHED ");
+                Append(" THEN");
+                IncreaseIndent();
+                AppendLineAndIndent();
+                Visit(n.Matched);
+                DecreaseIndent();
+            }
+            if (n.NotMatchedByTarget != null)
+            {
+                AppendLineAndIndent();
+                Append("WHEN NOT MATCHED BY TARGET ");
+                Append(" THEN");
+                IncreaseIndent();
+                AppendLineAndIndent();
+                Visit(n.NotMatchedByTarget);
+                DecreaseIndent();
+            }
+            if (n.NotMatchedBySource != null)
+            {
+                AppendLineAndIndent();
+                Append("WHEN NOT MATCHED BY SOURCE");
+                Append(" THEN");
+                IncreaseIndent();
+                AppendLineAndIndent();
+                Visit(n.NotMatchedBySource);
+                DecreaseIndent();
+            }
+
+            DecreaseIndent();
+
+            return n;
+        }
+
+        public override SqlNode VisitMergeInsert(SqlMergeInsertNode n)
+        {
+            Append("INSERT (");
+            Visit(n.Columns);
+            Append(") ");
+            Visit(n.Source);
+            return n;
+        }
+
+        public override SqlNode VisitMergeUpdate(SqlMergeUpdateNode n)
+        {
+            Append("UPDATE SET ");
+            Visit(n.SetClause);
             return n;
         }
 
@@ -608,6 +653,25 @@ namespace SqlParser.Stringify
                 Append(" PERCENT");
             if (n.WithTies)
                 Append(" WITH TIES");
+            return n;
+        }
+
+        public override SqlNode VisitValues(SqlValuesNode n)
+        {
+            void forEach(SqlListNode<SqlNode> child)
+            {
+                Append("(");
+                Visit(child);
+                Append(")");
+            }
+
+            Append("VALUES ");
+            forEach(n.Values.First());
+            foreach (var child in n.Values.Skip(1))
+            {
+                Append(", ");
+                forEach(child);
+            }
             return n;
         }
 

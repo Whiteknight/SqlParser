@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SqlParser.Ast;
 
@@ -13,7 +14,7 @@ namespace SqlParser.Validation
             _errors = new List<string>();
         }
 
-        private bool AddError(SqlNode parent, string name, string message)
+        public bool AddError(SqlNode parent, string name, string message)
         {
             _errors.Add($"{parent.GetType().Name}.{name}: {message}");
             return false;
@@ -114,6 +115,13 @@ namespace SqlParser.Validation
         public bool UnexpectedNodeType(SqlNode parent, string name, SqlNode child)
         {
             return AddError(parent, name, $"{child.GetType().Name} is an unexpected node type");
+        }
+
+        public bool Assert(SqlNode parent, string name, Func<bool> predicate)
+        {
+            if (!predicate())
+                return AddError(parent, name, "Condition is false");
+            return true;
         }
     }
 }

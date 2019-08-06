@@ -28,6 +28,8 @@ namespace SqlParser.Tokenizing
             return new SqlToken(s, SqlTokenType.Identifier, location);
         }
 
+        public static SqlToken Keyword(string s, Location location) => new SqlToken(s, SqlTokenType.Keyword, location);
+ 
         public static SqlToken Symbol(string c, Location location) => new SqlToken(c, SqlTokenType.Symbol, location);
 
         public static SqlToken Whitespace(string s, Location location) => new SqlToken(s, SqlTokenType.Whitespace, location);

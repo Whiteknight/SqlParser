@@ -122,6 +122,10 @@ namespace SqlParser.Validation
 
         public override SqlNode VisitInsert(SqlInsertNode n)
         {
+            _result.AssertNotNull(n, nameof(n.Columns), n.Columns);
+            if (n.Columns.Count == 0)
+                _result.AddError(n, nameof(n.Columns), "Must specify at least one column");
+            _result.AssertNotNull(n, nameof(n.Source), n.Source);
             return base.VisitInsert(n);
         }
 
@@ -144,6 +148,41 @@ namespace SqlParser.Validation
         public override SqlNode VisitList<TNode>(SqlListNode<TNode> n)
         {
             return base.VisitList(n);
+        }
+
+        public override SqlNode VisitMerge(SqlMergeNode n)
+        {
+            _result.AssertNotNull(n, nameof(n.Target), n.Target);
+            _result.AssertNotNull(n, nameof(n.Source), n.Source);
+            _result.AssertNotNull(n, nameof(n.MergeCondition), n.MergeCondition);
+            if (n.Matched != null)
+            {
+                if (!(n.Matched is SqlMergeUpdateNode || (n.Matched is SqlKeywordNode keyword && keyword.Keyword == "DELETE")))
+                    _result.AddError(n, nameof(n.Matched), "MATCHED clause must be valid UPDATE or DELETE");
+            }
+            if (n.NotMatchedBySource != null)
+            {
+                if (!(n.NotMatchedBySource is SqlMergeUpdateNode || (n.NotMatchedBySource is SqlKeywordNode keyword && keyword.Keyword == "DELETE")))
+                    _result.AddError(n, nameof(n.NotMatchedBySource), "NOT MATCHED BY SOURCE clause must be valid UPDATE or DELETE");
+            }
+            return base.VisitMerge(n);
+        }
+
+        public override SqlNode VisitMergeInsert(SqlMergeInsertNode n)
+        {
+            _result.AssertNotNull(n, nameof(n.Columns), n.Columns);
+            if (n.Columns.Count == 0)
+                _result.AddError(n, nameof(n.Columns), "Must specify at least one column");
+            _result.AssertNotNull(n, nameof(n.Source), n.Source);
+            return base.VisitMergeInsert(n);
+        }
+
+        public override SqlNode VisitMergeUpdate(SqlMergeUpdateNode n)
+        {
+            _result.AssertNotNull(n, nameof(n.SetClause), n.SetClause);
+            if (n.SetClause.Count == 0)
+                _result.AddError(n, nameof(n.SetClause), "Must specify at least one column");
+            return base.VisitMergeUpdate(n);
         }
 
         public override SqlNode VisitObjectIdentifier(SqlObjectIdentifierNode n)

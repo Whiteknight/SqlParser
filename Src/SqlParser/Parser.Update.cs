@@ -11,8 +11,7 @@ namespace SqlParser
             var updateToken = t.Expect(SqlTokenType.Keyword, "UPDATE");
             // TODO: TOP clause
             var table = ParseMaybeAliasedScalar(t, ParseVariableOrObjectIdentifier);
-            t.Expect(SqlTokenType.Keyword, "SET");
-            var setList = ParseList(t, ParseUpdateColumnAssignExpression);
+            var setList = ParseUpdateSetClause(t);
             // TODO: OUTPUT clause
             var where = ParseWhereClause(t);
             return new SqlUpdateNode
@@ -22,6 +21,13 @@ namespace SqlParser
                 SetClause = setList,
                 WhereClause = where
             };
+        }
+
+        private SqlListNode<SqlInfixOperationNode> ParseUpdateSetClause(Tokenizer t)
+        {
+            t.Expect(SqlTokenType.Keyword, "SET");
+            var setList = ParseList(t, ParseUpdateColumnAssignExpression);
+            return setList;
         }
 
         private SqlInfixOperationNode ParseUpdateColumnAssignExpression(Tokenizer t)

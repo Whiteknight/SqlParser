@@ -1,4 +1,7 @@
-﻿namespace SqlParser.Tokenizing
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace SqlParser.Tokenizing
 {
     public static class TokenizerExtensions
     {
@@ -83,6 +86,41 @@
                     break;
                 }
             }
+        }
+
+        public static SqlToken MaybeGetKeywordSequence(this ITokenizer tokenizer, params string[] allowed)
+        {
+            var lookup = new HashSet<string>(allowed);
+            var keywords = new List<SqlToken>();
+            while (true)
+            {
+                var next = tokenizer.GetNext();
+                if (!next.IsType(SqlTokenType.Keyword))
+                {
+                    tokenizer.PutBack(next);
+                    break;
+                }
+                if (!lookup.Contains(next.Value))
+                {
+                    tokenizer.PutBack(next);
+                    break;
+                }
+                keywords.Add(next);
+            }
+
+            if (!keywords.Any())
+                return null;
+
+            var combined = string.Join(" ", keywords.Select(k => k.Value));
+            return SqlToken.Keyword(combined, keywords.First().Location);
+        }
+
+        public static SqlToken GetIdentifierOrKeyword(this ITokenizer tokenizer)
+        {
+            var next = tokenizer.GetNext();
+            if (next.IsType(SqlTokenType.Identifier) || next.IsType(SqlTokenType.Keyword))
+                return next;
+            throw ParsingException.UnexpectedToken(SqlTokenType.Identifier, next);
         }
     }
 }

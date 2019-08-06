@@ -250,7 +250,6 @@ namespace SqlParser
             {
                 t.Expect(SqlTokenType.Keyword, "JOIN");
                 return new SqlOperatorNode("INNER JOIN", k.Location);
-
             }
 
             var joinOperator = new List<SqlToken>();

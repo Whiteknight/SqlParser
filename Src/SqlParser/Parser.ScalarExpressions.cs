@@ -141,7 +141,7 @@ namespace SqlParser
             // Terminal expression
             // <MethodCall> | <Identifier> | <Variable> | <String> | <Number> | "(" <Expression> ")"
             var next = t.Peek();
-            if (next.IsType(SqlTokenType.Identifier))
+            if (next.IsType(SqlTokenType.Identifier) || next.IsType(SqlTokenType.Keyword))
             {
                 var name = t.GetNext();
                 if (t.Peek().IsSymbol("("))
@@ -152,19 +152,6 @@ namespace SqlParser
 
                 t.PutBack(name);
                 return ParseQualifiedIdentifier(t);
-            }
-            // Some of the built-in function names are treated as Keyword by the tokenizer, so 
-            // try to account for those here
-            if (next.IsType(SqlTokenType.Keyword))
-            {
-                var name = t.GetNext();
-                if (t.Peek().IsSymbol("("))
-                {
-                    t.PutBack(name);
-                    return ParseFunctionCall(t);
-                }
-
-                t.PutBack(name);
             }
 
             if (next.IsType(SqlTokenType.Variable))

@@ -16,7 +16,7 @@ namespace SqlParser
                 Location = insertToken.Location
             };
             insertNode.Table = ParseObjectIdentifier(t);
-            insertNode.Columns = ParseParenthesis(t, a => ParseList(a, ParseIdentifier)).Expression;
+            insertNode.Columns = ParseInsertColumnList(t);
 
             // TODO: OUTPUT Clause
 
@@ -37,6 +37,11 @@ namespace SqlParser
                 throw new ParsingException("INSERT INTO statement does not have a source");
 
             return insertNode;
+        }
+
+        private SqlListNode<SqlIdentifierNode> ParseInsertColumnList(Tokenizer t)
+        {
+            return ParseParenthesis(t, a => ParseList(a, ParseIdentifier)).Expression;
         }
 
         private SqlNode ParseValues(Tokenizer t)
