@@ -68,7 +68,7 @@ namespace SqlParser
             throw ParsingException.CouldNotParseRule(nameof(ParseMergeMatched), t.Peek());
         }
 
-        public SqlNode ParseMergeNotMatched(Tokenizer t)
+        public SqlMergeInsertNode ParseMergeNotMatched(Tokenizer t)
         {
             var insertToken = t.Expect(SqlTokenType.Keyword, "INSERT");
             var insertNode = new SqlMergeInsertNode

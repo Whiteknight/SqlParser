@@ -13,10 +13,10 @@ namespace SqlParser
 
             var insertNode = new SqlInsertNode
             {
-                Location = insertToken.Location
+                Location = insertToken.Location,
+                Table = ParseObjectIdentifier(t),
+                Columns = ParseInsertColumnList(t)
             };
-            insertNode.Table = ParseObjectIdentifier(t);
-            insertNode.Columns = ParseInsertColumnList(t);
 
             // TODO: OUTPUT Clause
 

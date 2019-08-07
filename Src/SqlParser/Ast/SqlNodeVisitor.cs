@@ -153,7 +153,7 @@ namespace SqlParser.Ast
             var source = Visit(n.Source);
             var cond = Visit(n.MergeCondition);
             var m = Visit(n.Matched);
-            var nmt = Visit(n.NotMatchedByTarget);
+            var nmt = Visit(n.NotMatchedByTarget) as SqlMergeInsertNode;
             var nms = Visit(n.NotMatchedBySource);
             return n.Update(target, source, cond, m, nmt, nms);
         }

@@ -7,12 +7,12 @@
         public SqlNode Source { get; set; }
         public SqlNode MergeCondition { get; set; }
         public SqlNode Matched { get; set; }
-        public SqlNode NotMatchedByTarget { get; set; }
+        public SqlMergeInsertNode NotMatchedByTarget { get; set; }
         public SqlNode NotMatchedBySource { get; set; }
 
         public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitMerge(this);
 
-        public SqlMergeNode Update(SqlNode target, SqlNode source, SqlNode condition, SqlNode matched, SqlNode nmatchtarget, SqlNode nmatchsource)
+        public SqlMergeNode Update(SqlNode target, SqlNode source, SqlNode condition, SqlNode matched, SqlMergeInsertNode nmatchtarget, SqlNode nmatchsource)
         {
             if (Target == target && Source == source && MergeCondition == condition && Matched == matched && NotMatchedByTarget == nmatchtarget && NotMatchedBySource == nmatchsource)
                 return this;

@@ -240,6 +240,7 @@ namespace SqlParser
                     return new SqlOperatorNode("CROSS APPLY", k.Location);
                 if (t.NextIs(SqlTokenType.Keyword, "JOIN", true))
                     return new SqlOperatorNode("CROSS JOIN", k.Location);
+                throw ParsingException.CouldNotParseRule(nameof(ParseJoinOperator), k);
             }
             if (k.Value == "NATURAL")
             {
