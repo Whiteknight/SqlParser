@@ -58,6 +58,8 @@ namespace SqlParser
                 return ParseUpdateStatement(t);
             if (keyword.Value == "DELETE")
                 return ParseDeleteStatement(t);
+            if (keyword.Value == "MERGE")
+                return ParseMergeStatement(t);
 
             return null;
         }

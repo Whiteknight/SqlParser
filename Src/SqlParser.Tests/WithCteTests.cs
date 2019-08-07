@@ -209,5 +209,87 @@ INSERT INTO MyTable(ColumnA)
                 }
             );
         }
+
+        [Test]
+        public void With_Merge()
+        {
+            const string s = @"
+WITH 
+Cte1 AS (
+    SELECT cola FROM MyTable
+)
+MERGE table1 AS TARGET
+    USING MyTable AS SOURCE
+    ON TARGET.Id = SOURCE.Id
+    WHEN MATCHED THEN UPDATE SET TARGET.StatusCode = 'OK'
+;";
+            var target = new Parser();
+            var result = target.Parse(s);
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlWithNode
+                {
+                    Ctes = new SqlListNode<SqlWithCteNode>
+                    {
+                        new SqlWithCteNode
+                        {
+                            Select = new SqlSelectNode
+                            {
+                                Columns = new SqlListNode<SqlNode>
+                                {
+                                    new SqlIdentifierNode("cola")
+                                },
+                                FromClause = new SqlObjectIdentifierNode("MyTable")
+                            },
+                            Name = new SqlIdentifierNode("Cte1")
+                        }
+                    },
+                    Statement = new SqlMergeNode
+                    {
+                        Target = new SqlAliasNode
+                        {
+                            Source = new SqlObjectIdentifierNode("table1"),
+                            Alias = new SqlIdentifierNode("TARGET")
+                        },
+                        Source = new SqlAliasNode
+                        {
+                            Source = new SqlObjectIdentifierNode("MyTable"),
+                            Alias = new SqlIdentifierNode("SOURCE")
+                        },
+                        MergeCondition = new SqlInfixOperationNode
+                        {
+                            Left = new SqlQualifiedIdentifierNode
+                            {
+                                Qualifier = new SqlIdentifierNode("TARGET"),
+                                Identifier = new SqlIdentifierNode("Id")
+                            },
+                            Operator = new SqlOperatorNode("="),
+                            Right = new SqlQualifiedIdentifierNode
+                            {
+                                Qualifier = new SqlIdentifierNode("SOURCE"),
+                                Identifier = new SqlIdentifierNode("Id")
+                            }
+                        },
+                        Matched = new SqlMergeUpdateNode
+                        {
+                            SetClause = new SqlListNode<SqlInfixOperationNode>
+                            {
+                                new SqlInfixOperationNode
+                                {
+                                    Left = new SqlQualifiedIdentifierNode
+                                    {
+                                        Qualifier = new SqlIdentifierNode("TARGET"),
+                                        Identifier = new SqlIdentifierNode("StatusCode")
+                                    },
+                                    Operator = new SqlOperatorNode("="),
+                                    Right = new SqlStringNode("OK")
+                                }
+                            }
+                        }
+                    }
+                }
+            );
+        }
     }
 }
