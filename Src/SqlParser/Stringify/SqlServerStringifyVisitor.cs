@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using SqlParser.Ast;
@@ -7,13 +8,18 @@ namespace SqlParser.Stringify
 {
     public class SqlServerStringifyVisitor : SqlNodeVisitor
     {
-        private readonly StringBuilder _sb;
+        private readonly TextWriter _tw;
         private int _indent;
 
-        public SqlServerStringifyVisitor(StringBuilder sb)
+        public SqlServerStringifyVisitor(TextWriter tw)
         {
-            _sb = sb;
+            _tw = tw ?? throw new ArgumentNullException(nameof(tw));
             _indent = 0;
+        }
+
+        public SqlServerStringifyVisitor(StringBuilder sb)
+            : this(new StringWriter(sb))
+        {
         }
 
         public void AppendLineAndIndent(string s = "")
@@ -22,13 +28,13 @@ namespace SqlParser.Stringify
             WriteIndent();
         }
 
-        public void AppendLine(string s = "") => _sb.AppendLine(s);
-        public void Append(string s) => _sb.Append(s);
+        public void AppendLine(string s = "") => _tw.WriteLine(s);
+        public void Append(string s) => _tw.Write(s);
         public void WriteIndent()
         {
             if (_indent <= 0)
                 return;
-            _sb.Append(new string(' ', _indent * 4));
+            _tw.Write(new string(' ', _indent * 4));
         }
         public void IncreaseIndent() => _indent++;
         public void DecreaseIndent() => _indent--;
