@@ -187,7 +187,10 @@ namespace SqlParser
                 };
             }
 
-            throw ParsingException.CouldNotParseRule(nameof(ParseBooleanExpression1), operatorToken);
+            // There's no operator, it's just a scalar expression in a boolean context.
+            // This happens in CASE statements, for example. Return the scalar expression
+            // as-is and let the AST deal with it.
+            return left;
         }
     }
 }

@@ -7,14 +7,15 @@ namespace SqlParser
     {
         private SqlNode ParseCaseExpression(Tokenizer t)
         {
-            // "CASE" <Expression> <When>+ <Else>? "END"
+            // "CASE" <Expression>? <When>+ <Else>? "END"
             var caseToken = t.Expect(SqlTokenType.Keyword, "CASE");
             var caseNode = new SqlCaseNode
             {
-                Location = caseToken.Location,
-                InputExpression = ParseScalarExpression(t)
+                Location = caseToken.Location
             };
-            while(true)
+            if (!t.Peek().IsKeyword("WHEN"))
+                caseNode.InputExpression = ParseScalarExpression(t);
+            while (true)
             {
                 var lookahead = t.Peek();
                 if (lookahead.IsKeyword("END"))
@@ -32,7 +33,7 @@ namespace SqlParser
                 if (lookahead.IsKeyword("WHEN"))
                 {
                     var whenNode = t.GetNext();
-                    var condition = ParseScalarExpression(t);
+                    var condition = ParseBooleanExpression(t);
                     t.Expect(SqlTokenType.Keyword, "THEN");
                     var result = ParseScalarExpression(t);
                     caseNode.WhenExpressions.Add(new SqlCaseWhenNode
@@ -141,7 +142,23 @@ namespace SqlParser
             // Terminal expression
             // <MethodCall> | <Identifier> | <Variable> | <String> | <Number> | "(" <Expression> ")"
             var next = t.Peek();
-            if (next.IsType(SqlTokenType.Identifier) || next.IsType(SqlTokenType.Keyword))
+            if (next.IsKeyword("TARGET", "SOURCE"))
+                return ParseQualifiedIdentifier(t);
+
+            if (next.IsKeyword("CAST", "CONVERT", "COUNT"))
+
+            {
+                var name = t.GetNext();
+                if (t.Peek().IsSymbol("("))
+                {
+                    t.PutBack(name);
+                    return ParseFunctionCall(t);
+                }
+
+                throw ParsingException.CouldNotParseRule(nameof(ParseScalarExpression0), next);
+            }
+
+            if (next.IsType(SqlTokenType.Identifier) )
             {
                 var name = t.GetNext();
                 if (t.Peek().IsSymbol("("))
