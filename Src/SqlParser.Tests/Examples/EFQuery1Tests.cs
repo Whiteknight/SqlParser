@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Linq;
 using NUnit.Framework;
+using SqlParser.Analysis;
+using SqlParser.Ast;
+using FluentAssertions;
 using SqlParser.Tests.Utility;
 
 namespace SqlParser.Tests.Examples
@@ -52,7 +53,20 @@ SELECT
         {
             var target = new Parser();
             var result = target.Parse(Query);
-            result.Should().NotBeNull();
+            SqlNodeExtensions.Should(result).NotBeNull();
+        }
+
+        [Test]
+        public void GetTableNames_Test()
+        {
+            var ast = new Parser().Parse(Query);
+            var target = new GetNodesOfTypeAnalysisVisitor<SqlObjectIdentifierNode>();
+            target.Visit(ast);
+            var result = target.GetNodes().Select(n => n.ToString()).ToList();
+            result.Count.Should().Be(3);
+            result.Should().Contain("[dbo].[Table1]");
+            result.Should().Contain("[dbo].[Table2]");
+            result.Should().Contain("[dbo].[Table3]");
         }
     }
 }
