@@ -6,7 +6,7 @@
         public SqlNode Then { get; set; }
         public SqlNode Else { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitIf(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitIf(this);
 
         public SqlIfNode Update(SqlNode cond, SqlNode then, SqlNode e)
         {

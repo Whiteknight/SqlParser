@@ -6,7 +6,7 @@
         public bool Percent { get; set; }
         public bool WithTies { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitTop(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitTop(this);
 
         public SqlSelectTopNode Update(SqlNode value, bool percent, bool withTies)
         {

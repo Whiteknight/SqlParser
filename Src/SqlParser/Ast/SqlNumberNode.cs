@@ -71,7 +71,7 @@ namespace SqlParser.Ast
             }
         }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitNumber(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitNumber(this);
 
         public bool IsNumeric => _type == DataType.Numeric;
         public bool IsInt => _type == DataType.Int;

@@ -7,7 +7,7 @@
         public SqlNode Low { get; set; }
         public SqlNode High { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitBetween(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitBetween(this);
 
         public SqlBetweenOperationNode Update(bool not, SqlNode left, SqlNode low, SqlNode high)
         {

@@ -15,7 +15,7 @@
 
         public TNode Expression { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitParenthesis(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitParenthesis(this);
 
         public SqlParenthesisNode<TNode> Update(TNode expr)
         {

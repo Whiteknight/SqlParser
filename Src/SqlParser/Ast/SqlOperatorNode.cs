@@ -28,7 +28,7 @@ namespace SqlParser.Ast
 
         public string Operator { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitOperator(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitOperator(this);
 
         public SqlStringNode Apply(SqlStringNode left, SqlStringNode right)
         {

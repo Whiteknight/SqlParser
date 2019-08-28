@@ -5,7 +5,7 @@
         public SqlNode Name { get; set; }
         public SqlListNode<SqlNode> Arguments { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitFunctionCall(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitFunctionCall(this);
 
         public SqlFunctionCallNode Update(SqlNode name, SqlListNode<SqlNode> args)
         {

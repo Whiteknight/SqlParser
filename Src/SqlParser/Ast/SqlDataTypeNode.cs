@@ -5,7 +5,7 @@
         public SqlKeywordNode DataType { get; set; }
         public SqlNode Size { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitDataType(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitDataType(this);
 
         public SqlDataTypeNode Update(SqlKeywordNode keyword, SqlNode size)
         {

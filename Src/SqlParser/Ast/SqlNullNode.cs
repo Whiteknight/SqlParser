@@ -13,6 +13,6 @@ namespace SqlParser.Ast
             Location = t.Location;
         }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitNull(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitNull(this);
     }
 }

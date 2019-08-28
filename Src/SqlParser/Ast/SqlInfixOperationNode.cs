@@ -37,7 +37,7 @@ namespace SqlParser.Ast
             "ALL", "ANY", "SOME"
         };
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitInfixOperation(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitInfixOperation(this);
 
         public SqlInfixOperationNode Update(SqlNode left, SqlOperatorNode op, SqlNode right)
         {

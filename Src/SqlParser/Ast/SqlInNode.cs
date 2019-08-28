@@ -19,6 +19,6 @@
             };
         }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitIn(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitIn(this);
     }
 }

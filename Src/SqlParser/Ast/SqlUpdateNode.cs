@@ -9,7 +9,7 @@ namespace SqlParser.Ast
         public SqlNode WhereClause { get; set; }
         public SymbolTable Symbols { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitUpdate(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitUpdate(this);
 
         public SqlUpdateNode Update(SqlNode source, SqlListNode<SqlInfixOperationNode> set, SqlNode where)
         {

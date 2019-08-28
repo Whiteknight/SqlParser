@@ -7,7 +7,7 @@
         public SqlNode Offset { get; set; }
         public SqlNode Limit { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitOrderBy(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitOrderBy(this);
 
         public SqlSelectOrderByClauseNode Update(SqlListNode<SqlOrderByEntryNode> entries, SqlNode offset, SqlNode limit)
         {
@@ -28,7 +28,7 @@
         public SqlNode Source { get; set; }
         public string Direction { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitOrderByEntry(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitOrderByEntry(this);
 
         public SqlOrderByEntryNode Update(SqlNode source, string direction)
         {

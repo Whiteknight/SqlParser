@@ -6,7 +6,7 @@
         public SqlOperatorNode Operator { get; set; }
         public SqlNode Right { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitSet(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitSet(this);
 
         public SqlSetNode Update(SqlVariableNode v, SqlOperatorNode op, SqlNode right)
         {

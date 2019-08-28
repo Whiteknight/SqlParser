@@ -13,7 +13,7 @@ namespace SqlParser.Ast
         public List<SqlCaseWhenNode> WhenExpressions { get; set; }
         public SqlNode ElseExpression { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitCase(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitCase(this);
 
         public SqlCaseNode Update(SqlNode input, List<SqlCaseWhenNode> whens, SqlNode e)
         {
@@ -34,7 +34,7 @@ namespace SqlParser.Ast
         public SqlNode Condition { get; set; }
         public SqlNode Result { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitCaseWhen(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitCaseWhen(this);
 
         public SqlCaseWhenNode Update(SqlNode cond, SqlNode result)
         {

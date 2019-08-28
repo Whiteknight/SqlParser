@@ -10,7 +10,7 @@
         public SqlMergeInsertNode NotMatchedByTarget { get; set; }
         public SqlNode NotMatchedBySource { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitMerge(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitMerge(this);
 
         public SqlMergeNode Update(SqlNode target, SqlNode source, SqlNode condition, SqlNode matched, SqlMergeInsertNode nmatchtarget, SqlNode nmatchsource)
         {
@@ -33,7 +33,7 @@
     {
         public SqlListNode<SqlInfixOperationNode> SetClause { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitMergeUpdate(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitMergeUpdate(this);
 
         public SqlMergeUpdateNode Update(SqlListNode<SqlInfixOperationNode> set)
         {
@@ -52,7 +52,7 @@
         public SqlListNode<SqlIdentifierNode> Columns { get; set; }
         public SqlNode Source { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitMergeInsert(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitMergeInsert(this);
 
         public SqlMergeInsertNode Update(SqlListNode<SqlIdentifierNode> columns, SqlNode source)
         {

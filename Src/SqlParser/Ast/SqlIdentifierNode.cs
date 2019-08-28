@@ -21,7 +21,7 @@ namespace SqlParser.Ast
 
         public string Name { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitIdentifier(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitIdentifier(this);
     }
 
     public class SqlQualifiedIdentifierNode : SqlNode
@@ -39,7 +39,7 @@ namespace SqlParser.Ast
         public SqlIdentifierNode Qualifier { get; set; }
         public SqlNode Identifier { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitQualifiedIdentifier(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitQualifiedIdentifier(this);
 
         public SqlQualifiedIdentifierNode Update(SqlIdentifierNode qualfier, SqlNode id)
         {
@@ -91,7 +91,7 @@ namespace SqlParser.Ast
         public SqlIdentifierNode Schema { get; set; }
         public SqlIdentifierNode Name { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitObjectIdentifier(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitObjectIdentifier(this);
 
         public SqlObjectIdentifierNode Update(SqlIdentifierNode server, SqlIdentifierNode db, SqlIdentifierNode schema, SqlIdentifierNode name)
         {

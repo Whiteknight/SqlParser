@@ -7,7 +7,7 @@
         public SqlNode Right { get; set; }
         public SqlNode OnCondition { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitJoin(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitJoin(this);
 
         public SqlJoinNode Update(SqlNode left, SqlOperatorNode op, SqlNode right, SqlNode cond)
         {

@@ -6,7 +6,7 @@ namespace SqlParser.Ast
 {
     public abstract class SqlNode
     {
-        public abstract SqlNode Accept(SqlNodeVisitor visitor);
+        public abstract SqlNode Accept(ISqlNodeVisitImplementation visitor);
 
         public override string ToString()
         {

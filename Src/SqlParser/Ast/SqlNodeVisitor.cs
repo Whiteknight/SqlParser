@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace SqlParser.Ast
 {
-    public abstract class SqlNodeVisitor
+    public abstract class SqlNodeVisitor : ISqlNodeVisitor, ISqlNodeVisitImplementation
     {
         // TODO: Some kind of ShouldVisit predicate so certain visitors can choose which trees to navigate
         public virtual SqlNode Visit(SqlNode n) => n?.Accept(this);
@@ -105,7 +105,6 @@ namespace SqlParser.Ast
             var items = Visit(n.Items) as SqlListNode<SqlNode>;
             return n.Update(n.Not, search, items);
         }
-
 
         public virtual SqlNode VisitInfixOperation(SqlInfixOperationNode n)
         {

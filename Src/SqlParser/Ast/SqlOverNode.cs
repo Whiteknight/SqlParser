@@ -7,7 +7,7 @@
         public SqlNode OrderBy { get; set; }
         public SqlNode RowsRange { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitOver(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitOver(this);
 
         public SqlOverNode Update(SqlNode expr, SqlNode part, SqlNode orderBy, SqlNode rows)
         {

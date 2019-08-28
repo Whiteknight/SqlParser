@@ -6,7 +6,7 @@
 
         public SqlListNode<SqlExecuteArgumentNode> Arguments { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitExecute(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitExecute(this);
 
         public SqlExecuteNode Update(SqlNode name, SqlListNode<SqlExecuteArgumentNode> args)
         {
@@ -26,7 +26,7 @@
         public SqlNode Value { get; set; }
         public bool IsOut { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitExecuteArgument(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitExecuteArgument(this);
 
         public SqlExecuteArgumentNode Update(SqlVariableNode assign, SqlNode value, bool isOut)
         {

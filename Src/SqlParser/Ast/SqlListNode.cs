@@ -18,7 +18,7 @@ namespace SqlParser.Ast
 
         public List<TNode> Children { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitList(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitList(this);
 
         public SqlListNode<TNode> Update(List<TNode> children)
         {

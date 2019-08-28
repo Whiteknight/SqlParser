@@ -21,7 +21,7 @@ namespace SqlParser.Ast
             Statements = statements ?? new List<SqlNode>();
         }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitStatementList(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitStatementList(this);
 
         public SqlStatementListNode Update(List<SqlNode> stmts, bool isBeginEnd)
         {

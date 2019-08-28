@@ -6,7 +6,7 @@
         public SqlIdentifierNode Alias { get; set; }
         public SqlListNode<SqlIdentifierNode> ColumnNames { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitAlias(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitAlias(this);
 
         public SqlAliasNode Update(SqlNode source, SqlIdentifierNode alias, SqlListNode<SqlIdentifierNode> columns)
         {

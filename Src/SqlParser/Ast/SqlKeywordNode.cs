@@ -21,6 +21,6 @@ namespace SqlParser.Ast
 
         public string Keyword { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitKeyword(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitKeyword(this);
     }
 }

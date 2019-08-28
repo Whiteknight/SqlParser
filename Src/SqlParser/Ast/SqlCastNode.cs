@@ -7,7 +7,7 @@ namespace SqlParser.Ast
         public SqlNode Expression { get; set; }
         public SqlDataTypeNode DataType { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitCast(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitCast(this);
 
         public SqlCastNode Update(SqlNode expr, SqlDataTypeNode dt)
         {

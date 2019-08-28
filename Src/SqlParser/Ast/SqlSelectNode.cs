@@ -15,7 +15,7 @@ namespace SqlParser.Ast
         public SqlNode HavingClause { get; set; }
         public SymbolTable Symbols { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitSelect(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitSelect(this);
 
         public SqlSelectNode Update(string modifier, SqlSelectTopNode top, SqlListNode<SqlNode> columns, 
             SqlNode from, SqlNode where, SqlSelectOrderByClauseNode orderBy,

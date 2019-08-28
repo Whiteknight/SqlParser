@@ -7,7 +7,7 @@
         public SqlNode DataType { get; set; }
         public SqlNode Initializer { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitDeclare(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitDeclare(this);
 
         public SqlDeclareNode Update(SqlVariableNode v, SqlNode dataType, SqlNode init)
         {

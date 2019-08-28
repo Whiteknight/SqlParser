@@ -8,7 +8,7 @@ namespace SqlParser.Ast
         public SqlNode WhereClause { get; set; }
         public SymbolTable Symbols { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitDelete(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitDelete(this);
 
         public SqlDeleteNode Update(SqlNode source, SqlNode where)
         {

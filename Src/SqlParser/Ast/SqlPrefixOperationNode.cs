@@ -5,7 +5,7 @@
         public SqlOperatorNode Operator { get; set; }
         public SqlNode Right { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitPrefixOperation(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitPrefixOperation(this);
 
         public SqlPrefixOperationNode Update(SqlOperatorNode op, SqlNode right)
         {

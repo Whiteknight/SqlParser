@@ -8,7 +8,7 @@ namespace SqlParser.Ast
         public SqlNode Statement { get; set; }
         public SymbolTable Symbols { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitWith(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitWith(this);
         public SqlWithNode Update(SqlListNode<SqlWithCteNode> ctes, SqlNode stmt)
         {
             if (ctes == Ctes && Statement == stmt)
@@ -29,7 +29,7 @@ namespace SqlParser.Ast
         public SqlListNode<SqlIdentifierNode> ColumnNames { get; set; }
         public bool Recursive { get; set; }
 
-        public override SqlNode Accept(SqlNodeVisitor visitor) => visitor.VisitWithCte(this);
+        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitWithCte(this);
 
         public SqlWithCteNode Update(SqlIdentifierNode name, SqlListNode<SqlIdentifierNode>  columns, SqlNode select, bool recursive)
         {
