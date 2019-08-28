@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using SqlParser.Ast;
 
@@ -306,14 +307,17 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitList<TNode>(SqlListNode<TNode> n)
+        public override SqlNode VisitList<TNode>(SqlListNode<TNode> n) => VisitList(n, () => Append(", "));
+
+        private SqlNode VisitList<TNode>(SqlListNode<TNode> n, Action between)
+            where TNode : SqlNode
         {
             if (n.Children.Count == 0)
                 return n;
             Visit(n.Children[0]);
             for (int i = 1; i < n.Children.Count; i++)
             {
-                Append(", ");
+                between?.Invoke();
                 Visit(n.Children[i]);
             }
 
@@ -549,7 +553,7 @@ namespace SqlParser.Stringify
                 Visit(n.TopClause);
             }
             AppendLineAndIndent();
-            Visit(n.Columns);
+            VisitList(n.Columns, () => AppendLineAndIndent(","));
             if (n.FromClause != null)
             {
                 AppendLineAndIndent();

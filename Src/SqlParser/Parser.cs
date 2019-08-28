@@ -97,6 +97,9 @@ namespace SqlParser
             if (keyword.Value == "MERGE")
                 return ParseMergeStatement(t);
 
+            // TODO: RETURN?
+            // TODO: THROW/TRY/CATCH
+            // TODO: WHILE/CONTINUE/BREAK
             // TODO: CREATE/DROP/ALTER? Do we want to handle DDL statments here?
             return null;
         }
