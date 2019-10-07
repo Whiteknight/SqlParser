@@ -1,45 +1,14 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Text;
 using SqlParser.Ast;
 
 namespace SqlParser.Stringify
 {
-    public class SqlServerStringifyVisitor : SqlNodeVisitor
+    public partial class SqlServerStringifyVisitor : ISqlNodeVisitor, ISqlNodeVisitImplementation
     {
-        private readonly TextWriter _tw;
-        private int _indent;
+        public SqlNode Visit(SqlNode n) => n?.Accept(this);
 
-        public SqlServerStringifyVisitor(TextWriter tw)
-        {
-            _tw = tw ?? throw new ArgumentNullException(nameof(tw));
-            _indent = 0;
-        }
-
-        public SqlServerStringifyVisitor(StringBuilder sb)
-            : this(new StringWriter(sb))
-        {
-        }
-
-        public void AppendLineAndIndent(string s = "")
-        {
-            AppendLine(s);
-            WriteIndent();
-        }
-
-        public void AppendLine(string s = "") => _tw.WriteLine(s);
-        public void Append(string s) => _tw.Write(s);
-        public void WriteIndent()
-        {
-            if (_indent <= 0)
-                return;
-            _tw.Write(new string(' ', _indent * 4));
-        }
-        public void IncreaseIndent() => _indent++;
-        public void DecreaseIndent() => _indent--;
-
-        public override SqlNode VisitAlias(SqlAliasNode n)
+        public SqlNode VisitAlias(SqlAliasNode n)
         {
             Visit(n.Source);
             Append(" AS ");
@@ -53,19 +22,13 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitBetween(SqlBetweenOperationNode n)
+        public SqlNode VisitBetween(SqlBetweenOperationNode n)
         {
-            Visit(n.Left);
-            if (n.Not)
-                Append(" NOT");
-            Append(" BETWEEN ");
-            Visit(n.Low);
-            Append(" AND ");
-            Visit(n.High);
+            Append(n.Left, n.Not ? " NOT" : "", " BETWEEN ", n.Low, " AND ", n.High);
             return n;
         }
 
-        public override SqlNode VisitCase(SqlCaseNode n)
+        public SqlNode VisitCase(SqlCaseNode n)
         {
             Append("CASE ");
             Visit(n.InputExpression);
@@ -89,26 +52,19 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitCaseWhen(SqlCaseWhenNode n)
+        public SqlNode VisitCaseWhen(SqlCaseWhenNode n)
         {
-            Append("WHEN ");
-            Visit(n.Condition);
-            Append(" THEN ");
-            Visit(n.Result);
+            Append("WHEN ", n.Condition, " THEN ", n.Result);
             return n;
         }
 
-        public override SqlNode VisitCast(SqlCastNode n)
+        public SqlNode VisitCast(SqlCastNode n)
         {
-            Append("CAST(");
-            Visit(n.Expression);
-            Append(" AS ");
-            Visit(n.DataType);
-            Append(")");
+            Append("CAST(", n.Expression, " AS ", n.DataType, ")");
             return n;
         }
 
-        public override SqlNode VisitDataType(SqlDataTypeNode n)
+        public SqlNode VisitDataType(SqlDataTypeNode n)
         {
             Visit(n.DataType);
             if (n.Size != null)
@@ -121,7 +77,7 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitDeclare(SqlDeclareNode n)
+        public SqlNode VisitDeclare(SqlDeclareNode n)
         {
             Append("DECLARE ");
             Visit(n.Variable);
@@ -136,7 +92,7 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitDelete(SqlDeleteNode n)
+        public SqlNode VisitDelete(SqlDeleteNode n)
         {
             Append("DELETE FROM ");
             Visit(n.Source);
@@ -154,16 +110,13 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitExecute(SqlExecuteNode n)
+        public SqlNode VisitExecute(SqlExecuteNode n)
         {
-            Append("EXECUTE ");
-            Visit(n.Name);
-            Append(" ");
-            Visit(n.Arguments);
+            Append("EXECUTE ", n.Name, " ", n.Arguments);
             return n;
         }
 
-        public override SqlNode VisitExecuteArgument(SqlExecuteArgumentNode n)
+        public SqlNode VisitExecuteArgument(SqlExecuteArgumentNode n)
         {
             if (n.AssignVariable != null)
             {
@@ -177,25 +130,19 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitFunctionCall(SqlFunctionCallNode n)
+        public SqlNode VisitFunctionCall(SqlFunctionCallNode n)
         {
-            Visit(n.Name);
-            Append("(");
-            if (n.Arguments != null)
-                Visit(n.Arguments);
-            Append(")");
+            Append(n.Name, "(", n.Arguments, ")");
             return n;
         }
 
-        public override SqlNode VisitIdentifier(SqlIdentifierNode n)
+        public SqlNode VisitIdentifier(SqlIdentifierNode n)
         {
-            Append("[");
-            Append(n.Name);
-            Append("]");
+            Append("[", n.Name, "]");
             return n;
         }
 
-        public override SqlNode VisitIf(SqlIfNode n)
+        public SqlNode VisitIf(SqlIfNode n)
         {
             Append("IF (");
             Visit(n.Condition);
@@ -220,18 +167,13 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitIn(SqlInNode n)
+        public SqlNode VisitIn(SqlInNode n)
         {
-            Visit(n.Search);
-            if (n.Not)
-                Append(" NOT");
-            Append(" IN (");
-            Visit(n.Items);
-            Append(")");
+            Append(n.Search, n.Not ? " NOT" : "", " IN (", n.Items, ")");
             return n;
         }
 
-        public override SqlNode VisitInfixOperation(SqlInfixOperationNode n)
+        public SqlNode VisitInfixOperation(SqlInfixOperationNode n)
         {
             void ToStringChild(SqlNode node)
             {
@@ -273,7 +215,7 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitInsert(SqlInsertNode n)
+        public SqlNode VisitInsert(SqlInsertNode n)
         {
             Append("INSERT INTO ");
             Visit(n.Table);
@@ -287,7 +229,7 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlJoinNode VisitJoin(SqlJoinNode n)
+        public SqlJoinNode VisitJoin(SqlJoinNode n)
         {
             Visit(n.Left);
             AppendLineAndIndent();
@@ -307,13 +249,15 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitKeyword(SqlKeywordNode n)
+        public SqlNode VisitKeyword(SqlKeywordNode n)
         {
             Append(n.Keyword);
             return n;
         }
 
-        public override SqlNode VisitList<TNode>(SqlListNode<TNode> n) => VisitList(n, () => Append(", "));
+        public SqlNode VisitList<TNode>(SqlListNode<TNode> n) 
+            where TNode : SqlNode 
+            => VisitList(n, () => Append(", "));
 
         private SqlNode VisitList<TNode>(SqlListNode<TNode> n, Action between)
             where TNode : SqlNode
@@ -330,7 +274,7 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitMerge(SqlMergeNode n)
+        public SqlNode VisitMerge(SqlMergeNode n)
         {
             Append("MERGE");
             IncreaseIndent();
@@ -378,35 +322,31 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitMergeInsert(SqlMergeInsertNode n)
+        public SqlNode VisitMergeInsert(SqlMergeInsertNode n)
         {
-            Append("INSERT (");
-            Visit(n.Columns);
-            Append(") ");
-            Visit(n.Source);
+            Append("INSERT (", n.Columns, ") ", n.Source);
             return n;
         }
 
-        public override SqlNode VisitMergeUpdate(SqlMergeUpdateNode n)
+        public SqlNode VisitMergeUpdate(SqlMergeUpdateNode n)
         {
-            Append("UPDATE SET ");
-            Visit(n.SetClause);
+            Append("UPDATE SET ", n.SetClause);
             return n;
         }
 
-        public override SqlNode VisitNull(SqlNullNode n)
+        public SqlNode VisitNull(SqlNullNode n)
         {
             Append("NULL");
             return n;
         }
 
-        public override SqlNode VisitNumber(SqlNumberNode n)
+        public SqlNode VisitNumber(SqlNumberNode n)
         {
             Append(n.ToString());
             return n;
         }
 
-        public override SqlNode VisitObjectIdentifier(SqlObjectIdentifierNode n)
+        public SqlNode VisitObjectIdentifier(SqlObjectIdentifierNode n)
         {
             if (n.Server != null)
             {
@@ -430,13 +370,13 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitOperator(SqlOperatorNode n)
+        public SqlNode VisitOperator(SqlOperatorNode n)
         {
             Append(n.Operator);
             return n;
         }
 
-        public override SqlNode VisitOrderBy(SqlSelectOrderByClauseNode n)
+        public SqlNode VisitOrderBy(SqlSelectOrderByClauseNode n)
         {
             Append("ORDER BY");
             IncreaseIndent();
@@ -463,7 +403,7 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitOrderByEntry(SqlOrderByEntryNode n)
+        public SqlNode VisitOrderByEntry(SqlOrderByEntryNode n)
         {
             Visit(n.Source);
             if (!string.IsNullOrEmpty(n.Direction))
@@ -475,7 +415,7 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitOver(SqlOverNode n)
+        public SqlNode VisitOver(SqlOverNode n)
         {
             Visit(n.Expression);
             if (n.PartitionBy == null && n.OrderBy == null && n.RowsRange == null)
@@ -501,7 +441,8 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitParenthesis<TNode>(SqlParenthesisNode<TNode> n)
+        public SqlNode VisitParenthesis<TNode>(SqlParenthesisNode<TNode> n) 
+            where TNode : SqlNode
         {
             AppendLine("(");
             IncreaseIndent();
@@ -514,7 +455,7 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitPrefixOperation(SqlPrefixOperationNode n)
+        public SqlNode VisitPrefixOperation(SqlPrefixOperationNode n)
         {
             Visit(n.Operator);
             Append(" ");
@@ -530,7 +471,7 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitQualifiedIdentifier(SqlQualifiedIdentifierNode n)
+        public SqlNode VisitQualifiedIdentifier(SqlQualifiedIdentifierNode n)
         {
             if (n.Qualifier != null)
             {
@@ -542,7 +483,7 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitSelect(SqlSelectNode n)
+        public SqlNode VisitSelect(SqlSelectNode n)
         {
             Append("SELECT ");
             if (n.Modifier != null)
@@ -608,18 +549,13 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitSet(SqlSetNode n)
+        public SqlNode VisitSet(SqlSetNode n)
         {
-            Append("SET ");
-            Visit(n.Variable);
-            Append(" ");
-            Visit(n.Operator);
-            Append(" ");
-            Visit(n.Right);
+            Append("SET ", n.Variable, " ", n.Operator, " ", n.Right);
             return n;
         }
 
-        public override SqlNode VisitStatementList(SqlStatementListNode n)
+        public SqlNode VisitStatementList(SqlStatementListNode n)
         {
             if (n.UseBeginEnd)
             {
@@ -646,15 +582,13 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitString(SqlStringNode n)
+        public SqlNode VisitString(SqlStringNode n)
         {
-            Append("'");
-            Append(n.Value.Replace("'", "''"));
-            Append("'");
+            Append("'", n.Value.Replace("'", "''"), "'");
             return n;
         }
 
-        public override SqlNode VisitTop(SqlSelectTopNode n)
+        public SqlNode VisitTop(SqlSelectTopNode n)
         {
             Append("TOP (");
             Visit(n.Value);
@@ -666,7 +600,7 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitValues(SqlValuesNode n)
+        public SqlNode VisitValues(SqlValuesNode n)
         {
             void forEach(SqlListNode<SqlNode> child)
             {
@@ -685,17 +619,13 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitWith(SqlWithNode n)
+        public SqlNode VisitWith(SqlWithNode n)
         {
-            Append("WITH");
-
-            Visit(n.Ctes);
-
-            Visit(n.Statement);
+            Append("WITH ", n.Ctes, n.Statement);
             return n;
         }
 
-        public override SqlNode VisitWithCte(SqlWithCteNode n)
+        public SqlNode VisitWithCte(SqlWithCteNode n)
         {
             Visit(n.Name);
             if (n.ColumnNames != null && n.ColumnNames.Any())
@@ -714,7 +644,7 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitUpdate(SqlUpdateNode n)
+        public SqlNode VisitUpdate(SqlUpdateNode n)
         {
             Append("UPDATE ");
             Visit(n.Source);
@@ -739,7 +669,7 @@ namespace SqlParser.Stringify
             return n;
         }
 
-        public override SqlNode VisitVariable(SqlVariableNode n)
+        public SqlNode VisitVariable(SqlVariableNode n)
         {
             Append(n.Name);
             return n;

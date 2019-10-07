@@ -14,22 +14,22 @@ namespace SqlParser.Stringify
             return sb.ToString();
         }
 
-        public static string ToMySqlString(this SqlNode n)
-        {
-            var sb = new StringBuilder();
-            var visitor = new MySqlStringifyVisitor(sb);
-            visitor.Visit(n);
-            return sb.ToString();
-        }
+        //public static string ToMySqlString(this SqlNode n)
+        //{
+        //    var sb = new StringBuilder();
+        //    var visitor = new MySqlStringifyVisitor(sb);
+        //    visitor.Visit(n);
+        //    return sb.ToString();
+        //}
 
-        public static string ToPostGresqlString(this SqlNode n)
-        {
-            throw new NotImplementedException();
-        }
+        //public static string ToPostGresqlString(this SqlNode n)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public static string ToOracleSqlString(this SqlNode n)
-        {
-            throw new NotImplementedException();
-        }
+        //public static string ToOracleSqlString(this SqlNode n)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

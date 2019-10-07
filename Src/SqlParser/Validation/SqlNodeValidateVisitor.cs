@@ -231,6 +231,7 @@ namespace SqlParser.Validation
 
         public override SqlNode VisitSelect(SqlSelectNode n)
         {
+            _result.AssertIsNotNullOrEmpty(n, nameof(n.Columns), n.Columns);
             // TODO: If the FROM clause contains a SELECT or values subquery, it MUST be in a parenthesis node
             // TODO: If the FROM clause contains a VALUES expression, it MUST be aliased and have ColumnNames
             return base.VisitSelect(n);

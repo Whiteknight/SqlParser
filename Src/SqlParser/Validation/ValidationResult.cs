@@ -112,6 +112,14 @@ namespace SqlParser.Validation
             return true;
         }
 
+        public bool AssertIsNotNullOrEmpty<TNode>(SqlNode parent, string name, SqlListNode<TNode> list) 
+            where TNode : SqlNode
+        {
+            if (list == null || list.Count == 0)
+                return AddError(parent, name, "List node may not be null or empty");
+            return true;
+        }
+
         public bool UnexpectedNodeType(SqlNode parent, string name, SqlNode child)
         {
             return AddError(parent, name, $"{child.GetType().Name} is an unexpected node type");
