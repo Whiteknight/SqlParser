@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using SqlParser.Ast;
 
 namespace SqlParser.Analysis
@@ -6,19 +6,19 @@ namespace SqlParser.Analysis
     public class GetNodesOfTypeAnalysisVisitor<TNode> : SqlNodeVisitor
         where TNode : SqlNode
     {
-        private readonly List<TNode> _nodes;
+        private readonly Action<TNode> _onFound;
 
-        public GetNodesOfTypeAnalysisVisitor()
+        // TODO: Predicate to satisfy before invoking callback
+        // TODO: Subtree pruning (exclude some subtrees by match)
+        public GetNodesOfTypeAnalysisVisitor(Action<TNode> onFound)
         {
-            _nodes = new List<TNode>();
+            _onFound = onFound ?? throw new ArgumentNullException(nameof(onFound));
         }
-
-        public IReadOnlyList<TNode> GetNodes() => _nodes;
 
         public override SqlNode Visit(SqlNode n)
         {
             if (n is TNode match)
-                _nodes.Add(match);
+                _onFound(match);
             return base.Visit(n);
         }
     }

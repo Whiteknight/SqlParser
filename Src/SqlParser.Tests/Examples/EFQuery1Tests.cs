@@ -4,6 +4,7 @@ using SqlParser.Analysis;
 using SqlParser.Ast;
 using FluentAssertions;
 using SqlParser.Tests.Utility;
+using SqlNodeExtensions = SqlParser.Tests.Utility.SqlNodeExtensions;
 
 namespace SqlParser.Tests.Examples
 {
@@ -58,12 +59,10 @@ SELECT
         }
 
         [Test]
-        public void GetTableNames_Test()
+        public void GetDataSources_Test()
         {
             var ast = new Parser().Parse(Query);
-            var target = new GetNodesOfTypeAnalysisVisitor<SqlObjectIdentifierNode>();
-            target.Visit(ast);
-            var result = target.GetNodes().Select(n => n.ToString()).ToList();
+            var result = ast.GetDataSources().ToList();
             result.Count.Should().Be(3);
             result.Should().Contain("[dbo].[Table1]");
             result.Should().Contain("[dbo].[Table2]");
@@ -74,9 +73,7 @@ SELECT
         public void GetVariableNames_Test()
         {
             var ast = new Parser().Parse(Query);
-            var target = new GetNodesOfTypeAnalysisVisitor<SqlVariableNode>();
-            target.Visit(ast);
-            var result = target.GetNodes().Select(n => n.ToString()).ToList();
+            var result = ast.GetVariableNames();
             result.Count.Should().Be(1);
             result.Should().Contain("@Z_7_p__linq__0");
         }
