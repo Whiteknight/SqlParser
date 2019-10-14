@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using SqlParser.Ast;
 using SqlParser.Optimizer;
-using SqlParser.Tests.Utility;
+using SqlParser.Tests.SqlServer.Utility;
 
 namespace SqlParser.Tests.SqlServer
 {

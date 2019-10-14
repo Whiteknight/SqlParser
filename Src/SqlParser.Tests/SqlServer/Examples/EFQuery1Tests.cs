@@ -3,7 +3,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using SqlParser.Analysis;
 using SqlParser.SqlServer.Parsing;
-using SqlNodeExtensions = SqlParser.Tests.Utility.SqlNodeExtensions;
 
 namespace SqlParser.Tests.SqlServer.Examples
 {
@@ -54,7 +53,7 @@ SELECT
         {
             var target = new Parser();
             var result = target.Parse(Query);
-            SqlNodeExtensions.Should(result).NotBeNull();
+            SqlParser.Tests.SqlServer.Utility.SqlNodeExtensions.Should(result).NotBeNull();
         }
 
         [Test]

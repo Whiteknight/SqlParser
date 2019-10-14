@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SqlParser.Tokenizing;
 
-namespace SqlParser.SqlServer.Tokenizing
+namespace SqlParser.PostgreSql.Tokenizing
 {
     public class TokenScanner
     {
@@ -54,7 +54,7 @@ namespace SqlParser.SqlServer.Tokenizing
                 return ReadVariableName();
             if (c == '\'')
                 return ReadQuoted();
-            if (c == '[')
+            if (c == '"')
                 return ReadQuotedIdentifier();
             if (c == '-')
             {
@@ -199,11 +199,11 @@ namespace SqlParser.SqlServer.Tokenizing
         {
             var l = _chars.GetLocation();
             var chars = new List<char>();
-            _chars.Expect('[');
+            _chars.Expect('"');
             while (true)
             {
                 var c = _chars.GetNext();
-                if (c == ']')
+                if (c == '"')
                     break;
                 chars.Add(c);
             }

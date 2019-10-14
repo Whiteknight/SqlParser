@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using SqlParser.Ast;
 using SqlParser.SqlServer.Parsing;
-using SqlParser.Tests.Utility;
+using SqlParser.Tests.SqlServer.Utility;
 using SqlParser.Tokenizing;
 
 namespace SqlParser.Tests.SqlServer

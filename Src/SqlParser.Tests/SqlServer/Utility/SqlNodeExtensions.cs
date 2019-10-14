@@ -1,6 +1,6 @@
 ﻿using SqlParser.Ast;
 
-namespace SqlParser.Tests.Utility
+namespace SqlParser.Tests.SqlServer.Utility
 {
     public static class SqlNodeExtensions
     {

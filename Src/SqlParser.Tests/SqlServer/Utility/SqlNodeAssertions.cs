@@ -7,11 +7,12 @@ using FluentAssertions;
 using FluentAssertions.Common;
 using FluentAssertions.Primitives;
 using SqlParser.Ast;
+using SqlParser.SqlServer.Stringify;
 using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Symbols;
 using SqlParser.SqlServer.Validation;
 
-namespace SqlParser.Tests.Utility
+namespace SqlParser.Tests.SqlServer.Utility
 {
     public class SqlNodeAssertions : ReferenceTypeAssertions<ISqlNode, SqlNodeAssertions>
     {
@@ -32,7 +33,7 @@ namespace SqlParser.Tests.Utility
 
         public AndConstraint<SqlNodeAssertions> RoundTrip()
         {
-            var asString = Subject.ToString();
+            var asString = Subject.ToSqlServerString();
             ISqlNode roundTripped = null;
             try
             {
@@ -44,7 +45,7 @@ namespace SqlParser.Tests.Utility
             {
                 var message = "Expected\n" + asString;
                 if (roundTripped != null)
-                    message += "\n\nBut got\n" + roundTripped.ToString();
+                    message += "\n\nBut got\n" + roundTripped.ToSqlServerString();
                 throw new Exception(message, e);
             }
         }
