@@ -13,7 +13,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_OrderByColumnDesc()
         {
-            const string s = "SELECT * FROM MyTable ORDER BY MyColumn DESC;";
+            const string s = "SELECT * FROM mytable ORDER BY mycolumn DESC;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -25,14 +25,14 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     OrderByClause = new SqlSelectOrderByClauseNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
                         {
                             new SqlOrderByEntryNode
                             {
-                                Source = new SqlIdentifierNode("MyColumn"),
+                                Source = new SqlIdentifierNode("mycolumn"),
                                 Direction = "DESC"
                             }
                         }
@@ -44,7 +44,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_OrderByNumberDesc()
         {
-            const string s = "SELECT * FROM MyTable ORDER BY 1 DESC;";
+            const string s = "SELECT * FROM mytable ORDER BY 1 DESC;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -56,7 +56,7 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     OrderByClause = new SqlSelectOrderByClauseNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
@@ -75,7 +75,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_OrderByColumnAsc()
         {
-            const string s = "SELECT * FROM MyTable ORDER BY MyColumn ASC;";
+            const string s = "SELECT * FROM mytable ORDER BY mycolumn ASC;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -87,14 +87,14 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     OrderByClause = new SqlSelectOrderByClauseNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
                         {
                             new SqlOrderByEntryNode
                             {
-                                Source = new SqlIdentifierNode("MyColumn"),
+                                Source = new SqlIdentifierNode("mycolumn"),
                                 Direction = "ASC"
                             }
                         }
@@ -106,7 +106,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_OrderByColumnNone()
         {
-            const string s = "SELECT * FROM MyTable ORDER BY MyColumn;";
+            const string s = "SELECT * FROM mytable ORDER BY mycolumn;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -118,14 +118,14 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     OrderByClause = new SqlSelectOrderByClauseNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
                         {
                             new SqlOrderByEntryNode
                             {
-                                Source = new SqlIdentifierNode("MyColumn")
+                                Source = new SqlIdentifierNode("mycolumn")
                             }
                         }
                     }
@@ -136,7 +136,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_OrderByColumnNoneOffsetNumberFetchNumber()
         {
-            const string s = "SELECT * FROM MyTable ORDER BY MyColumn OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY;";
+            const string s = "SELECT * FROM mytable ORDER BY mycolumn OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -148,14 +148,14 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     OrderByClause = new SqlSelectOrderByClauseNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
                         {
                             new SqlOrderByEntryNode
                             {
-                                Source = new SqlIdentifierNode("MyColumn")
+                                Source = new SqlIdentifierNode("mycolumn")
                             }
                         },
                         Offset = new SqlNumberNode(5),
@@ -168,7 +168,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_OrderByColumnAscDesc()
         {
-            const string s = "SELECT * FROM MyTable ORDER BY MyColumn1 ASC, MyColumn2 DESC;";
+            const string s = "SELECT * FROM mytable ORDER BY mycolumn1 ASC, mycolumn2 DESC;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -180,19 +180,19 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     OrderByClause = new SqlSelectOrderByClauseNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
                         {
                             new SqlOrderByEntryNode
                             {
-                                Source = new SqlIdentifierNode("MyColumn1"),
+                                Source = new SqlIdentifierNode("mycolumn1"),
                                 Direction = "ASC"
                             },
                             new SqlOrderByEntryNode
                             {
-                                Source = new SqlIdentifierNode("MyColumn2"),
+                                Source = new SqlIdentifierNode("mycolumn2"),
                                 Direction = "DESC"
                             }
                         }

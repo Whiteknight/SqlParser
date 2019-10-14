@@ -13,7 +13,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Update_SetWhere()
         {
-            const string s = "UPDATE MyTable SET ColumnA = 1 WHERE ColumnB = 2;";
+            const string s = "UPDATE mytable SET columna = 1 WHERE columnb = 2;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             var output = result.ToString();
@@ -22,19 +22,19 @@ namespace SqlParser.PostgreSql.Tests
             result.Statements.First().Should().MatchAst(
                 new SqlUpdateNode
                 {
-                    Source = new SqlObjectIdentifierNode("MyTable"),
+                    Source = new SqlObjectIdentifierNode("mytable"),
                     SetClause = new SqlListNode<SqlInfixOperationNode>
                     {
                         new SqlInfixOperationNode
                         {
-                            Left = new SqlIdentifierNode("ColumnA"),
+                            Left = new SqlIdentifierNode("columna"),
                             Operator = new SqlOperatorNode("="),
                             Right = new SqlNumberNode(1)
                         }
                     },
                     WhereClause = new SqlInfixOperationNode
                     {
-                        Left = new SqlIdentifierNode("ColumnB"),
+                        Left = new SqlIdentifierNode("columnb"),
                         Operator = new SqlOperatorNode("="),
                         Right = new SqlNumberNode(2)
                     }
@@ -45,7 +45,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Update_SetNull()
         {
-            const string s = "UPDATE MyTable SET ColumnA = NULL;";
+            const string s = "UPDATE mytable SET columna = NULL;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -53,12 +53,12 @@ namespace SqlParser.PostgreSql.Tests
             result.Statements.First().Should().MatchAst(
                 new SqlUpdateNode
                 {
-                    Source = new SqlObjectIdentifierNode("MyTable"),
+                    Source = new SqlObjectIdentifierNode("mytable"),
                     SetClause = new SqlListNode<SqlInfixOperationNode>
                     {
                         new SqlInfixOperationNode
                         {
-                            Left = new SqlIdentifierNode("ColumnA"),
+                            Left = new SqlIdentifierNode("columna"),
                             Operator = new SqlOperatorNode("="),
                             Right = new SqlNullNode()
                         }
@@ -70,7 +70,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Update_SetDefault()
         {
-            const string s = "UPDATE MyTable SET ColumnA = DEFAULT;";
+            const string s = "UPDATE mytable SET columna = DEFAULT;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -78,12 +78,12 @@ namespace SqlParser.PostgreSql.Tests
             result.Statements.First().Should().MatchAst(
                 new SqlUpdateNode
                 {
-                    Source = new SqlObjectIdentifierNode("MyTable"),
+                    Source = new SqlObjectIdentifierNode("mytable"),
                     SetClause = new SqlListNode<SqlInfixOperationNode>
                     {
                         new SqlInfixOperationNode
                         {
-                            Left = new SqlIdentifierNode("ColumnA"),
+                            Left = new SqlIdentifierNode("columna"),
                             Operator = new SqlOperatorNode("="),
                             Right = new SqlKeywordNode("DEFAULT")
                         }

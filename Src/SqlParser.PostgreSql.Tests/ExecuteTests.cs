@@ -14,7 +14,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Execute_NoArgs()
         {
-            const string s = "EXECUTE myProc;";
+            const string s = "EXECUTE \"myProc\";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -30,7 +30,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Exec_NoArgs()
         {
-            const string s = "EXEC myProc;";
+            const string s = "EXEC \"myProc\";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -46,7 +46,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Execute_ScalarArgs()
         {
-            const string s = "EXECUTE myProc 5, 'TEST';";
+            const string s = "EXECUTE \"myProc\" 5, 'TEST';";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -73,7 +73,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Execute_NamedScalarArgs()
         {
-            const string s = "EXECUTE myProc @size=5, @name='TEST';";
+            const string s = "EXECUTE \"myProc\" @size=5, @name='TEST';";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -102,7 +102,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Execute_OutputArgs()
         {
-            const string s = "EXECUTE myProc @size OUTPUT, @count OUT;";
+            const string s = "EXECUTE \"myProc\" @size OUTPUT, @count OUT;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();

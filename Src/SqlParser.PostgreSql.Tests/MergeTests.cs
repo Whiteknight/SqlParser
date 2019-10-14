@@ -15,8 +15,8 @@ namespace SqlParser.PostgreSql.Tests
             const string s = @"
 MERGE table1 AS TARGET
     USING table2 AS SOURCE
-    ON TARGET.Id = SOURCE.Id
-    WHEN MATCHED THEN UPDATE SET TARGET.StatusCode = 'OK'
+    ON TARGET.id = SOURCE.id
+    WHEN MATCHED THEN UPDATE SET TARGET.statuscode = 'OK'
 ;";
             var target = new Parser();
             var result = target.Parse(s);
@@ -40,13 +40,13 @@ MERGE table1 AS TARGET
                         Left = new SqlQualifiedIdentifierNode
                         {
                             Qualifier = new SqlIdentifierNode("TARGET"),
-                            Identifier = new SqlIdentifierNode("Id")
+                            Identifier = new SqlIdentifierNode("id")
                         },
                         Operator = new SqlOperatorNode("="),
                         Right = new SqlQualifiedIdentifierNode
                         {
                             Qualifier = new SqlIdentifierNode("SOURCE"),
-                            Identifier = new SqlIdentifierNode("Id")
+                            Identifier = new SqlIdentifierNode("id")
                         }
                     },
                     Matched = new SqlMergeUpdateNode
@@ -58,7 +58,7 @@ MERGE table1 AS TARGET
                                 Left = new SqlQualifiedIdentifierNode
                                 {
                                     Qualifier = new SqlIdentifierNode("TARGET"),
-                                    Identifier = new SqlIdentifierNode("StatusCode")
+                                    Identifier = new SqlIdentifierNode("statuscode")
                                 },
                                 Operator = new SqlOperatorNode("="),
                                 Right = new SqlStringNode("OK")
@@ -75,8 +75,8 @@ MERGE table1 AS TARGET
             const string s = @"
 MERGE table1 AS TARGET
     USING table2 AS SOURCE
-    ON TARGET.Id = SOURCE.Id
-    WHEN NOT MATCHED THEN INSERT (StatusCode) VALUES ('OK')
+    ON TARGET.id = SOURCE.id
+    WHEN NOT MATCHED THEN INSERT (statuscode) VALUES ('OK')
 ;";
             var target = new Parser();
             var result = target.Parse(s);
@@ -100,20 +100,20 @@ MERGE table1 AS TARGET
                         Left = new SqlQualifiedIdentifierNode
                         {
                             Qualifier = new SqlIdentifierNode("TARGET"),
-                            Identifier = new SqlIdentifierNode("Id")
+                            Identifier = new SqlIdentifierNode("id")
                         },
                         Operator = new SqlOperatorNode("="),
                         Right = new SqlQualifiedIdentifierNode
                         {
                             Qualifier = new SqlIdentifierNode("SOURCE"),
-                            Identifier = new SqlIdentifierNode("Id")
+                            Identifier = new SqlIdentifierNode("id")
                         }
                     },
                     NotMatchedByTarget = new SqlMergeInsertNode
                     {
                         Columns = new SqlListNode<SqlIdentifierNode>
                         {
-                            new SqlIdentifierNode("StatusCode")
+                            new SqlIdentifierNode("statuscode")
                         },
                         Source = new SqlValuesNode
                         {
@@ -136,8 +136,8 @@ MERGE table1 AS TARGET
             const string s = @"
 MERGE table1 AS TARGET
     USING table2 AS SOURCE
-    ON TARGET.Id = SOURCE.Id
-    WHEN NOT MATCHED BY TARGET THEN INSERT (StatusCode) VALUES ('OK')
+    ON TARGET.id = SOURCE.id
+    WHEN NOT MATCHED BY TARGET THEN INSERT (statuscode) VALUES ('OK')
 ;";
             var target = new Parser();
             var result = target.Parse(s);
@@ -161,20 +161,20 @@ MERGE table1 AS TARGET
                         Left = new SqlQualifiedIdentifierNode
                         {
                             Qualifier = new SqlIdentifierNode("TARGET"),
-                            Identifier = new SqlIdentifierNode("Id")
+                            Identifier = new SqlIdentifierNode("id")
                         },
                         Operator = new SqlOperatorNode("="),
                         Right = new SqlQualifiedIdentifierNode
                         {
                             Qualifier = new SqlIdentifierNode("SOURCE"),
-                            Identifier = new SqlIdentifierNode("Id")
+                            Identifier = new SqlIdentifierNode("id")
                         }
                     },
                     NotMatchedByTarget = new SqlMergeInsertNode
                     {
                         Columns = new SqlListNode<SqlIdentifierNode>
                         {
-                            new SqlIdentifierNode("StatusCode")
+                            new SqlIdentifierNode("statuscode")
                         },
                         Source = new SqlValuesNode
                         {
@@ -197,7 +197,7 @@ MERGE table1 AS TARGET
             const string s = @"
 MERGE table1 AS TARGET
     USING table2 AS SOURCE
-    ON TARGET.Id = SOURCE.Id
+    ON TARGET.id = SOURCE.id
     WHEN NOT MATCHED BY SOURCE THEN DELETE
 ;";
             var target = new Parser();
@@ -222,13 +222,13 @@ MERGE table1 AS TARGET
                         Left = new SqlQualifiedIdentifierNode
                         {
                             Qualifier = new SqlIdentifierNode("TARGET"),
-                            Identifier = new SqlIdentifierNode("Id")
+                            Identifier = new SqlIdentifierNode("id")
                         },
                         Operator = new SqlOperatorNode("="),
                         Right = new SqlQualifiedIdentifierNode
                         {
                             Qualifier = new SqlIdentifierNode("SOURCE"),
-                            Identifier = new SqlIdentifierNode("Id")
+                            Identifier = new SqlIdentifierNode("id")
                         }
                     },
                     NotMatchedBySource = new SqlKeywordNode("DELETE")

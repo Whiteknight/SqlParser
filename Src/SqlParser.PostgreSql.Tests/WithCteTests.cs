@@ -15,10 +15,10 @@ namespace SqlParser.PostgreSql.Tests
         {
             const string s = @"
 WITH 
-Cte1 AS (
-    SELECT * FROM MyTable
+cte1 AS (
+    SELECT * FROM mytable
 )
-SELECT * FROM Cte1;";
+SELECT * FROM cte1;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -36,9 +36,9 @@ SELECT * FROM Cte1;";
                                 {
                                     new SqlOperatorNode("*")
                                 },
-                                FromClause = new SqlObjectIdentifierNode("MyTable")
+                                FromClause = new SqlObjectIdentifierNode("mytable")
                             },
-                            Name = new SqlIdentifierNode("Cte1")
+                            Name = new SqlIdentifierNode("cte1")
                         }
                     },
                     Statement = new SqlSelectNode
@@ -47,7 +47,7 @@ SELECT * FROM Cte1;";
                         {
                             new SqlOperatorNode("*")
                         },
-                        FromClause =  new SqlObjectIdentifierNode("Cte1")
+                        FromClause =  new SqlObjectIdentifierNode("cte1")
                     }
                 }
             );
@@ -58,10 +58,10 @@ SELECT * FROM Cte1;";
         {
             const string s = @"
 WITH 
-Cte1(ColumnA) AS (
-    SELECT * FROM MyTable
+cte1(columna) AS (
+    SELECT * FROM mytable
 )
-SELECT * FROM Cte1;";
+SELECT * FROM cte1;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -79,12 +79,12 @@ SELECT * FROM Cte1;";
                                 {
                                     new SqlOperatorNode("*")
                                 },
-                                FromClause = new SqlObjectIdentifierNode("MyTable")
+                                FromClause = new SqlObjectIdentifierNode("mytable")
                             },
-                            Name = new SqlIdentifierNode("Cte1"),
+                            Name = new SqlIdentifierNode("cte1"),
                             ColumnNames = new SqlListNode<SqlIdentifierNode>
                             {
-                                new SqlIdentifierNode("ColumnA")
+                                new SqlIdentifierNode("columna")
                             }
                         }
                     },
@@ -94,7 +94,7 @@ SELECT * FROM Cte1;";
                         {
                             new SqlOperatorNode("*")
                         },
-                        FromClause = new SqlObjectIdentifierNode("Cte1")
+                        FromClause = new SqlObjectIdentifierNode("cte1")
                     }
                 }
             );
@@ -105,13 +105,13 @@ SELECT * FROM Cte1;";
         {
             const string s = @"
 WITH 
-Cte1 AS (
-    SELECT * FROM MyTable
+cte1 AS (
+    SELECT * FROM mytable
 ),
-Cte2 AS (
-    SELECT * FROM Cte1
+cte2 AS (
+    SELECT * FROM cte1
 )
-SELECT * FROM Cte2;";
+SELECT * FROM cte2;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             var output = result.ToString();
@@ -130,9 +130,9 @@ SELECT * FROM Cte2;";
                                 {
                                     new SqlOperatorNode("*")
                                 },
-                                FromClause = new SqlObjectIdentifierNode("MyTable")
+                                FromClause = new SqlObjectIdentifierNode("mytable")
                             },
-                            Name = new SqlIdentifierNode("Cte1")
+                            Name = new SqlIdentifierNode("cte1")
                         },
                         new SqlWithCteNode
                         {
@@ -142,9 +142,9 @@ SELECT * FROM Cte2;";
                                 {
                                     new SqlOperatorNode("*")
                                 },
-                                FromClause = new SqlObjectIdentifierNode("Cte1")
+                                FromClause = new SqlObjectIdentifierNode("cte1")
                             },
-                            Name = new SqlIdentifierNode("Cte2")
+                            Name = new SqlIdentifierNode("cte2")
                         }
                     },
                     Statement = new SqlSelectNode
@@ -153,7 +153,7 @@ SELECT * FROM Cte2;";
                         {
                             new SqlOperatorNode("*")
                         },
-                        FromClause = new SqlObjectIdentifierNode("Cte2")
+                        FromClause = new SqlObjectIdentifierNode("cte2")
                     }
                 }
             );
@@ -164,11 +164,11 @@ SELECT * FROM Cte2;";
         {
             const string s = @"
 WITH 
-Cte1 AS (
-    SELECT cola FROM MyTable
+cte1 AS (
+    SELECT cola FROM mytable
 )
-INSERT INTO MyTable(ColumnA) 
-    SELECT cola FROM Cte1;";
+INSERT INTO mytable(columna) 
+    SELECT cola FROM cte1;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -186,17 +186,17 @@ INSERT INTO MyTable(ColumnA)
                                 {
                                     new SqlIdentifierNode("cola")
                                 },
-                                FromClause = new SqlObjectIdentifierNode("MyTable")
+                                FromClause = new SqlObjectIdentifierNode("mytable")
                             },
-                            Name = new SqlIdentifierNode("Cte1")
+                            Name = new SqlIdentifierNode("cte1")
                         }
                     },
                     Statement = new SqlInsertNode
                     {
-                        Table = new SqlObjectIdentifierNode("MyTable"),
+                        Table = new SqlObjectIdentifierNode("mytable"),
                         Columns = new SqlListNode<SqlIdentifierNode>
                         {
-                            new SqlIdentifierNode("ColumnA")
+                            new SqlIdentifierNode("columna")
                         },
                         Source = new SqlSelectNode
                         {
@@ -204,7 +204,7 @@ INSERT INTO MyTable(ColumnA)
                             {
                                 new SqlIdentifierNode("cola")
                             },
-                            FromClause = new SqlObjectIdentifierNode("Cte1")
+                            FromClause = new SqlObjectIdentifierNode("cte1")
                         }
                     }
                 }
@@ -216,13 +216,13 @@ INSERT INTO MyTable(ColumnA)
         {
             const string s = @"
 WITH 
-Cte1 AS (
-    SELECT cola FROM MyTable
+cte1 AS (
+    SELECT cola FROM mytable
 )
 MERGE table1 AS TARGET
-    USING MyTable AS SOURCE
-    ON TARGET.Id = SOURCE.Id
-    WHEN MATCHED THEN UPDATE SET TARGET.StatusCode = 'OK'
+    USING mytable AS SOURCE
+    ON TARGET.id = SOURCE.id
+    WHEN MATCHED THEN UPDATE SET TARGET.statuscode = 'OK'
 ;";
             var target = new Parser();
             var result = target.Parse(s);
@@ -241,9 +241,9 @@ MERGE table1 AS TARGET
                                 {
                                     new SqlIdentifierNode("cola")
                                 },
-                                FromClause = new SqlObjectIdentifierNode("MyTable")
+                                FromClause = new SqlObjectIdentifierNode("mytable")
                             },
-                            Name = new SqlIdentifierNode("Cte1")
+                            Name = new SqlIdentifierNode("cte1")
                         }
                     },
                     Statement = new SqlMergeNode
@@ -255,7 +255,7 @@ MERGE table1 AS TARGET
                         },
                         Source = new SqlAliasNode
                         {
-                            Source = new SqlObjectIdentifierNode("MyTable"),
+                            Source = new SqlObjectIdentifierNode("mytable"),
                             Alias = new SqlIdentifierNode("SOURCE")
                         },
                         MergeCondition = new SqlInfixOperationNode
@@ -263,13 +263,13 @@ MERGE table1 AS TARGET
                             Left = new SqlQualifiedIdentifierNode
                             {
                                 Qualifier = new SqlIdentifierNode("TARGET"),
-                                Identifier = new SqlIdentifierNode("Id")
+                                Identifier = new SqlIdentifierNode("id")
                             },
                             Operator = new SqlOperatorNode("="),
                             Right = new SqlQualifiedIdentifierNode
                             {
                                 Qualifier = new SqlIdentifierNode("SOURCE"),
-                                Identifier = new SqlIdentifierNode("Id")
+                                Identifier = new SqlIdentifierNode("id")
                             }
                         },
                         Matched = new SqlMergeUpdateNode
@@ -281,7 +281,7 @@ MERGE table1 AS TARGET
                                     Left = new SqlQualifiedIdentifierNode
                                     {
                                         Qualifier = new SqlIdentifierNode("TARGET"),
-                                        Identifier = new SqlIdentifierNode("StatusCode")
+                                        Identifier = new SqlIdentifierNode("statuscode")
                                     },
                                     Operator = new SqlOperatorNode("="),
                                     Right = new SqlStringNode("OK")

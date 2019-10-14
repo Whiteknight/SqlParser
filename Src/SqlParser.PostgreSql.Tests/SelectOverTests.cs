@@ -13,7 +13,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_RowNumberOverPartition()
         {
-            const string s = "SELECT ROW_NUMBER() OVER (PARTITION BY ColumnA)";
+            const string s = "SELECT ROW_NUMBER() OVER (PARTITION BY columna)";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -27,11 +27,11 @@ namespace SqlParser.PostgreSql.Tests
                         {
                             Expression = new SqlFunctionCallNode
                             {
-                                Name = new SqlIdentifierNode("ROW_NUMBER")
+                                Name = new SqlIdentifierNode("row_number")
                             },
                             PartitionBy = new SqlListNode<ISqlNode>
                             {
-                                new SqlIdentifierNode("ColumnA")
+                                new SqlIdentifierNode("columna")
                             }
                         }
                     }
@@ -42,7 +42,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_AvgOverOrderBy()
         {
-            const string s = "SELECT AVG(ColumnA) OVER (ORDER BY ColumnA) FROM MyTable";
+            const string s = "SELECT AVG(columna) OVER (ORDER BY columna) FROM mytable";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -56,22 +56,22 @@ namespace SqlParser.PostgreSql.Tests
                         {
                             Expression = new SqlFunctionCallNode
                             {
-                                Name = new SqlIdentifierNode("AVG"),
+                                Name = new SqlIdentifierNode("avg"),
                                 Arguments = new SqlListNode<ISqlNode>
                                 {
-                                    new SqlIdentifierNode("ColumnA")
+                                    new SqlIdentifierNode("columna")
                                 }
                             },
                             OrderBy = new SqlListNode<SqlOrderByEntryNode>
                             {
                                 new SqlOrderByEntryNode
                                 {
-                                    Source = new SqlIdentifierNode("ColumnA")
+                                    Source = new SqlIdentifierNode("columna")
                                 }
                             }
                         }
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable")
+                    FromClause = new SqlObjectIdentifierNode("mytable")
                 }
             );
         }

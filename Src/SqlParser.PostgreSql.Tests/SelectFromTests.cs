@@ -14,7 +14,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_StarFromTable()
         {
-            const string s = "SELECT * FROM MyTable;";
+            const string s = "SELECT * FROM \"MyTable\";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -34,7 +34,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_StarFromSchemaTable()
         {
-            const string s = "SELECT * FROM dbo.MyTable;";
+            const string s = "SELECT * FROM public.\"MyTable\";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -49,7 +49,7 @@ namespace SqlParser.PostgreSql.Tests
                             new SqlOperatorNode("*")
                         }
                     },
-                    FromClause = new SqlObjectIdentifierNode("dbo", "MyTable")
+                    FromClause = new SqlObjectIdentifierNode("public", "MyTable")
                 }
             );
         }
@@ -63,7 +63,7 @@ namespace SqlParser.PostgreSql.Tests
                 -- FirstColumn,
                 * 
                 FROM 
-                    MyTable
+                    ""MyTable""
                     -- INNER JOIN SomeOtherTable ON MyTableId = SomeOtherTableId;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
@@ -109,7 +109,7 @@ namespace SqlParser.PostgreSql.Tests
                             new SqlOperatorNode("*")
                         }
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable")
+                    FromClause = new SqlObjectIdentifierNode("mytable")
                 }
             );
         }
@@ -134,7 +134,7 @@ namespace SqlParser.PostgreSql.Tests
                             new SqlOperatorNode("*")
                         }
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable")
+                    FromClause = new SqlObjectIdentifierNode("mytable")
                 }
             );
         }
@@ -187,7 +187,7 @@ namespace SqlParser.PostgreSql.Tests
                     FromClause = new SqlAliasNode
                     {
                         Alias = new SqlIdentifierNode("t1"),
-                        Source = new SqlObjectIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("mytable")
                     }
                 }
             );
@@ -218,10 +218,10 @@ namespace SqlParser.PostgreSql.Tests
                     FromClause = new SqlAliasNode
                     {
                         Alias = new SqlIdentifierNode("t1"),
-                        Source = new SqlObjectIdentifierNode("MyTable"),
+                        Source = new SqlObjectIdentifierNode("mytable"),
                         ColumnNames = new SqlListNode<SqlIdentifierNode>
                         {
-                            new SqlIdentifierNode("ColumnA")
+                            new SqlIdentifierNode("columna")
                         }
                     }
                 }
@@ -246,14 +246,14 @@ namespace SqlParser.PostgreSql.Tests
                             new SqlQualifiedIdentifierNode
                             {
                                 Qualifier = new SqlIdentifierNode("t1"),
-                                Identifier = new SqlIdentifierNode("MyColumn")
+                                Identifier = new SqlIdentifierNode("mycolumn")
                             }
                         }
                     },
                     FromClause = new SqlAliasNode
                     {
                         Alias = new SqlIdentifierNode("t1"),
-                        Source = new SqlObjectIdentifierNode("MyTable")
+                        Source = new SqlObjectIdentifierNode("mytable")
                     }
                 }
             );
@@ -328,7 +328,7 @@ namespace SqlParser.PostgreSql.Tests
                 SELECT 
                     t1.* 
                     FROM 
-                        (SELECT * FROM MyTable) AS t1;";
+                        (SELECT * FROM ""MyTable"") AS t1;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -377,7 +377,7 @@ namespace SqlParser.PostgreSql.Tests
                 SELECT 
                     t1.* 
                     FROM 
-                        (SELECT * FROM MyTable) AS t1(ColumnA);";
+                        (SELECT * FROM ""MyTable"") AS t1(""ColumnA"");";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -424,7 +424,7 @@ namespace SqlParser.PostgreSql.Tests
                 SELECT 
                     t1.* 
                     FROM 
-                        (VALUES (1), (2)) AS t1(ColumnA);";
+                        (VALUES (1), (2)) AS t1(""ColumnA"");";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -473,7 +473,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_ColumnsFromTable()
         {
-            const string s = "SELECT ColumnA, ColumnB FROM MyTable;";
+            const string s = "SELECT \"ColumnA\", \"ColumnB\" FROM \"MyTable\";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -497,7 +497,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_NegativeColumnFromTable()
         {
-            const string s = "SELECT -ColumnA FROM MyTable;";
+            const string s = "SELECT -\"ColumnA\" FROM \"MyTable\";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -521,7 +521,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_IdentityRowGuidFromTable()
         {
-            const string s = "SELECT $IDENTITY, $ROWGUID FROM MyTable;";
+            const string s = "SELECT $IDENTITY, $ROWGUID FROM \"MyTable\";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -545,7 +545,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_BracketedColumnsFromTable()
         {
-            const string s = "SELECT \"ColumnA\", \"ColumnB\" FROM MyTable;";
+            const string s = "SELECT \"ColumnA\", \"ColumnB\" FROM \"MyTable\";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -569,7 +569,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_BracketedKeywordColumnsFromTable()
         {
-            const string s = "SELECT \"SELECT\", \"FROM\" FROM MyTable;";
+            const string s = "SELECT \"SELECT\", \"FROM\" FROM \"MyTable\";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -593,7 +593,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_ColumnAliasFromTable()
         {
-            const string s = "SELECT ColumnA AS ColumnB FROM MyTable;";
+            const string s = "SELECT \"ColumnA\" AS \"ColumnB\" FROM \"MyTable\";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -620,7 +620,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_ColumnAliasBracketedFromTable()
         {
-            const string s = "SELECT \"ColumnA\" AS \"ColumnB\" FROM MyTable;";
+            const string s = "SELECT \"ColumnA\" AS \"ColumnB\" FROM \"MyTable\";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -647,7 +647,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_VariableAssign()
         {
-            const string s = "SELECT @value = ColumnA FROM MyTable;";
+            const string s = "SELECT @value = \"ColumnA\" FROM \"MyTable\";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();

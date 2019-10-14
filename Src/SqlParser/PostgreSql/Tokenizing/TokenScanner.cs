@@ -209,7 +209,7 @@ namespace SqlParser.PostgreSql.Tokenizing
             }
             
             var x = new string(chars.ToArray());
-            return SqlToken.BracketedIdentifier(x, l);
+            return SqlToken.QuotedIdentifier(x, l);
         }
 
         private SqlToken ReadNumber()
@@ -264,8 +264,10 @@ namespace SqlParser.PostgreSql.Tokenizing
                 chars.Add(c);
             }
 
-            var x = new string(chars.ToArray());
-            return SqlToken.Word(x, l);
+            var s = new string(chars.ToArray());
+            if (Keywords.IsKeyword(s))
+                return new SqlToken(s.ToUpperInvariant(), SqlTokenType.Keyword, l);
+            return new SqlToken(s.ToLowerInvariant(), SqlTokenType.Identifier, l);
         }
 
         private SqlToken ReadSpecialIdentifier()

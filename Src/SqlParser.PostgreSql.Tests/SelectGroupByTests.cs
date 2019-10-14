@@ -13,7 +13,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_GroupByColumn()
         {
-            const string s = "SELECT * FROM TableA GROUP BY Column1";
+            const string s = "SELECT * FROM \"TableA\" GROUP BY \"Column1\"";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();

@@ -36,7 +36,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_StringConstantAlias()
         {
-            const string s = "SELECT 'TEST' AS ColumnA";
+            const string s = "SELECT 'TEST' AS columna";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -51,7 +51,7 @@ namespace SqlParser.PostgreSql.Tests
                             new SqlAliasNode
                             {
                                 Source = new SqlStringNode("TEST"),
-                                Alias = new SqlIdentifierNode("ColumnA")
+                                Alias = new SqlIdentifierNode("columna")
                             }
                         }
                     }
@@ -221,7 +221,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_VariableAlias()
         {
-            const string s = "SELECT @value AS ColumnA";
+            const string s = "SELECT @value AS columna";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -234,7 +234,7 @@ namespace SqlParser.PostgreSql.Tests
                         new SqlAliasNode
                         {
                             Source = new SqlVariableNode("@value"),
-                            Alias = new SqlIdentifierNode("ColumnA")
+                            Alias = new SqlIdentifierNode("columna")
                         }
                     }
                 }
@@ -244,7 +244,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_FunctionCall()
         {
-            const string s = "SELECT GETUTCDATE() AS ColumnA";
+            const string s = "SELECT GETUTCDATE() AS columna";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -258,9 +258,9 @@ namespace SqlParser.PostgreSql.Tests
                         {
                             Source = new SqlFunctionCallNode
                             {
-                                Name = new SqlIdentifierNode("GETUTCDATE")
+                                Name = new SqlIdentifierNode("getutcdate")
                             },
-                            Alias = new SqlIdentifierNode("ColumnA")
+                            Alias = new SqlIdentifierNode("columna")
                         }
                     }
                 }
@@ -270,7 +270,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_CountStar()
         {
-            const string s = "SELECT COUNT(*) AS ColumnA";
+            const string s = "SELECT COUNT(*) AS columna";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -290,7 +290,7 @@ namespace SqlParser.PostgreSql.Tests
                                     new SqlOperatorNode("*")
                                 }
                             },
-                            Alias = new SqlIdentifierNode("ColumnA")
+                            Alias = new SqlIdentifierNode("columna")
                         }
                     }
                 }
@@ -300,7 +300,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_FunctionCallArgument()
         {
-            const string s = "SELECT ABS(1) AS ColumnA";
+            const string s = "SELECT ABS(1) AS columna";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -314,13 +314,13 @@ namespace SqlParser.PostgreSql.Tests
                         {
                             Source = new SqlFunctionCallNode
                             {
-                                Name = new SqlIdentifierNode("ABS"),
+                                Name = new SqlIdentifierNode("abs"),
                                 Arguments = new SqlListNode<ISqlNode>
                                 {
                                     new SqlNumberNode(1)
                                 }
                             },
-                            Alias = new SqlIdentifierNode("ColumnA")
+                            Alias = new SqlIdentifierNode("columna")
                         }
                     }
                 }
@@ -330,7 +330,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_FunctionCall2Arguments()
         {
-            const string s = "SELECT COALESCE(NULL, 0) AS ColumnA";
+            const string s = "SELECT COALESCE(NULL, 0) AS columna";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -344,14 +344,14 @@ namespace SqlParser.PostgreSql.Tests
                         {
                             Source = new SqlFunctionCallNode
                             {
-                                Name = new SqlIdentifierNode("COALESCE"),
+                                Name = new SqlIdentifierNode("coalesce"),
                                 Arguments = new SqlListNode<ISqlNode>
                                 {
                                     new SqlNullNode(),
                                     new SqlNumberNode(0)
                                 }
                             },
-                            Alias = new SqlIdentifierNode("ColumnA")
+                            Alias = new SqlIdentifierNode("columna")
                         }
                     }
                 }
@@ -361,7 +361,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_Null()
         {
-            const string s = "SELECT NULL AS ColumnA";
+            const string s = "SELECT NULL AS columna";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -374,7 +374,7 @@ namespace SqlParser.PostgreSql.Tests
                         new SqlAliasNode
                         {
                             Source = new SqlNullNode(),
-                            Alias = new SqlIdentifierNode("ColumnA")
+                            Alias = new SqlIdentifierNode("columna")
                         }
                     }
                 }

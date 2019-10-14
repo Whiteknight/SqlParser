@@ -13,7 +13,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_ArithmeticExpression1()
         {
-            const string s = "SELECT 1 + 2 * 3 AS ColumnA";
+            const string s = "SELECT 1 + 2 * 3 AS \"ColumnA\"";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -47,7 +47,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_ArithmeticExpression()
         {
-            const string s = "SELECT 1 * 2 + 3 AS ColumnA";
+            const string s = "SELECT 1 * 2 + 3 AS \"ColumnA\"";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             var output = result.ToString();
@@ -81,7 +81,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_ArithmeticExpression2()
         {
-            const string s = "SELECT 1 + 2 * -3 AS ColumnA";
+            const string s = "SELECT 1 + 2 * -3 AS \"ColumnA\"";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -147,7 +147,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_ColumnArithmeticExpression()
         {
-            const string s = "SELECT ColumnA + ColumnB * ColumnC AS ColumnD";
+            const string s = "SELECT \"ColumnA\" + \"ColumnB\" * \"ColumnC\" AS \"ColumnD\"";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();

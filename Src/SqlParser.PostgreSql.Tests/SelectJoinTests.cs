@@ -25,10 +25,10 @@ namespace SqlParser.PostgreSql.Tests
 SELECT 
     * 
     FROM 
-        Table1 t1
+        ""Table1"" t1
         {joinType}
-        Table2 t2
-            ON t1.Id = t2.Id;";
+        ""Table2"" t2
+            ON t1.""Id"" = t2.""Id"";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             var output = result.ToString();
@@ -80,9 +80,9 @@ SELECT
 SELECT 
     * 
     FROM 
-        Table1 t1
+        ""Table1"" t1
         NATURAL JOIN
-        Table2 t2;";
+        ""Table2"" t2;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();

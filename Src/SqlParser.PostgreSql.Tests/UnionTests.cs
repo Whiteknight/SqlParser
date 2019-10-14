@@ -17,7 +17,7 @@ namespace SqlParser.PostgreSql.Tests
         [TestCase("INTERSECT")]
         public void Select_UnionOperatorSelect(string op)
         {
-            string s = $"SELECT * FROM Table1 {op} SELECT * FROM Table2";
+            string s = $"SELECT * FROM table1 {op} SELECT * FROM table2";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -35,7 +35,7 @@ namespace SqlParser.PostgreSql.Tests
                                 new SqlOperatorNode("*")
                             }
                         },
-                        FromClause = new SqlObjectIdentifierNode("Table1")
+                        FromClause = new SqlObjectIdentifierNode("table1")
                     },
                     Operator = new SqlOperatorNode(op),
                     Right = new SqlSelectNode
@@ -47,7 +47,7 @@ namespace SqlParser.PostgreSql.Tests
                                 new SqlOperatorNode("*")
                             }
                         },
-                        FromClause = new SqlObjectIdentifierNode("Table2")
+                        FromClause = new SqlObjectIdentifierNode("table2")
                     }
                 }
             );
@@ -56,7 +56,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_UnionSelect2x()
         {
-            const string s = "SELECT * FROM Table1 UNION SELECT * FROM Table2 UNION ALL SELECT * FROM Table3;";
+            const string s = "SELECT * FROM table1 UNION SELECT * FROM table2 UNION ALL SELECT * FROM table3;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             var output = result.ToString();
@@ -74,7 +74,7 @@ namespace SqlParser.PostgreSql.Tests
                                 new SqlOperatorNode("*")
                             }
                         },
-                        FromClause = new SqlObjectIdentifierNode("Table1")
+                        FromClause = new SqlObjectIdentifierNode("table1")
                     },
                     Operator = new SqlOperatorNode("UNION"),
                     Right = new SqlInfixOperationNode
@@ -88,7 +88,7 @@ namespace SqlParser.PostgreSql.Tests
                                     new SqlOperatorNode("*")
                                 }
                             },
-                            FromClause = new SqlObjectIdentifierNode("Table2")
+                            FromClause = new SqlObjectIdentifierNode("table2")
                         },
                         Operator = new SqlOperatorNode("UNION ALL"),
                         Right = new SqlSelectNode
@@ -100,7 +100,7 @@ namespace SqlParser.PostgreSql.Tests
                                     new SqlOperatorNode("*")
                                 }
                             },
-                            FromClause = new SqlObjectIdentifierNode("Table3")
+                            FromClause = new SqlObjectIdentifierNode("table3")
                         }
                     }
                 }

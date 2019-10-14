@@ -47,7 +47,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_CaseWhenThenElseEndAlias()
         {
-            const string s = "SELECT CASE ValueA WHEN 6 THEN 'A' ELSE 'B' END AS ColumnA, ColumnB;";
+            const string s = "SELECT CASE \"ValueA\" WHEN 6 THEN 'A' ELSE 'B' END AS \"ColumnA\", \"ColumnB\";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();

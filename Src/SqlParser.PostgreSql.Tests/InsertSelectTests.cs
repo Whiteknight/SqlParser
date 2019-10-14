@@ -14,7 +14,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Insert_ValuesOneRowTwoColumns()
         {
-            const string s = @"INSERT INTO MyTable(Column1, Column2) SELECT ColumnA, ColumnB FROM MyTable;";
+            const string s = @"INSERT INTO ""MyTable""(""Column1"", ""Column2"") SELECT ""ColumnA"", ""ColumnB"" FROM ""MyTable"";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -47,7 +47,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Insert_Execute()
         {
-            const string s = @"INSERT INTO MyTable(Column1) EXECUTE 'SELECT 1';
+            const string s = @"INSERT INTO ""MyTable""(""Column1"") EXECUTE 'SELECT 1';
 ;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));

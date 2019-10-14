@@ -13,7 +13,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_HavingColumnEqualsNumber()
         {
-            const string s = "SELECT * FROM MyTable HAVING MyColumn = 1;";
+            const string s = "SELECT * FROM mytable HAVING mycolumn = 1;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -25,10 +25,10 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     HavingClause = new SqlInfixOperationNode
                     {
-                        Left = new SqlIdentifierNode("MyColumn"),
+                        Left = new SqlIdentifierNode("mycolumn"),
                         Operator = new SqlOperatorNode("="),
                         Right = new SqlNumberNode(1)
                     }
@@ -39,7 +39,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_HavingAnd()
         {
-            const string s = "SELECT * FROM MyTable HAVING MyColumn1 = 1 AND MyColumn2 = 2;";
+            const string s = "SELECT * FROM mytable HAVING mycolumn1 = 1 AND mycolumn2 = 2;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -51,19 +51,19 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause =  new SqlObjectIdentifierNode("MyTable"),
+                    FromClause =  new SqlObjectIdentifierNode("mytable"),
                     HavingClause = new SqlInfixOperationNode
                     {
                         Left = new SqlInfixOperationNode
                         {
-                            Left = new SqlIdentifierNode("MyColumn1"),
+                            Left = new SqlIdentifierNode("mycolumn1"),
                             Operator = new SqlOperatorNode("="),
                             Right = new SqlNumberNode(1)
                         },
                         Operator = new SqlOperatorNode("AND"),
                         Right = new SqlInfixOperationNode
                         {
-                            Left = new SqlIdentifierNode("MyColumn2"),
+                            Left = new SqlIdentifierNode("mycolumn2"),
                             Operator = new SqlOperatorNode("="),
                             Right = new SqlNumberNode(2)
                         }
@@ -75,7 +75,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_HavingColumnBetween()
         {
-            const string s = "SELECT * FROM MyTable HAVING MyColumn BETWEEN 1 AND 2;";
+            const string s = "SELECT * FROM mytable HAVING mycolumn BETWEEN 1 AND 2;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -87,10 +87,10 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause =  new SqlObjectIdentifierNode("MyTable"),
+                    FromClause =  new SqlObjectIdentifierNode("mytable"),
                     HavingClause = new SqlBetweenOperationNode
                     {
-                        Left = new SqlIdentifierNode("MyColumn"),
+                        Left = new SqlIdentifierNode("mycolumn"),
                         Low = new SqlNumberNode(1),
                         High = new SqlNumberNode(2)
                     }
@@ -101,7 +101,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_HavingColumnInNumberList()
         {
-            const string s = "SELECT * FROM MyTable HAVING MyColumn IN (1, 2, 3);";
+            const string s = "SELECT * FROM mytable HAVING mycolumn IN (1, 2, 3);";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             var output = result.ToString();
@@ -114,10 +114,10 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause =  new SqlObjectIdentifierNode("MyTable"),
+                    FromClause =  new SqlObjectIdentifierNode("mytable"),
                     HavingClause = new SqlInNode
                     {
-                        Search = new SqlIdentifierNode("MyColumn"),
+                        Search = new SqlIdentifierNode("mycolumn"),
                         Items = new SqlListNode<ISqlNode>
                         {
                             new SqlNumberNode(1),

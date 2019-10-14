@@ -22,11 +22,11 @@ namespace SqlParser.PostgreSql.Tests
             result.Statements.First().Should().MatchAst(
                 new SqlInsertNode
                 {
-                    Table = new SqlObjectIdentifierNode("MyTable"),
+                    Table = new SqlObjectIdentifierNode("mytable"),
                     Columns = new SqlListNode<SqlIdentifierNode>
                     {
-                        new SqlIdentifierNode("Column1"),
-                        new SqlIdentifierNode("Column2")
+                        new SqlIdentifierNode("column1"),
+                        new SqlIdentifierNode("column2")
                     },
                     Source = new SqlValuesNode
                     {
@@ -55,11 +55,11 @@ namespace SqlParser.PostgreSql.Tests
             result.Statements.First().Should().MatchAst(
                 new SqlInsertNode
                 {
-                    Table = new SqlObjectIdentifierNode("MyTable"),
+                    Table = new SqlObjectIdentifierNode("mytable"),
                     Columns = new SqlListNode<SqlIdentifierNode>
                     {
-                        new SqlIdentifierNode("Column1"),
-                        new SqlIdentifierNode("Column2")
+                        new SqlIdentifierNode("column1"),
+                        new SqlIdentifierNode("column2")
                     },
                     Source = new SqlValuesNode
                     {
@@ -92,11 +92,11 @@ namespace SqlParser.PostgreSql.Tests
             result.Statements.First().Should().MatchAst(
                 new SqlInsertNode
                 {
-                    Table = new SqlObjectIdentifierNode("MyTable"),
+                    Table = new SqlObjectIdentifierNode("mytable"),
                     Columns = new SqlListNode<SqlIdentifierNode>
                     {
-                        new SqlIdentifierNode("Column1"),
-                        new SqlIdentifierNode("Column2")
+                        new SqlIdentifierNode("column1"),
+                        new SqlIdentifierNode("column2")
                     },
                     Source = new SqlKeywordNode("DEFAULT VALUES")
                 }

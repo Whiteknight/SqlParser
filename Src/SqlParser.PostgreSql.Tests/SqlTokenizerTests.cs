@@ -37,7 +37,7 @@ namespace SqlParser.PostgreSql.Tests
             result[5].Type.Should().Be(SqlTokenType.Whitespace);
 
             result[6].Type.Should().Be(SqlTokenType.Identifier);
-            result[6].Value.Should().Be("MyTable");
+            result[6].Value.Should().Be("mytable");
             result[6].Location.Line.Should().Be(1);
             result[6].Location.Column.Should().Be(15);
         }

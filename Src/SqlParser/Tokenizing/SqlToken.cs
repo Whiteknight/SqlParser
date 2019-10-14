@@ -37,7 +37,7 @@ namespace SqlParser.Tokenizing
 
         public static SqlToken QuotedString(string s, Location location) => new SqlToken(s, SqlTokenType.QuotedString, location);
 
-        public static SqlToken BracketedIdentifier(string s, Location location) => new SqlToken(s, SqlTokenType.Identifier, location);
+        public static SqlToken QuotedIdentifier(string s, Location location) => new SqlToken(s, SqlTokenType.Identifier, location);
 
         public static SqlToken Comment(string s, Location location) => new SqlToken(s, SqlTokenType.Comment, location);
 

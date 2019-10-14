@@ -13,7 +13,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereColumnEqualsNumber()
         {
-            const string s = "SELECT * FROM MyTable WHERE MyColumn = 1;";
+            const string s = "SELECT * FROM mytable WHERE mycolumn = 1;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -25,10 +25,10 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlInfixOperationNode
                     {
-                        Left = new SqlIdentifierNode("MyColumn"),
+                        Left = new SqlIdentifierNode("mycolumn"),
                         Operator = new SqlOperatorNode("="),
                         Right = new SqlNumberNode(1)
                     }
@@ -39,7 +39,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereColumnEqualsExpression()
         {
-            const string s = "SELECT * FROM MyTable WHERE MyColumn1 = MyColumn2 + 1;";
+            const string s = "SELECT * FROM mytable WHERE mycolumn1 = mycolumn2 + 1;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -51,14 +51,14 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlInfixOperationNode
                     {
-                        Left = new SqlIdentifierNode("MyColumn1"),
+                        Left = new SqlIdentifierNode("mycolumn1"),
                         Operator = new SqlOperatorNode("="),
                         Right = new SqlInfixOperationNode
                         {
-                            Left = new SqlIdentifierNode("MyColumn2"),
+                            Left = new SqlIdentifierNode("mycolumn2"),
                             Operator = new SqlOperatorNode("+"),
                             Right = new SqlNumberNode(1)
                         }
@@ -70,7 +70,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereAnd()
         {
-            const string s = "SELECT * FROM MyTable WHERE MyColumn1 = 1 AND MyColumn2 = 2;";
+            const string s = "SELECT * FROM mytable WHERE mycolumn1 = 1 AND mycolumn2 = 2;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -82,19 +82,19 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlInfixOperationNode
                     {
                         Left = new SqlInfixOperationNode
                         {
-                            Left = new SqlIdentifierNode("MyColumn1"),
+                            Left = new SqlIdentifierNode("mycolumn1"),
                             Operator = new SqlOperatorNode("="),
                             Right = new SqlNumberNode(1)
                         },
                         Operator = new SqlOperatorNode("AND"),
                         Right = new SqlInfixOperationNode
                         {
-                            Left = new SqlIdentifierNode("MyColumn2"),
+                            Left = new SqlIdentifierNode("mycolumn2"),
                             Operator = new SqlOperatorNode("="),
                             Right = new SqlNumberNode(2)
                         }
@@ -106,7 +106,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereColumnBetween()
         {
-            const string s = "SELECT * FROM MyTable WHERE MyColumn BETWEEN 1 AND 2;";
+            const string s = "SELECT * FROM mytable WHERE mycolumn BETWEEN 1 AND 2;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -118,10 +118,10 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlBetweenOperationNode
                     {
-                        Left = new SqlIdentifierNode("MyColumn"),
+                        Left = new SqlIdentifierNode("mycolumn"),
                         Low = new SqlNumberNode(1),
                         High = new SqlNumberNode(2)
                     }
@@ -132,7 +132,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereColumnInNumberList()
         {
-            const string s = "SELECT * FROM MyTable WHERE MyColumn IN (1, 2, 3);";
+            const string s = "SELECT * FROM mytable WHERE mycolumn IN (1, 2, 3);";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -144,11 +144,11 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlInNode
                     {
 
-                        Search = new SqlIdentifierNode("MyColumn"),
+                        Search = new SqlIdentifierNode("mycolumn"),
                         Items = new SqlListNode<ISqlNode>
                         {
                             new SqlNumberNode(1),
@@ -163,7 +163,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereColumnIsNull()
         {
-            const string s = "SELECT * FROM MyTable WHERE MyColumn IS NULL;";
+            const string s = "SELECT * FROM mytable WHERE mycolumn IS NULL;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -175,10 +175,10 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlInfixOperationNode
                     {
-                        Left = new SqlIdentifierNode("MyColumn"),
+                        Left = new SqlIdentifierNode("mycolumn"),
                         Operator = new SqlOperatorNode("IS"),
                         Right = new SqlNullNode()
                     }
@@ -189,7 +189,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereColumnIsNotNull()
         {
-            const string s = "SELECT * FROM MyTable WHERE MyColumn IS NOT NULL;";
+            const string s = "SELECT * FROM mytable WHERE mycolumn IS NOT NULL;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -201,10 +201,10 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlInfixOperationNode
                     {
-                        Left = new SqlIdentifierNode("MyColumn"),
+                        Left = new SqlIdentifierNode("mycolumn"),
                         Operator = new SqlOperatorNode("IS NOT"),
                         Right = new SqlNullNode()
                     }
@@ -215,7 +215,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereColumnLikeString()
         {
-            const string s = "SELECT * FROM MyTable WHERE MyColumn LIKE '%test%';";
+            const string s = "SELECT * FROM mytable WHERE mycolumn LIKE '%test%';";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -227,10 +227,10 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlInfixOperationNode
                     {
-                        Left = new SqlIdentifierNode("MyColumn"),
+                        Left = new SqlIdentifierNode("mycolumn"),
                         Operator = new SqlOperatorNode("LIKE"),
                         Right = new SqlStringNode("%test%")
                     }
@@ -241,7 +241,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereColumnNotLikeString()
         {
-            const string s = "SELECT * FROM MyTable WHERE MyColumn NOT LIKE '%test%';";
+            const string s = "SELECT * FROM mytable WHERE mycolumn NOT LIKE '%test%';";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -253,10 +253,10 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlInfixOperationNode
                     {
-                        Left = new SqlIdentifierNode("MyColumn"),
+                        Left = new SqlIdentifierNode("mycolumn"),
                         Operator = new SqlOperatorNode("NOT LIKE"),
                         Right = new SqlStringNode("%test%")
                     }
@@ -267,7 +267,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereExists()
         {
-            const string s = "SELECT * FROM MyTable1 WHERE EXISTS (SELECT * FROM MyTable2);";
+            const string s = "SELECT * FROM mytable1 WHERE EXISTS (SELECT * FROM mytable2);";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -279,7 +279,7 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable1"),
+                    FromClause = new SqlObjectIdentifierNode("mytable1"),
                     WhereClause = new SqlPrefixOperationNode
                     {
                         Operator = new SqlOperatorNode("EXISTS"),
@@ -289,7 +289,7 @@ namespace SqlParser.PostgreSql.Tests
                             {
                                 new SqlOperatorNode("*")
                             },
-                            FromClause = new SqlObjectIdentifierNode("MyTable2")
+                            FromClause = new SqlObjectIdentifierNode("mytable2")
                         })
                     }
                 }
@@ -299,7 +299,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereNotExists()
         {
-            const string s = "SELECT * FROM MyTable1 WHERE NOT EXISTS (SELECT * FROM MyTable2);";
+            const string s = "SELECT * FROM mytable1 WHERE NOT EXISTS (SELECT * FROM mytable2);";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -311,7 +311,7 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable1"),
+                    FromClause = new SqlObjectIdentifierNode("mytable1"),
                     WhereClause = new SqlPrefixOperationNode
                     {
                         Operator = new SqlOperatorNode("NOT"),
@@ -324,7 +324,7 @@ namespace SqlParser.PostgreSql.Tests
                                 {
                                     new SqlOperatorNode("*")
                                 },
-                                FromClause = new SqlObjectIdentifierNode("MyTable2")
+                                FromClause = new SqlObjectIdentifierNode("mytable2")
                             })
                         }
                     }
@@ -335,7 +335,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereEqualsAllSelect()
         {
-            const string s = "SELECT * FROM MyTable WHERE MyColumn = ALL (SELECT 5);";
+            const string s = "SELECT * FROM mytable WHERE mycolumn = ALL (SELECT 5);";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -347,10 +347,10 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlInfixOperationNode
                     {
-                        Left = new SqlIdentifierNode("MyColumn"),
+                        Left = new SqlIdentifierNode("mycolumn"),
                         Operator = new SqlOperatorNode("= ALL"),
                         Right = new SqlParenthesisNode<ISqlNode>
                         {
@@ -370,7 +370,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereAndOr1()
         {
-            const string s = "SELECT * FROM MyTable WHERE MyColumn1 = 1 AND (MyColumn2 = 2 OR MyColumn3 = 3);";
+            const string s = "SELECT * FROM mytable WHERE mycolumn1 = 1 AND (mycolumn2 = 2 OR mycolumn3 = 3);";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -382,12 +382,12 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlInfixOperationNode
                     {
                         Left = new SqlInfixOperationNode
                         {
-                            Left = new SqlIdentifierNode("MyColumn1"),
+                            Left = new SqlIdentifierNode("mycolumn1"),
                             Operator = new SqlOperatorNode("="),
                             Right = new SqlNumberNode(1)
                         },
@@ -396,14 +396,14 @@ namespace SqlParser.PostgreSql.Tests
                         {
                             Left = new SqlInfixOperationNode
                             {
-                                Left = new SqlIdentifierNode("MyColumn2"),
+                                Left = new SqlIdentifierNode("mycolumn2"),
                                 Operator = new SqlOperatorNode("="),
                                 Right = new SqlNumberNode(2)
                             },
                             Operator = new SqlOperatorNode("OR"),
                             Right = new SqlInfixOperationNode
                             {
-                                Left = new SqlIdentifierNode("MyColumn3"),
+                                Left = new SqlIdentifierNode("mycolumn3"),
                                 Operator = new SqlOperatorNode("="),
                                 Right = new SqlNumberNode(3)
                             }
@@ -416,7 +416,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereAndOr2()
         {
-            const string s = "SELECT * FROM MyTable WHERE MyColumn1 = 1 AND MyColumn2 = 2 OR MyColumn3 = 3;";
+            const string s = "SELECT * FROM mytable WHERE mycolumn1 = 1 AND mycolumn2 = 2 OR mycolumn3 = 3;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -428,21 +428,21 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlInfixOperationNode
                     {
                         Left = new SqlInfixOperationNode
                         {
                             Left = new SqlInfixOperationNode
                             {
-                                Left = new SqlIdentifierNode("MyColumn1"),
+                                Left = new SqlIdentifierNode("mycolumn1"),
                                 Operator = new SqlOperatorNode("="),
                                 Right = new SqlNumberNode(1)
                             },
                             Operator = new SqlOperatorNode("AND"),
                             Right = new SqlInfixOperationNode
                             {
-                                Left = new SqlIdentifierNode("MyColumn2"),
+                                Left = new SqlIdentifierNode("mycolumn2"),
                                 Operator = new SqlOperatorNode("="),
                                 Right = new SqlNumberNode(2)
                             }
@@ -450,7 +450,7 @@ namespace SqlParser.PostgreSql.Tests
                         Operator = new SqlOperatorNode("OR"),
                         Right = new SqlInfixOperationNode
                         {
-                            Left = new SqlIdentifierNode("MyColumn3"),
+                            Left = new SqlIdentifierNode("mycolumn3"),
                             Operator = new SqlOperatorNode("="),
                             Right = new SqlNumberNode(3)
                         }
@@ -462,7 +462,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_WhereAndOr3()
         {
-            const string s = "SELECT * FROM MyTable WHERE (MyColumn1 = 1 AND MyColumn2 = 2) OR MyColumn3 = 3;";
+            const string s = "SELECT * FROM mytable WHERE (mycolumn1 = 1 AND mycolumn2 = 2) OR mycolumn3 = 3;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -474,21 +474,21 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlInfixOperationNode
                     {
                         Left = new SqlInfixOperationNode
                         {
                             Left = new SqlInfixOperationNode
                             {
-                                Left = new SqlIdentifierNode("MyColumn1"),
+                                Left = new SqlIdentifierNode("mycolumn1"),
                                 Operator = new SqlOperatorNode("="),
                                 Right = new SqlNumberNode(1)
                             },
                             Operator = new SqlOperatorNode("AND"),
                             Right = new SqlInfixOperationNode
                             {
-                                Left = new SqlIdentifierNode("MyColumn2"),
+                                Left = new SqlIdentifierNode("mycolumn2"),
                                 Operator = new SqlOperatorNode("="),
                                 Right = new SqlNumberNode(2)
                             }
@@ -496,7 +496,7 @@ namespace SqlParser.PostgreSql.Tests
                         Operator = new SqlOperatorNode("OR"),
                         Right = new SqlInfixOperationNode
                         {
-                            Left = new SqlIdentifierNode("MyColumn3"),
+                            Left = new SqlIdentifierNode("mycolumn3"),
                             Operator = new SqlOperatorNode("="),
                             Right = new SqlNumberNode(3)
                         }
@@ -508,7 +508,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_NotOr1()
         {
-            const string s = "SELECT * FROM MyTable WHERE NOT MyColumn1 = 1 OR MyColumn2 = 2;";
+            const string s = "SELECT * FROM mytable WHERE NOT mycolumn1 = 1 OR mycolumn2 = 2;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -520,7 +520,7 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlInfixOperationNode
                     {
                         Left = new SqlPrefixOperationNode
@@ -528,7 +528,7 @@ namespace SqlParser.PostgreSql.Tests
                             Operator = new SqlOperatorNode("NOT"),
                             Right = new SqlInfixOperationNode
                             {
-                                Left = new SqlIdentifierNode("MyColumn1"),
+                                Left = new SqlIdentifierNode("mycolumn1"),
                                 Operator = new SqlOperatorNode("="),
                                 Right = new SqlNumberNode(1)
                             }
@@ -536,7 +536,7 @@ namespace SqlParser.PostgreSql.Tests
                         Operator = new SqlOperatorNode("OR"),
                         Right = new SqlInfixOperationNode
                         {
-                            Left = new SqlIdentifierNode("MyColumn2"),
+                            Left = new SqlIdentifierNode("mycolumn2"),
                             Operator = new SqlOperatorNode("="),
                             Right = new SqlNumberNode(2)
                         }
@@ -548,7 +548,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_NotOr2()
         {
-            const string s = "SELECT * FROM MyTable WHERE NOT (MyColumn1 = 1 OR MyColumn2 = 2);";
+            const string s = "SELECT * FROM mytable WHERE NOT (mycolumn1 = 1 OR mycolumn2 = 2);";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -560,7 +560,7 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlPrefixOperationNode
                     {
                         Operator = new SqlOperatorNode("NOT"),
@@ -568,14 +568,14 @@ namespace SqlParser.PostgreSql.Tests
                         {
                             Left = new SqlInfixOperationNode
                             {
-                                Left = new SqlIdentifierNode("MyColumn1"),
+                                Left = new SqlIdentifierNode("mycolumn1"),
                                 Operator = new SqlOperatorNode("="),
                                 Right = new SqlNumberNode(1)
                             },
                             Operator = new SqlOperatorNode("OR"),
                             Right = new SqlInfixOperationNode
                             {
-                                Left = new SqlIdentifierNode("MyColumn2"),
+                                Left = new SqlIdentifierNode("mycolumn2"),
                                 Operator = new SqlOperatorNode("="),
                                 Right = new SqlNumberNode(2)
                             }

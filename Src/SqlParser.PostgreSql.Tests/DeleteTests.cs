@@ -13,7 +13,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Delete_FromTable()
         {
-            const string s = "DELETE FROM MyTable;";
+            const string s = "DELETE FROM \"MyTable\";";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -37,10 +37,10 @@ namespace SqlParser.PostgreSql.Tests
             result.Statements.First().Should().MatchAst(
                 new SqlDeleteNode
                 {
-                    Source = new SqlObjectIdentifierNode("MyTable"),
+                    Source = new SqlObjectIdentifierNode("mytable"),
                     WhereClause = new SqlInfixOperationNode
                     {
-                        Left = new SqlIdentifierNode("ColumnA"),
+                        Left = new SqlIdentifierNode("columna"),
                         Operator = new SqlOperatorNode("="),
                         Right = new SqlNumberNode(1)
                     }

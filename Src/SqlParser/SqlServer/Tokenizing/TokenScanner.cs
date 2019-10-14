@@ -209,7 +209,7 @@ namespace SqlParser.SqlServer.Tokenizing
             }
             
             var x = new string(chars.ToArray());
-            return SqlToken.BracketedIdentifier(x, l);
+            return SqlToken.QuotedIdentifier(x, l);
         }
 
         private SqlToken ReadNumber()

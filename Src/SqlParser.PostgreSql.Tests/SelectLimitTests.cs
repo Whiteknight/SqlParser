@@ -13,7 +13,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_LimitNumber()
         {
-            const string s = "SELECT * FROM MyTable LIMIT 10;";
+            const string s = "SELECT * FROM mytable LIMIT 10;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -25,7 +25,7 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     TopClause = new SqlTopLimitNode
                     {
                         Value = new SqlNumberNode(10)
@@ -37,7 +37,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_LimitVariable()
         {
-            const string s = "SELECT * FROM MyTable LIMIT @limit;";
+            const string s = "SELECT * FROM mytable LIMIT @limit;";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -49,7 +49,7 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     TopClause = new SqlTopLimitNode
                     {
                         Value = new SqlVariableNode("@limit")
@@ -61,7 +61,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_LimitNumberParens()
         {
-            const string s = "SELECT * FROM MyTable LIMIT(10);";
+            const string s = "SELECT * FROM mytable LIMIT(10);";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -73,7 +73,7 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     TopClause = new SqlTopLimitNode
                     {
                         Value = new SqlNumberNode(10)
@@ -85,7 +85,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Select_LimitVariableParens()
         {
-            const string s = "SELECT * FROM MyTable LIMIT (@limit);";
+            const string s = "SELECT * FROM mytable LIMIT (@limit);";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
             result.Should().PassValidation().And.RoundTrip();
@@ -97,7 +97,7 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         new SqlOperatorNode("*")
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
+                    FromClause = new SqlObjectIdentifierNode("mytable"),
                     TopClause = new SqlTopLimitNode
                     {
                         Value = new SqlVariableNode("@limit")
