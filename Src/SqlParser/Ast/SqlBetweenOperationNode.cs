@@ -1,15 +1,22 @@
-﻿namespace SqlParser.Ast
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
+
+namespace SqlParser.Ast
 {
-    public class SqlBetweenOperationNode : SqlNode
+    public class SqlBetweenOperationNode : ISqlNode
     {
         public bool Not { get; set; }
-        public SqlNode Left { get; set; }
-        public SqlNode Low { get; set; }
-        public SqlNode High { get; set; }
+        public ISqlNode Left { get; set; }
+        public ISqlNode Low { get; set; }
+        public ISqlNode High { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitBetween(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitBetween(this);
 
-        public SqlBetweenOperationNode Update(bool not, SqlNode left, SqlNode low, SqlNode high)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlBetweenOperationNode Update(bool not, ISqlNode left, ISqlNode low, ISqlNode high)
         {
             if (not == Not && left == Left && low == Low && high == High)
                 return this;

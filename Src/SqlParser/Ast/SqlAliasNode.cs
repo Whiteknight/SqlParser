@@ -1,14 +1,21 @@
-﻿namespace SqlParser.Ast
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
+
+namespace SqlParser.Ast
 {
-    public class SqlAliasNode  : SqlNode
+    public class SqlAliasNode  : ISqlNode
     {
-        public SqlNode Source { get; set; }
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public ISqlNode Source { get; set; }
         public SqlIdentifierNode Alias { get; set; }
         public SqlListNode<SqlIdentifierNode> ColumnNames { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitAlias(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitAlias(this);
 
-        public SqlAliasNode Update(SqlNode source, SqlIdentifierNode alias, SqlListNode<SqlIdentifierNode> columns)
+        public SqlAliasNode Update(ISqlNode source, SqlIdentifierNode alias, SqlListNode<SqlIdentifierNode> columns)
         {
             if (source == Source && alias == Alias && columns == ColumnNames)
                 return this;

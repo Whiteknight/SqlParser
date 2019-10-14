@@ -1,29 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using SqlParser.Symbols;
+using SqlParser.SqlServer.Stringify;
+using SqlParser.SqlServer.Symbols;
+using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlStatementListNode : SqlNode, ISqlSymbolScopeNode, IList<SqlNode>
+    public class SqlStatementListNode : ISqlNode, ISqlSymbolScopeNode, IList<ISqlNode>
     {
-        public List<SqlNode> Statements { get; }
+        public List<ISqlNode> Statements { get; }
         public bool UseBeginEnd { get; set; }
         public SymbolTable Symbols { get; set; }
         
 
         public SqlStatementListNode()
         {
-            Statements = new List<SqlNode>();
+            Statements = new List<ISqlNode>();
         }
 
-        public SqlStatementListNode(List<SqlNode> statements)
+        public SqlStatementListNode(List<ISqlNode> statements)
         {
-            Statements = statements ?? new List<SqlNode>();
+            Statements = statements ?? new List<ISqlNode>();
         }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitStatementList(this);
+        public override string ToString() => StringifyVisitor.ToString(this);
 
-        public SqlStatementListNode Update(List<SqlNode> stmts, bool isBeginEnd)
+        public Location Location { get; set; }
+
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitStatementList(this);
+
+        public SqlStatementListNode Update(List<ISqlNode> stmts, bool isBeginEnd)
         {
             if (stmts == Statements && isBeginEnd == UseBeginEnd)
                 return this;
@@ -34,7 +40,7 @@ namespace SqlParser.Ast
             };
         }
 
-        public IEnumerator<SqlNode> GetEnumerator()
+        public IEnumerator<ISqlNode> GetEnumerator()
         {
             return Statements.GetEnumerator();
         }
@@ -44,7 +50,7 @@ namespace SqlParser.Ast
             return GetEnumerator();
         }
 
-        public void Add(SqlNode item)
+        public void Add(ISqlNode item)
         {
             Statements.Add(item);
         }
@@ -54,29 +60,29 @@ namespace SqlParser.Ast
             Statements.Clear();
         }
 
-        public bool Contains(SqlNode item)
+        public bool Contains(ISqlNode item)
         {
             return Statements.Contains(item);
         }
 
-        public void CopyTo(SqlNode[] array, int arrayIndex)
+        public void CopyTo(ISqlNode[] array, int arrayIndex)
         {
             Statements.CopyTo(array, arrayIndex);
         }
 
-        public bool Remove(SqlNode item)
+        public bool Remove(ISqlNode item)
         {
             return Statements.Remove(item);
         }
 
         public int Count => Statements.Count;
         public bool IsReadOnly => false;
-        public int IndexOf(SqlNode item)
+        public int IndexOf(ISqlNode item)
         {
             return Statements.IndexOf(item);
         }
 
-        public void Insert(int index, SqlNode item)
+        public void Insert(int index, ISqlNode item)
         {
             Statements.Insert(index, item);
         }
@@ -86,7 +92,7 @@ namespace SqlParser.Ast
             Statements.RemoveAt(index);
         }
 
-        public SqlNode this[int index]
+        public ISqlNode this[int index]
         {
             get => Statements[index];
             set => Statements[index] = value;

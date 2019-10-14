@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
+using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlInfixOperationNode : SqlNode
+    public class SqlInfixOperationNode : ISqlNode
     {
-        public SqlNode Left { get; set; }
+        public ISqlNode Left { get; set; }
         public SqlOperatorNode Operator { get; set; }
-        public SqlNode Right { get; set; }
+        public ISqlNode Right { get; set; }
 
         private static readonly HashSet<string> _queryUnionOperators = new HashSet<string>
         {
@@ -37,9 +39,13 @@ namespace SqlParser.Ast
             "ALL", "ANY", "SOME"
         };
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitInfixOperation(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitInfixOperation(this);
 
-        public SqlInfixOperationNode Update(SqlNode left, SqlOperatorNode op, SqlNode right)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlInfixOperationNode Update(ISqlNode left, SqlOperatorNode op, ISqlNode right)
         {
             if (left == Left && op == Operator && right == Right)
                 return this;

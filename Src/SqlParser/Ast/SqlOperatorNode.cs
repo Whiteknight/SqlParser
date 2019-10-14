@@ -1,9 +1,11 @@
 ﻿using System;
+using SqlParser.SqlServer.Stringify;
 using SqlParser.Tokenizing;
+using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlOperatorNode  : SqlNode
+    public class SqlOperatorNode  : ISqlNode
     {
         public SqlOperatorNode()
         {
@@ -26,9 +28,14 @@ namespace SqlParser.Ast
             Operator = op;
         }
 
+
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
         public string Operator { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitOperator(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitOperator(this);
 
         public SqlStringNode Apply(SqlStringNode left, SqlStringNode right)
         {

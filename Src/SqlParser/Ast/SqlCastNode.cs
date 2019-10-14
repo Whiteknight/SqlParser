@@ -1,15 +1,21 @@
 ﻿using System.Linq;
+using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlCastNode : SqlNode
+    public class SqlCastNode : ISqlNode
     {
-        public SqlNode Expression { get; set; }
+        public ISqlNode Expression { get; set; }
         public SqlDataTypeNode DataType { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitCast(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitCast(this);
 
-        public SqlCastNode Update(SqlNode expr, SqlDataTypeNode dt)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlCastNode Update(ISqlNode expr, SqlDataTypeNode dt)
         {
             if (expr == Expression && dt == DataType)
                 return this;
@@ -32,7 +38,7 @@ namespace SqlParser.Ast
             return null;
         }
 
-        public SqlNode TryReduce()
+        public ISqlNode TryReduce()
         {
             if (DataType.DataType.Keyword == "CHAR" || DataType.DataType.Keyword == "VARCHAR")
             {
@@ -48,7 +54,7 @@ namespace SqlParser.Ast
             return this;
         }
 
-        private SqlNode TryReduceStringToNumber(SqlStringNode asString)
+        private ISqlNode TryReduceStringToNumber(SqlStringNode asString)
         {
             switch (DataType.DataType.Keyword)
             {
@@ -68,7 +74,7 @@ namespace SqlParser.Ast
             }
         }
 
-        private SqlNode TryReduceToString(int size)
+        private ISqlNode TryReduceToString(int size)
         {
             if (Expression is SqlStringNode asString)
             {

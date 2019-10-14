@@ -1,15 +1,22 @@
-﻿namespace SqlParser.Ast
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
+
+namespace SqlParser.Ast
 {
-    public class SqlOverNode : SqlNode
+    public class SqlOverNode : ISqlNode
     {
-        public SqlNode Expression { get; set; }
-        public SqlNode PartitionBy { get; set; }
-        public SqlNode OrderBy { get; set; }
-        public SqlNode RowsRange { get; set; }
+        public ISqlNode Expression { get; set; }
+        public ISqlNode PartitionBy { get; set; }
+        public ISqlNode OrderBy { get; set; }
+        public ISqlNode RowsRange { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitOver(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitOver(this);
 
-        public SqlOverNode Update(SqlNode expr, SqlNode part, SqlNode orderBy, SqlNode rows)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlOverNode Update(ISqlNode expr, ISqlNode part, ISqlNode orderBy, ISqlNode rows)
         {
             if (expr == Expression && part == PartitionBy && orderBy == OrderBy && rows == RowsRange)
                 return this;

@@ -1,4 +1,4 @@
-﻿using SqlParser.Symbols;
+﻿using SqlParser.SqlServer.Symbols;
 
 namespace SqlParser.Ast
 {

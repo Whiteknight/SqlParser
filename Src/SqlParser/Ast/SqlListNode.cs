@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlListNode<TNode> : SqlNode, ICollection<TNode>
-        where TNode : SqlNode
+    public class SqlListNode<TNode> : ISqlNode, ICollection<TNode>
+        where TNode : class, ISqlNode
     {
         public SqlListNode()
         {
@@ -18,7 +20,11 @@ namespace SqlParser.Ast
 
         public List<TNode> Children { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitList(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitList(this);
+
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
 
         public SqlListNode<TNode> Update(List<TNode> children)
         {

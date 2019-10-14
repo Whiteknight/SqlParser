@@ -1,9 +1,10 @@
 ﻿using System;
 using SqlParser.Tokenizing;
+using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlNumberNode : SqlNode
+    public class SqlNumberNode : ISqlNode
     {
         private enum DataType
         {
@@ -71,7 +72,9 @@ namespace SqlParser.Ast
             }
         }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitNumber(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitNumber(this);
+
+        public Location Location { get; set; }
 
         public bool IsNumeric => _type == DataType.Numeric;
         public bool IsInt => _type == DataType.Int;

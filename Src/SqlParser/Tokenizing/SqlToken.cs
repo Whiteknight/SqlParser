@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using SqlParser.SqlServer;
 
 namespace SqlParser.Tokenizing
 {

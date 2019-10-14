@@ -1,8 +1,10 @@
-﻿using SqlParser.Tokenizing;
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.Tokenizing;
+using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlIdentifierNode : SqlNode
+    public class SqlIdentifierNode : ISqlNode
     {
         public SqlIdentifierNode()
         {
@@ -21,10 +23,14 @@ namespace SqlParser.Ast
 
         public string Name { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitIdentifier(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitIdentifier(this);
+
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
     }
 
-    public class SqlQualifiedIdentifierNode : SqlNode
+    public class SqlQualifiedIdentifierNode : ISqlNode
     {
         public SqlQualifiedIdentifierNode()
         {
@@ -37,11 +43,15 @@ namespace SqlParser.Ast
         }
 
         public SqlIdentifierNode Qualifier { get; set; }
-        public SqlNode Identifier { get; set; }
+        public ISqlNode Identifier { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitQualifiedIdentifier(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitQualifiedIdentifier(this);
 
-        public SqlQualifiedIdentifierNode Update(SqlIdentifierNode qualfier, SqlNode id)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlQualifiedIdentifierNode Update(SqlIdentifierNode qualfier, ISqlNode id)
         {
             if (qualfier == Qualifier && id == Identifier)
                 return this;
@@ -54,7 +64,7 @@ namespace SqlParser.Ast
         }
     }
 
-    public class SqlObjectIdentifierNode :SqlNode
+    public class SqlObjectIdentifierNode : ISqlNode
     {
         public SqlObjectIdentifierNode()
         {
@@ -91,7 +101,11 @@ namespace SqlParser.Ast
         public SqlIdentifierNode Schema { get; set; }
         public SqlIdentifierNode Name { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitObjectIdentifier(this);
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitObjectIdentifier(this);
 
         public SqlObjectIdentifierNode Update(SqlIdentifierNode server, SqlIdentifierNode db, SqlIdentifierNode schema, SqlIdentifierNode name)
         {

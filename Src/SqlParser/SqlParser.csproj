@@ -20,4 +20,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Analysis\" />
+    <Folder Include="Optimizer\" />
+    <Folder Include="Shared\" />
+  </ItemGroup>
+
 </Project>

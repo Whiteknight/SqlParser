@@ -1,10 +1,11 @@
 ﻿using System;
 using SqlParser.Ast;
+using SqlParser.Visiting;
 
 namespace SqlParser.Analysis
 {
     public class GetNodesOfTypeAnalysisVisitor<TNode> : SqlNodeVisitor
-        where TNode : SqlNode
+        where TNode : ISqlNode
     {
         private readonly Action<TNode> _onFound;
 
@@ -15,7 +16,7 @@ namespace SqlParser.Analysis
             _onFound = onFound ?? throw new ArgumentNullException(nameof(onFound));
         }
 
-        public override SqlNode Visit(SqlNode n)
+        public override ISqlNode Visit(ISqlNode n)
         {
             if (n is TNode match)
                 _onFound(match);

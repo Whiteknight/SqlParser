@@ -1,25 +1,31 @@
-﻿using SqlParser.Symbols;
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.SqlServer.Symbols;
+using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlSelectNode : SqlNode, ISqlSymbolScopeNode
+    public class SqlSelectNode : ISqlNode, ISqlSymbolScopeNode
     {
         public string Modifier { get; set; }
         public SqlSelectTopNode TopClause { get; set; }
-        public SqlListNode<SqlNode> Columns { get; set; }
-        public SqlNode FromClause { get; set; }
-        public SqlNode WhereClause { get; set; }
+        public SqlListNode<ISqlNode> Columns { get; set; }
+        public ISqlNode FromClause { get; set; }
+        public ISqlNode WhereClause { get; set; }
         public SqlSelectOrderByClauseNode OrderByClause { get; set; }
-        public SqlNode GroupByClause { get; set; }
+        public ISqlNode GroupByClause { get; set; }
 
-        public SqlNode HavingClause { get; set; }
+        public ISqlNode HavingClause { get; set; }
         public SymbolTable Symbols { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitSelect(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitSelect(this);
 
-        public SqlSelectNode Update(string modifier, SqlSelectTopNode top, SqlListNode<SqlNode> columns, 
-            SqlNode from, SqlNode where, SqlSelectOrderByClauseNode orderBy,
-            SqlNode groupBy, SqlNode having)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlSelectNode Update(string modifier, SqlSelectTopNode top, SqlListNode<ISqlNode> columns, 
+            ISqlNode from, ISqlNode where, SqlSelectOrderByClauseNode orderBy,
+            ISqlNode groupBy, ISqlNode having)
         {
             if (modifier == Modifier && top == TopClause && columns == Columns && from == FromClause &&
                 where == WhereClause && orderBy == OrderByClause && groupBy == GroupByClause && having == HavingClause)

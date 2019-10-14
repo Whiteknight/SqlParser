@@ -1,15 +1,22 @@
-﻿namespace SqlParser.Ast
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
+
+namespace SqlParser.Ast
 {
-    public class SqlSelectOrderByClauseNode : SqlNode
+    public class SqlSelectOrderByClauseNode : ISqlNode
     {
         public SqlListNode<SqlOrderByEntryNode> Entries { get; set; }
 
-        public SqlNode Offset { get; set; }
-        public SqlNode Limit { get; set; }
+        public ISqlNode Offset { get; set; }
+        public ISqlNode Limit { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitOrderBy(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitOrderBy(this);
 
-        public SqlSelectOrderByClauseNode Update(SqlListNode<SqlOrderByEntryNode> entries, SqlNode offset, SqlNode limit)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlSelectOrderByClauseNode Update(SqlListNode<SqlOrderByEntryNode> entries, ISqlNode offset, ISqlNode limit)
         {
             if (entries == Entries && offset == Offset && limit == Limit)
                 return this;
@@ -23,14 +30,18 @@
         }
     }
 
-    public class SqlOrderByEntryNode : SqlNode
+    public class SqlOrderByEntryNode : ISqlNode
     {
-        public SqlNode Source { get; set; }
+        public ISqlNode Source { get; set; }
         public string Direction { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitOrderByEntry(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitOrderByEntry(this);
 
-        public SqlOrderByEntryNode Update(SqlNode source, string direction)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlOrderByEntryNode Update(ISqlNode source, string direction)
         {
             if (source == Source && direction == Direction)
                 return this;

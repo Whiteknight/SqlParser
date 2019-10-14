@@ -1,8 +1,10 @@
-﻿using SqlParser.Tokenizing;
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.Tokenizing;
+using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlKeywordNode : SqlNode
+    public class SqlKeywordNode : ISqlNode
     {
         public SqlKeywordNode()
         {
@@ -21,6 +23,10 @@ namespace SqlParser.Ast
 
         public string Keyword { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitKeyword(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitKeyword(this);
+
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
     }
 }

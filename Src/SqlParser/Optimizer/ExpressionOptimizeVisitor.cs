@@ -1,15 +1,16 @@
 ﻿using SqlParser.Ast;
+using SqlParser.Visiting;
 
 namespace SqlParser.Optimizer
 {
     public class ExpressionOptimizeVisitor : SqlNodeVisitor
     {
-        public override SqlNode VisitCast(SqlCastNode n)
+        public override ISqlNode VisitCast(SqlCastNode n)
         {
             return n.TryReduce();
         }
 
-        public override SqlNode VisitInfixOperation(SqlInfixOperationNode n)
+        public override ISqlNode VisitInfixOperation(SqlInfixOperationNode n)
         {
             n = base.VisitInfixOperation(n) as SqlInfixOperationNode;
             if (n.IsArithmeticOperation())
@@ -34,7 +35,7 @@ namespace SqlParser.Optimizer
             return n;
         }
 
-        public override SqlNode VisitPrefixOperation(SqlPrefixOperationNode n)
+        public override ISqlNode VisitPrefixOperation(SqlPrefixOperationNode n)
         {
             // First make sure we visit the children nodes and reduce those as much as possible
             n = base.VisitPrefixOperation(n) as SqlPrefixOperationNode;
@@ -51,7 +52,7 @@ namespace SqlParser.Optimizer
             return n;
         }
 
-        public override SqlNode VisitSelect(SqlSelectNode n)
+        public override ISqlNode VisitSelect(SqlSelectNode n)
         {
             // TODO: if SELECT WHERE can reduce to TRUE, the where clause can be omitted
             // TODO: If SELECT WHERE can reduce to FALSE, the entire statement can be replaced with an empty result set

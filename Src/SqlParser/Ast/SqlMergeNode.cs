@@ -1,18 +1,25 @@
-﻿namespace SqlParser.Ast
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
+
+namespace SqlParser.Ast
 {
-    public class SqlMergeNode : SqlNode
+    public class SqlMergeNode : ISqlNode
     {
         // TODO: Symbol table? source and target can be aliased, we also want to insert 'TARGET' and 'SOURCE' as symbols
-        public SqlNode Target { get; set; }
-        public SqlNode Source { get; set; }
-        public SqlNode MergeCondition { get; set; }
-        public SqlNode Matched { get; set; }
+        public ISqlNode Target { get; set; }
+        public ISqlNode Source { get; set; }
+        public ISqlNode MergeCondition { get; set; }
+        public ISqlNode Matched { get; set; }
         public SqlMergeInsertNode NotMatchedByTarget { get; set; }
-        public SqlNode NotMatchedBySource { get; set; }
+        public ISqlNode NotMatchedBySource { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitMerge(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitMerge(this);
 
-        public SqlMergeNode Update(SqlNode target, SqlNode source, SqlNode condition, SqlNode matched, SqlMergeInsertNode nmatchtarget, SqlNode nmatchsource)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlMergeNode Update(ISqlNode target, ISqlNode source, ISqlNode condition, ISqlNode matched, SqlMergeInsertNode nmatchtarget, ISqlNode nmatchsource)
         {
             if (Target == target && Source == source && MergeCondition == condition && Matched == matched && NotMatchedByTarget == nmatchtarget && NotMatchedBySource == nmatchsource)
                 return this;
@@ -29,11 +36,15 @@
         }
     }
 
-    public class SqlMergeUpdateNode : SqlNode
+    public class SqlMergeUpdateNode : ISqlNode
     {
         public SqlListNode<SqlInfixOperationNode> SetClause { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitMergeUpdate(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitMergeUpdate(this);
+
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
 
         public SqlMergeUpdateNode Update(SqlListNode<SqlInfixOperationNode> set)
         {
@@ -47,14 +58,18 @@
         }
     }
 
-    public class SqlMergeInsertNode : SqlNode
+    public class SqlMergeInsertNode : ISqlNode
     {
         public SqlListNode<SqlIdentifierNode> Columns { get; set; }
-        public SqlNode Source { get; set; }
+        public ISqlNode Source { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitMergeInsert(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitMergeInsert(this);
 
-        public SqlMergeInsertNode Update(SqlListNode<SqlIdentifierNode> columns, SqlNode source)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlMergeInsertNode Update(SqlListNode<SqlIdentifierNode> columns, ISqlNode source)
         {
             if (columns == Columns && source == Source)
                 return this;

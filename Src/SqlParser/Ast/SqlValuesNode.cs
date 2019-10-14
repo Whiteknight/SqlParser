@@ -1,10 +1,13 @@
-﻿namespace SqlParser.Ast
-{
-    public class SqlValuesNode : SqlNode
-    {
-        public SqlListNode<SqlListNode<SqlNode>> Values { get; set; }
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
 
-        public SqlValuesNode Update(SqlListNode<SqlListNode<SqlNode>> values)
+namespace SqlParser.Ast
+{
+    public class SqlValuesNode : ISqlNode
+    {
+        public SqlListNode<SqlListNode<ISqlNode>> Values { get; set; }
+
+        public SqlValuesNode Update(SqlListNode<SqlListNode<ISqlNode>> values)
         {
             if (values == Values)
                 return this;
@@ -15,6 +18,10 @@
             };
         }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitValues(this);
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitValues(this);
     }
 }

@@ -1,14 +1,21 @@
-﻿namespace SqlParser.Ast
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
+
+namespace SqlParser.Ast
 {
-    public class SqlSelectTopNode : SqlNode
+    public class SqlSelectTopNode : ISqlNode
     {
-        public SqlNode Value { get; set; }
+        public ISqlNode Value { get; set; }
         public bool Percent { get; set; }
         public bool WithTies { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitTop(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitTop(this);
 
-        public SqlSelectTopNode Update(SqlNode value, bool percent, bool withTies)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlSelectTopNode Update(ISqlNode value, bool percent, bool withTies)
         {
             if (value == Value && percent == Percent && withTies == WithTies)
                 return this;

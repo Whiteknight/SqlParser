@@ -21,4 +21,8 @@
     <ProjectReference Include="..\SqlParser\SqlParser.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="SqlServer\Examples\" />
+  </ItemGroup>
+
 </Project>

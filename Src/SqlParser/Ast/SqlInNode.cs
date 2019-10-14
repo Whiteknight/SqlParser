@@ -1,12 +1,19 @@
-﻿namespace SqlParser.Ast
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
+
+namespace SqlParser.Ast
 {
-    public class SqlInNode : SqlNode
+    public class SqlInNode : ISqlNode
     {
         public bool Not { get; set; }
-        public SqlNode Search { get; set; }
-        public SqlListNode<SqlNode> Items { get; set; }
+        public ISqlNode Search { get; set; }
+        public SqlListNode<ISqlNode> Items { get; set; }
 
-        public SqlInNode Update(bool not, SqlNode search, SqlListNode<SqlNode> items)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlInNode Update(bool not, ISqlNode search, SqlListNode<ISqlNode> items)
         {
             if (not == Not && search == Search && items == Items)
                 return this;
@@ -19,6 +26,6 @@
             };
         }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitIn(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitIn(this);
     }
 }

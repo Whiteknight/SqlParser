@@ -1,16 +1,22 @@
-﻿using SqlParser.Symbols;
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.SqlServer.Symbols;
+using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlDeleteNode : SqlNode, ISqlSymbolScopeNode
+    public class SqlDeleteNode : ISqlNode, ISqlSymbolScopeNode
     {
-        public SqlNode Source { get; set; }
-        public SqlNode WhereClause { get; set; }
+        public ISqlNode Source { get; set; }
+        public ISqlNode WhereClause { get; set; }
         public SymbolTable Symbols { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitDelete(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitDelete(this);
 
-        public SqlDeleteNode Update(SqlNode source, SqlNode where)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlDeleteNode Update(ISqlNode source, ISqlNode where)
         {
             if (source == Source && where == WhereClause)
                 return this;

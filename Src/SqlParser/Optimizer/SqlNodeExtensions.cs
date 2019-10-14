@@ -4,7 +4,7 @@ namespace SqlParser.Optimizer
 {
     public static class SqlNodeExtensions
     {
-        public static SqlNode Optimize(this SqlNode n)
+        public static ISqlNode Optimize(this ISqlNode n)
         {
             if (n == null)
                 return null;

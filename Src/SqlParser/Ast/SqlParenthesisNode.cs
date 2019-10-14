@@ -1,7 +1,10 @@
-﻿namespace SqlParser.Ast
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
+
+namespace SqlParser.Ast
 {
-    public class SqlParenthesisNode<TNode> : SqlNode
-        where TNode: SqlNode
+    public class SqlParenthesisNode<TNode> : ISqlNode
+        where TNode: class, ISqlNode
     {
         public SqlParenthesisNode()
         {
@@ -15,7 +18,11 @@
 
         public TNode Expression { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitParenthesis(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitParenthesis(this);
+
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
 
         public SqlParenthesisNode<TNode> Update(TNode expr)
         {

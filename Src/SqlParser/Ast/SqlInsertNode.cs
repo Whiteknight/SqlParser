@@ -1,17 +1,23 @@
-﻿using SqlParser.Symbols;
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.SqlServer.Symbols;
+using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlInsertNode : SqlNode, ISqlSymbolScopeNode
+    public class SqlInsertNode : ISqlNode, ISqlSymbolScopeNode
     {
-        public SqlNode Table { get; set; }
+        public ISqlNode Table { get; set; }
         public SqlListNode<SqlIdentifierNode> Columns { get; set; }
-        public SqlNode Source { get; set; }
+        public ISqlNode Source { get; set; }
         public SymbolTable Symbols { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitInsert(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitInsert(this);
 
-        public SqlInsertNode Update(SqlNode table, SqlListNode<SqlIdentifierNode> columns, SqlNode source)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlInsertNode Update(ISqlNode table, SqlListNode<SqlIdentifierNode> columns, ISqlNode source)
         {
             if (table == Table && columns == Columns && source == Source)
                 return this;

@@ -1,13 +1,20 @@
-﻿namespace SqlParser.Ast
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
+
+namespace SqlParser.Ast
 {
-    public class SqlFunctionCallNode : SqlNode
+    public class SqlFunctionCallNode : ISqlNode
     {
-        public SqlNode Name { get; set; }
-        public SqlListNode<SqlNode> Arguments { get; set; }
+        public ISqlNode Name { get; set; }
+        public SqlListNode<ISqlNode> Arguments { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitFunctionCall(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitFunctionCall(this);
 
-        public SqlFunctionCallNode Update(SqlNode name, SqlListNode<SqlNode> args)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlFunctionCallNode Update(ISqlNode name, SqlListNode<ISqlNode> args)
         {
             if (name == Name && args == Arguments)
                 return this;

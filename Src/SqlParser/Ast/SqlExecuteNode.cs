@@ -1,14 +1,21 @@
-﻿namespace SqlParser.Ast
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
+
+namespace SqlParser.Ast
 {
-    public class SqlExecuteNode : SqlNode
+    public class SqlExecuteNode : ISqlNode
     {
-        public SqlNode Name { get; set; }
+        public ISqlNode Name { get; set; }
 
         public SqlListNode<SqlExecuteArgumentNode> Arguments { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitExecute(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitExecute(this);
 
-        public SqlExecuteNode Update(SqlNode name, SqlListNode<SqlExecuteArgumentNode> args)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlExecuteNode Update(ISqlNode name, SqlListNode<SqlExecuteArgumentNode> args)
         {
             if (name == Name && args == Arguments)
                 return this;
@@ -20,15 +27,19 @@
         }
     }
 
-    public class SqlExecuteArgumentNode : SqlNode
+    public class SqlExecuteArgumentNode : ISqlNode
     {
         public SqlVariableNode AssignVariable { get; set; }
-        public SqlNode Value { get; set; }
+        public ISqlNode Value { get; set; }
         public bool IsOut { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitExecuteArgument(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitExecuteArgument(this);
 
-        public SqlExecuteArgumentNode Update(SqlVariableNode assign, SqlNode value, bool isOut)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlExecuteArgumentNode Update(SqlVariableNode assign, ISqlNode value, bool isOut)
         {
             if (assign == AssignVariable && Value == value && isOut == IsOut)
                 return this;

@@ -7,22 +7,22 @@ using FluentAssertions;
 using FluentAssertions.Common;
 using FluentAssertions.Primitives;
 using SqlParser.Ast;
-using SqlParser.Symbols;
-using SqlParser.Tokenizing;
-using SqlParser.Validation;
+using SqlParser.SqlServer.Parsing;
+using SqlParser.SqlServer.Symbols;
+using SqlParser.SqlServer.Validation;
 
 namespace SqlParser.Tests.Utility
 {
-    public class SqlNodeAssertions : ReferenceTypeAssertions<SqlNode, SqlNodeAssertions>
+    public class SqlNodeAssertions : ReferenceTypeAssertions<ISqlNode, SqlNodeAssertions>
     {
-        public SqlNodeAssertions(SqlNode node)
+        public SqlNodeAssertions(ISqlNode node)
         {
             Subject = node;
         }
 
         protected override string Identifier => "SqlNode";
 
-        public AndConstraint<SqlNodeAssertions> MatchAst(SqlNode expected)
+        public AndConstraint<SqlNodeAssertions> MatchAst(ISqlNode expected)
         {
             Subject.Should().NotBeNull();
             expected.Should().NotBeNull();
@@ -33,7 +33,7 @@ namespace SqlParser.Tests.Utility
         public AndConstraint<SqlNodeAssertions> RoundTrip()
         {
             var asString = Subject.ToString();
-            SqlNode roundTripped = null;
+            ISqlNode roundTripped = null;
             try
             {
                 roundTripped = new Parser().Parse(asString);
@@ -55,7 +55,7 @@ namespace SqlParser.Tests.Utility
             return new AndConstraint<SqlNodeAssertions>(this);
         }
 
-        private void AssertMatchAst(SqlNode a, SqlNode b, string path)
+        private void AssertMatchAst(ISqlNode a, ISqlNode b, string path)
         {
             if (a == null && b == null)
                 return;
@@ -64,7 +64,7 @@ namespace SqlParser.Tests.Utility
             type.Should().BeSameAs(b.GetType(), path);
             foreach (var property in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
             {   
-                if (property.Name == nameof(SqlNode.Location) && property.PropertyType == typeof(Location))
+                if (property.Name == nameof(ISqlNode.Location) && property.PropertyType == typeof(Location))
                     continue;
                 if (property.Name == nameof(ISqlSymbolScopeNode.Symbols) && property.PropertyType == typeof(SymbolTable))
                     continue;
@@ -79,18 +79,18 @@ namespace SqlParser.Tests.Utility
                 childA.Should().NotBeNull(childPath);
                 childB.Should().NotBeNull(childPath);
 
-                if (typeof(SqlNode).IsAssignableFrom(property.PropertyType))
+                if (typeof(ISqlNode).IsAssignableFrom(property.PropertyType))
                 {
-                    AssertMatchAst(childA as SqlNode, childB as SqlNode, childPath);
+                    AssertMatchAst(childA as ISqlNode, childB as ISqlNode, childPath);
                     continue;
                 }
                 if (property.PropertyType.IsGenericType && property.PropertyType.IsConstructedGenericType && property.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
                 {
                     var elementType = property.PropertyType.GetGenericArguments().First();
-                    if (typeof(SqlNode).IsAssignableFrom(elementType))
+                    if (typeof(ISqlNode).IsAssignableFrom(elementType))
                     {
-                        var listA = (childA as IEnumerable).Cast<SqlNode>().ToList();
-                        var listB = (childB as IEnumerable).Cast<SqlNode>().ToList();
+                        var listA = (childA as IEnumerable).Cast<ISqlNode>().ToList();
+                        var listB = (childB as IEnumerable).Cast<ISqlNode>().ToList();
                         listA.Count.Should().Be(listB.Count, childPath);
                         for (int i = 0; i < listA.Count; i++)
                         {

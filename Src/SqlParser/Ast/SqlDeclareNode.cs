@@ -1,15 +1,22 @@
-﻿namespace SqlParser.Ast
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.Visiting;
+
+namespace SqlParser.Ast
 { 
-    public class SqlDeclareNode : SqlNode
+    public class SqlDeclareNode : ISqlNode
     {
         public SqlVariableNode Variable { get; set; }
 
-        public SqlNode DataType { get; set; }
-        public SqlNode Initializer { get; set; }
+        public ISqlNode DataType { get; set; }
+        public ISqlNode Initializer { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitDeclare(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitDeclare(this);
 
-        public SqlDeclareNode Update(SqlVariableNode v, SqlNode dataType, SqlNode init)
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
+
+        public SqlDeclareNode Update(SqlVariableNode v, ISqlNode dataType, ISqlNode init)
         {
             if (v == Variable && dataType == DataType && init == Initializer)
                 return this;

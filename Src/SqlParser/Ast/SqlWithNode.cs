@@ -1,15 +1,20 @@
-﻿using SqlParser.Symbols;
+﻿using SqlParser.SqlServer.Stringify;
+using SqlParser.SqlServer.Symbols;
+using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlWithNode : SqlNode, ISqlSymbolScopeNode
+    public class SqlWithNode : ISqlNode, ISqlSymbolScopeNode
     {
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
         public SqlListNode<SqlWithCteNode> Ctes { get; set; }
-        public SqlNode Statement { get; set; }
+        public ISqlNode Statement { get; set; }
         public SymbolTable Symbols { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitWith(this);
-        public SqlWithNode Update(SqlListNode<SqlWithCteNode> ctes, SqlNode stmt)
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitWith(this);
+        public SqlWithNode Update(SqlListNode<SqlWithCteNode> ctes, ISqlNode stmt)
         {
             if (ctes == Ctes && Statement == stmt)
                 return this;
@@ -22,16 +27,19 @@ namespace SqlParser.Ast
         }
     }
 
-    public class SqlWithCteNode : SqlNode
+    public class SqlWithCteNode : ISqlNode
     {
+        public override string ToString() => StringifyVisitor.ToString(this);
+
+        public Location Location { get; set; }
         public SqlIdentifierNode Name { get; set; }
-        public SqlNode Select { get; set; }
+        public ISqlNode Select { get; set; }
         public SqlListNode<SqlIdentifierNode> ColumnNames { get; set; }
         public bool Recursive { get; set; }
 
-        public override SqlNode Accept(ISqlNodeVisitImplementation visitor) => visitor.VisitWithCte(this);
+        public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitWithCte(this);
 
-        public SqlWithCteNode Update(SqlIdentifierNode name, SqlListNode<SqlIdentifierNode>  columns, SqlNode select, bool recursive)
+        public SqlWithCteNode Update(SqlIdentifierNode name, SqlListNode<SqlIdentifierNode>  columns, ISqlNode select, bool recursive)
         {
             if (name == Name && columns == ColumnNames && select == Select && recursive == Recursive)
                 return this;
