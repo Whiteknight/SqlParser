@@ -6,7 +6,7 @@ namespace SqlParser.PostgreSql.Parsing
 {
     public partial class Parser
     {
-        private ISqlNode ParseNumberOrVariable(Tokenizer t)
+        private ISqlNode ParseNumberOrVariable(ITokenizer t)
         {
             var next = t.GetNext();
             if (next.IsType(SqlTokenType.Variable))
@@ -17,7 +17,7 @@ namespace SqlParser.PostgreSql.Parsing
             throw ParsingException.CouldNotParseRule(nameof(ParseNumberOrVariable), next);
         }
 
-        private SqlNumberNode ParseNumber(Tokenizer t)
+        private SqlNumberNode ParseNumber(ITokenizer t)
         {
             var next = t.GetNext();
             if (next.IsType(SqlTokenType.Number))
@@ -27,7 +27,7 @@ namespace SqlParser.PostgreSql.Parsing
             return null;
         }
 
-        private ISqlNode ParseVariableOrConstant(Tokenizer t)
+        private ISqlNode ParseVariableOrConstant(ITokenizer t)
         {
             var next = t.GetNext();
             if (next.IsType(SqlTokenType.Variable))
@@ -41,7 +41,7 @@ namespace SqlParser.PostgreSql.Parsing
             throw ParsingException.CouldNotParseRule(nameof(ParseVariableOrConstant), next);
         }
 
-        private ISqlNode ParseVariableOrQualifiedIdentifier(Tokenizer t)
+        private ISqlNode ParseVariableOrQualifiedIdentifier(ITokenizer t)
         {
             var next = t.GetNext();
 
@@ -56,13 +56,13 @@ namespace SqlParser.PostgreSql.Parsing
             throw ParsingException.CouldNotParseRule(nameof(ParseVariableOrQualifiedIdentifier), next);
         }
 
-        private SqlIdentifierNode ParseIdentifier(Tokenizer t)
+        private SqlIdentifierNode ParseIdentifier(ITokenizer t)
         {
             var next = t.Expect(SqlTokenType.Identifier);
             return new SqlIdentifierNode(next);
         }
 
-        private ISqlNode ParseQualifiedIdentifier(Tokenizer t)
+        private ISqlNode ParseQualifiedIdentifier(ITokenizer t)
         {
             // ( <Qualifier> "." )? <Identifier>
             
@@ -83,7 +83,7 @@ namespace SqlParser.PostgreSql.Parsing
             };
         }
 
-        private ISqlNode ParseVariableOrObjectIdentifier(Tokenizer t)
+        private ISqlNode ParseVariableOrObjectIdentifier(ITokenizer t)
         {
             var next = t.GetNext();
 
@@ -94,7 +94,7 @@ namespace SqlParser.PostgreSql.Parsing
             return ParseObjectIdentifier(t);
         }
 
-        private SqlObjectIdentifierNode ParseObjectIdentifier(Tokenizer t)
+        private SqlObjectIdentifierNode ParseObjectIdentifier(ITokenizer t)
         {
             // (((<ServerName> ".")? <DatabaseName> ".")? <Schema> ".")? <Identifier>
             var item1 = t.Expect(SqlTokenType.Identifier);
@@ -141,7 +141,7 @@ namespace SqlParser.PostgreSql.Parsing
             };
         }
 
-        private ISqlNode ParseMaybeAliasedScalar(Tokenizer t, Func<Tokenizer, ISqlNode> parse)
+        private ISqlNode ParseMaybeAliasedScalar(ITokenizer t, Func<ITokenizer, ISqlNode> parse)
         {
             var node = parse(t);
 
@@ -171,7 +171,7 @@ namespace SqlParser.PostgreSql.Parsing
             return node;
         }
 
-        private ISqlNode ParseMaybeAliasedTable(Tokenizer t, Func<Tokenizer, ISqlNode> parse)
+        private ISqlNode ParseMaybeAliasedTable(ITokenizer t, Func<ITokenizer, ISqlNode> parse)
         {
             var node = parse(t);
 
@@ -202,7 +202,7 @@ namespace SqlParser.PostgreSql.Parsing
             return alias;
         }
 
-        private SqlStringNode ParseString(Tokenizer t)
+        private SqlStringNode ParseString(ITokenizer t)
         {
             var s = t.Expect(SqlTokenType.QuotedString);
             return new SqlStringNode(s);

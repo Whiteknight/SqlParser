@@ -20,7 +20,7 @@ namespace SqlParser.Ast
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitParenthesis(this);
 
-        public override string ToString() => StringifyVisitor.ToString(this);
+        
 
         public Location Location { get; set; }
 

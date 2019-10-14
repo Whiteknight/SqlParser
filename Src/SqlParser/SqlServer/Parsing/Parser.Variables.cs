@@ -5,7 +5,7 @@ namespace SqlParser.SqlServer.Parsing
 {
     public partial class Parser
     {
-        private SqlDeclareNode ParseDeclare(Tokenizer t)
+        private SqlDeclareNode ParseDeclare(ITokenizer t)
         {
             // "DECLARE" <variable> <DataType> ("=" <Expression>)?
             // TODO: "DECLARE" <variable> <DataType> ("=" <Expression>)? ("," <variable> <DataType> ("=" <Expression>)?)*
@@ -24,7 +24,7 @@ namespace SqlParser.SqlServer.Parsing
             return declareNode;
         }
 
-        private SqlDataTypeNode ParseDataType(Tokenizer t)
+        private SqlDataTypeNode ParseDataType(ITokenizer t)
         {
             // <Keyword> ("(" ("MAX" | <SizeList>)? ")")?
             var next = t.GetNext();
@@ -53,7 +53,7 @@ namespace SqlParser.SqlServer.Parsing
             return dataType;
         }
 
-        private SqlSetNode ParseSet(Tokenizer t)
+        private SqlSetNode ParseSet(ITokenizer t)
         {
             // "SET" <variable> <assignOp> <Expression>
             var setToken = t.Expect(SqlTokenType.Keyword, "SET");

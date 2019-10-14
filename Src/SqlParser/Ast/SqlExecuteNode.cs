@@ -11,7 +11,7 @@ namespace SqlParser.Ast
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitExecute(this);
 
-        public override string ToString() => StringifyVisitor.ToString(this);
+        
 
         public Location Location { get; set; }
 
@@ -35,7 +35,7 @@ namespace SqlParser.Ast
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitExecuteArgument(this);
 
-        public override string ToString() => StringifyVisitor.ToString(this);
+        
 
         public Location Location { get; set; }
 

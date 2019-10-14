@@ -5,18 +5,18 @@ namespace SqlParser.Analysis
 {
     public static class SqlNodeExtensions
     {
-        public static IReadOnlyCollection<string> GetDataSources(this ISqlNode node)
+        public static IReadOnlyCollection<SqlObjectIdentifierNode> GetDataSources(this ISqlNode node)
         {
-            var names = new List<string>();
-            var visitor = new GetNodesOfTypeAnalysisVisitor<SqlObjectIdentifierNode>(n => names.Add(n.ToString()));
+            var names = new List<SqlObjectIdentifierNode>();
+            var visitor = new GetNodesOfTypeAnalysisVisitor<SqlObjectIdentifierNode>(n => names.Add(n));
             visitor.Visit(node);
             return names;
         }
 
-        public static IReadOnlyCollection<string> GetVariableNames(this ISqlNode node)
+        public static IReadOnlyCollection<SqlVariableNode> GetVariableNames(this ISqlNode node)
         {
-            var names = new List<string>();
-            var visitor = new GetNodesOfTypeAnalysisVisitor<SqlVariableNode>(n => names.Add(n.ToString()));
+            var names = new List<SqlVariableNode>();
+            var visitor = new GetNodesOfTypeAnalysisVisitor<SqlVariableNode>(n => names.Add(n));
             visitor.Visit(node);
             return names;
         }

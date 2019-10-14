@@ -139,7 +139,7 @@ namespace SqlParser.PostgreSql.Stringify
 
         public ISqlNode VisitIdentifier(SqlIdentifierNode n)
         {
-            Append("[", n.Name, "]");
+            Append("\"", n.Name, "\"");
             return n;
         }
 
@@ -584,11 +584,11 @@ namespace SqlParser.PostgreSql.Stringify
 
         public ISqlNode VisitString(SqlStringNode n)
         {
-            Append("'", n.Value.Replace("'", "''"), "'");
+            Append(n.ToString());
             return n;
         }
 
-        public ISqlNode VisitTop(SqlSelectTopNode n)
+        public ISqlNode VisitTopLimit(SqlTopLimitNode n)
         {
             Append("LIMIT ");
             Visit(n.Value);

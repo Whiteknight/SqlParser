@@ -589,7 +589,7 @@ namespace SqlParser.SqlServer.Stringify
             return n;
         }
 
-        public ISqlNode VisitTop(SqlSelectTopNode n)
+        public ISqlNode VisitTopLimit(SqlTopLimitNode n)
         {
             Append("TOP (");
             Visit(n.Value);

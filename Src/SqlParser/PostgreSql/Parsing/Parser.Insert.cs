@@ -5,7 +5,7 @@ namespace SqlParser.PostgreSql.Parsing
 {
     public partial class Parser
     {
-        private ISqlNode ParseInsertStatement(Tokenizer t)
+        private ISqlNode ParseInsertStatement(ITokenizer t)
         {
             // "INSERT" "INTO" <ObjectIdOrVariable> "(" <ColumnList> ")" <ValuesOrSelect>
             var insertToken = t.Expect(SqlTokenType.Keyword, "INSERT");
@@ -39,12 +39,12 @@ namespace SqlParser.PostgreSql.Parsing
             return insertNode;
         }
 
-        private SqlListNode<SqlIdentifierNode> ParseInsertColumnList(Tokenizer t)
+        private SqlListNode<SqlIdentifierNode> ParseInsertColumnList(ITokenizer t)
         {
             return ParseParenthesis(t, a => ParseList(a, ParseIdentifier)).Expression;
         }
 
-        private ISqlNode ParseValues(Tokenizer t)
+        private ISqlNode ParseValues(ITokenizer t)
         {
             // "VALUES" "(" <ValueList> ")" ("," "(" <ValueList> ")")*
             var valuesToken = t.Expect(SqlTokenType.Keyword, "VALUES");

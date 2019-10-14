@@ -5,7 +5,7 @@ namespace SqlParser.Ast
 {
     public class SqlAliasNode  : ISqlNode
     {
-        public override string ToString() => StringifyVisitor.ToString(this);
+        
 
         public Location Location { get; set; }
 

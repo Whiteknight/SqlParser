@@ -5,7 +5,7 @@ namespace SqlParser.PostgreSql.Parsing
 {
     public partial class Parser
     {
-        private ISqlNode ParseWithStatement(Tokenizer t)
+        private ISqlNode ParseWithStatement(ITokenizer t)
         {
             // "WITH" <Cte> ("," <Cte>)* <WithChildStatement>
             var with = new SqlWithNode();
@@ -16,7 +16,7 @@ namespace SqlParser.PostgreSql.Parsing
             return with;
         }
 
-        private SqlWithCteNode ParseCte(Tokenizer t)
+        private SqlWithCteNode ParseCte(ITokenizer t)
         {
             // "RECURSIVE"? <identifier> ("(" <columnList> ")")? "AS" "(" <QueryExpression> ")"
             bool isRecursive = t.NextIs(SqlTokenType.Keyword, "RECURSIVE", true);
@@ -37,7 +37,7 @@ namespace SqlParser.PostgreSql.Parsing
             return cteNode;
         }
 
-        private ISqlNode ParseWithChildStatement(Tokenizer t)
+        private ISqlNode ParseWithChildStatement(ITokenizer t)
         {
             while (t.NextIs(SqlTokenType.Symbol, ";", true)) ;
             var stmt = ParseUnterminatedWithChildStatement(t);
@@ -45,7 +45,7 @@ namespace SqlParser.PostgreSql.Parsing
             return stmt;
         }
 
-        private ISqlNode ParseUnterminatedWithChildStatement(Tokenizer t)
+        private ISqlNode ParseUnterminatedWithChildStatement(ITokenizer t)
         {
             t.Skip(SqlTokenType.Whitespace);
 

@@ -18,7 +18,7 @@ namespace SqlParser.Ast
             };
         }
 
-        public override string ToString() => StringifyVisitor.ToString(this);
+        
 
         public Location Location { get; set; }
 

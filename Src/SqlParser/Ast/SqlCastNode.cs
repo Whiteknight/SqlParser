@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using SqlParser.SqlServer.Stringify;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
@@ -11,7 +10,7 @@ namespace SqlParser.Ast
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitCast(this);
 
-        public override string ToString() => StringifyVisitor.ToString(this);
+        
 
         public Location Location { get; set; }
 

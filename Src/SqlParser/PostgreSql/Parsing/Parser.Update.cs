@@ -5,7 +5,7 @@ namespace SqlParser.PostgreSql.Parsing
 {
     public partial class Parser
     {
-        private ISqlNode ParseUpdateStatement(Tokenizer t)
+        private ISqlNode ParseUpdateStatement(ITokenizer t)
         {
             // "UPDATE" <TopClause>? "SET" <SetList> <WhereClause>?
             var updateToken = t.Expect(SqlTokenType.Keyword, "UPDATE");
@@ -23,14 +23,14 @@ namespace SqlParser.PostgreSql.Parsing
             };
         }
 
-        private SqlListNode<SqlInfixOperationNode> ParseUpdateSetClause(Tokenizer t)
+        private SqlListNode<SqlInfixOperationNode> ParseUpdateSetClause(ITokenizer t)
         {
             t.Expect(SqlTokenType.Keyword, "SET");
             var setList = ParseList(t, ParseUpdateColumnAssignExpression);
             return setList;
         }
 
-        private SqlInfixOperationNode ParseUpdateColumnAssignExpression(Tokenizer t)
+        private SqlInfixOperationNode ParseUpdateColumnAssignExpression(ITokenizer t)
         {
             // (<Column> | <Variable>) <CompareOp> ("DEFAULT" | <Expression>)
             var columnName = ParseVariableOrQualifiedIdentifier(t);

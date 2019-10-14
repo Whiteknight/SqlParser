@@ -1,5 +1,6 @@
 ﻿using SqlParser.SqlServer.Stringify;
 using SqlParser.SqlServer.Symbols;
+using SqlParser.Symbols;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
@@ -13,7 +14,7 @@ namespace SqlParser.Ast
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitUpdate(this);
 
-        public override string ToString() => StringifyVisitor.ToString(this);
+        
 
         public Location Location { get; set; }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SqlParser.SqlServer.Stringify;
 using SqlParser.SqlServer.Symbols;
+using SqlParser.Symbols;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
@@ -23,7 +24,7 @@ namespace SqlParser.Ast
             Statements = statements ?? new List<ISqlNode>();
         }
 
-        public override string ToString() => StringifyVisitor.ToString(this);
+        
 
         public Location Location { get; set; }
 

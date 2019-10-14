@@ -6,19 +6,19 @@ namespace SqlParser.SqlServer.Parsing
 {
     public partial class Parser
     {
-        public SqlStatementListNode Parse(Tokenizer t)
+        public SqlStatementListNode Parse(ITokenizer t)
         {
             return ParseStatementList(t);
         }
 
         public SqlStatementListNode Parse(string s)
         {
-            return ParseStatementList(new Tokenizer(s));
+            return ParseStatementList(Tokenizer.ForSqlServer(s));
         }
 
         // TODO: "GO" which starts a new logical block and also sets scope limits for variables
 
-        private SqlStatementListNode ParseStatementList(Tokenizer t)
+        private SqlStatementListNode ParseStatementList(ITokenizer t)
         {
             var statements = new SqlStatementListNode();
             while (true)
@@ -35,7 +35,7 @@ namespace SqlParser.SqlServer.Parsing
             return statements;
         }
 
-        private SqlStatementListNode ParseBeginEndStatementList(Tokenizer t)
+        private SqlStatementListNode ParseBeginEndStatementList(ITokenizer t)
         {
             t.Expect(SqlTokenType.Keyword, "BEGIN");
             var statements = new SqlStatementListNode {
@@ -62,14 +62,14 @@ namespace SqlParser.SqlServer.Parsing
             return statements;
         }
 
-        private ISqlNode ParseStatement(Tokenizer t)
+        private ISqlNode ParseStatement(ITokenizer t)
         {
             var stmt = ParseUnterminatedStatement(t);
             t.NextIs(SqlTokenType.Symbol, ";", true);
             return stmt;
         }
 
-        private ISqlNode ParseUnterminatedStatement(Tokenizer t)
+        private ISqlNode ParseUnterminatedStatement(ITokenizer t)
         { 
             t.Skip(SqlTokenType.Whitespace);
             
@@ -104,7 +104,7 @@ namespace SqlParser.SqlServer.Parsing
             return null;
         }
 
-        private TNode ParseMaybeParenthesis<TNode>(Tokenizer t, Func<Tokenizer, TNode> parse)
+        private TNode ParseMaybeParenthesis<TNode>(ITokenizer t, Func<ITokenizer, TNode> parse)
             where TNode : ISqlNode
         {
             var next = t.Peek();
@@ -122,7 +122,7 @@ namespace SqlParser.SqlServer.Parsing
             return value;
         }
 
-        private SqlParenthesisNode<TNode> ParseParenthesis<TNode>(Tokenizer t, Func<Tokenizer, TNode> parse)
+        private SqlParenthesisNode<TNode> ParseParenthesis<TNode>(ITokenizer t, Func<ITokenizer, TNode> parse)
             where TNode : class, ISqlNode
         {
             var openingParen = t.Expect(SqlTokenType.Symbol, "(");
@@ -143,7 +143,7 @@ namespace SqlParser.SqlServer.Parsing
             };
         }
 
-        private SqlListNode<TNode> ParseList<TNode>(Tokenizer t, Func<Tokenizer, TNode> getItem)
+        private SqlListNode<TNode> ParseList<TNode>(ITokenizer t, Func<ITokenizer, TNode> getItem)
             where TNode : class, ISqlNode
         {
             if (t.Peek().IsType(SqlTokenType.EndOfInput))

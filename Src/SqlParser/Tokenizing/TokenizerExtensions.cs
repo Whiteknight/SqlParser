@@ -3,13 +3,13 @@ using System.Linq;
 
 namespace SqlParser.Tokenizing
 {
-    public static class TokenizerExtensions
+    public static class ITokenizerExtensions
     {
-        public static SqlToken GetNext(this ITokenizer tokenizer, bool skipComments = true)
+        public static SqlToken GetNext(this ITokenizer ITokenizer, bool skipComments = true)
         {
             while (true)
             {
-                var next = tokenizer.GetNextToken();
+                var next = ITokenizer.GetNextToken();
                 if (next == null || next.IsType(SqlTokenType.EndOfInput))
                     return SqlToken.EndOfInput();
                 if (next.Type == SqlTokenType.Comment && skipComments)
@@ -20,32 +20,32 @@ namespace SqlParser.Tokenizing
             }
         }
 
-        public static bool NextIs(this ITokenizer tokenizer, SqlTokenType type, string value, bool consume = false)
+        public static bool NextIs(this ITokenizer ITokenizer, SqlTokenType type, string value, bool consume = false)
         {
-            var t = tokenizer.GetNext();
+            var t = ITokenizer.GetNext();
             bool isSame = t.Type == type && t.Value == value;
             if (!isSame)
             {
-                tokenizer.PutBack(t);
+                ITokenizer.PutBack(t);
                 return false;
             }
 
             if (!consume)
-                tokenizer.PutBack(t);
+                ITokenizer.PutBack(t);
             return true;
         }
 
-        public static SqlToken Expect(this ITokenizer tokenizer, SqlTokenType type)
+        public static SqlToken Expect(this ITokenizer ITokenizer, SqlTokenType type)
         {
-            var found = tokenizer.GetNext();
+            var found = ITokenizer.GetNext();
             if (found.Type != type)
                 throw ParsingException.UnexpectedToken(type, found);
             return found;
         }
 
-        public static SqlToken Expect(this ITokenizer tokenizer, SqlTokenType type, params string[] values)
+        public static SqlToken Expect(this ITokenizer ITokenizer, SqlTokenType type, params string[] values)
         {
-            var found = tokenizer.GetNext();
+            var found = ITokenizer.GetNext();
             if (found.Type == type)
             {
                 foreach (var value in values)
@@ -58,51 +58,51 @@ namespace SqlParser.Tokenizing
             throw ParsingException.UnexpectedToken(type, values, found);
         }
 
-        public static SqlToken Peek(this ITokenizer tokenizer)
+        public static SqlToken Peek(this ITokenizer ITokenizer)
         {
-            var t = tokenizer.GetNext();
-            tokenizer.PutBack(t);
+            var t = ITokenizer.GetNext();
+            ITokenizer.PutBack(t);
             return t;
         }
 
-        public static SqlToken ExpectPeek(this ITokenizer tokenizer, SqlTokenType type)
+        public static SqlToken ExpectPeek(this ITokenizer ITokenizer, SqlTokenType type)
         {
-            var found = tokenizer.Peek();
+            var found = ITokenizer.Peek();
             if (found.Type != type)
                 throw ParsingException.UnexpectedToken(type, found);
             return found;
         }
 
-        public static void Skip(this ITokenizer tokenizer, SqlTokenType type)
+        public static void Skip(this ITokenizer ITokenizer, SqlTokenType type)
         {
             while (true)
             {
-                var t = tokenizer.GetNext();
+                var t = ITokenizer.GetNext();
                 if (t.Type == SqlTokenType.EndOfInput || type == SqlTokenType.EndOfInput)
                     break;
                 if (t.Type != type)
                 {
-                    tokenizer.PutBack(t);
+                    ITokenizer.PutBack(t);
                     break;
                 }
             }
         }
 
-        public static SqlToken MaybeGetKeywordSequence(this ITokenizer tokenizer, params string[] allowed)
+        public static SqlToken MaybeGetKeywordSequence(this ITokenizer ITokenizer, params string[] allowed)
         {
             var lookup = new HashSet<string>(allowed);
             var keywords = new List<SqlToken>();
             while (true)
             {
-                var next = tokenizer.GetNext();
+                var next = ITokenizer.GetNext();
                 if (!next.IsType(SqlTokenType.Keyword))
                 {
-                    tokenizer.PutBack(next);
+                    ITokenizer.PutBack(next);
                     break;
                 }
                 if (!lookup.Contains(next.Value))
                 {
-                    tokenizer.PutBack(next);
+                    ITokenizer.PutBack(next);
                     break;
                 }
                 keywords.Add(next);
@@ -115,9 +115,9 @@ namespace SqlParser.Tokenizing
             return SqlToken.Keyword(combined, keywords.First().Location);
         }
 
-        public static SqlToken GetIdentifierOrKeyword(this ITokenizer tokenizer)
+        public static SqlToken GetIdentifierOrKeyword(this ITokenizer ITokenizer)
         {
-            var next = tokenizer.GetNext();
+            var next = ITokenizer.GetNext();
             if (next.IsType(SqlTokenType.Identifier) || next.IsType(SqlTokenType.Keyword))
                 return next;
             throw ParsingException.UnexpectedToken(SqlTokenType.Identifier, next);

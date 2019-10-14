@@ -232,7 +232,7 @@ namespace SqlParser.Visiting
 
         public virtual ISqlNode VisitSelect(SqlSelectNode n)
         {
-            var top = Visit(n.TopClause) as SqlSelectTopNode;
+            var top = Visit(n.TopClause) as SqlTopLimitNode;
             var columns = Visit(n.Columns) as SqlListNode<ISqlNode>;
             var from = Visit(n.FromClause);
             var where = Visit(n.WhereClause);
@@ -258,7 +258,7 @@ namespace SqlParser.Visiting
 
         public virtual ISqlNode VisitString(SqlStringNode n) => n;
 
-        public virtual ISqlNode VisitTop(SqlSelectTopNode n)
+        public virtual ISqlNode VisitTopLimit(SqlTopLimitNode n)
         {
             var value = Visit(n.Value);
             return n.Update(value, n.Percent, n.WithTies);

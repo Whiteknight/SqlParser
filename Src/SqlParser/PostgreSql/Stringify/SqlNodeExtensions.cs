@@ -5,7 +5,7 @@ namespace SqlParser.PostgreSql.Stringify
 {
     public static class SqlNodeExtensions
     {
-        public static string ToPostgresString(this ISqlNode n)
+        public static string ToPostgreSqlString(this ISqlNode n)
         {
             var sb = new StringBuilder();
             var visitor = new StringifyVisitor(sb);

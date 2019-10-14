@@ -47,7 +47,7 @@ namespace SqlParser.Visiting
         ISqlNode VisitSet(SqlSetNode n);
         ISqlNode VisitStatementList(SqlStatementListNode n);
         ISqlNode VisitString(SqlStringNode n);
-        ISqlNode VisitTop(SqlSelectTopNode n);
+        ISqlNode VisitTopLimit(SqlTopLimitNode n);
         ISqlNode VisitWith(SqlWithNode n);
         ISqlNode VisitWithCte(SqlWithCteNode n);
         ISqlNode VisitUpdate(SqlUpdateNode n);

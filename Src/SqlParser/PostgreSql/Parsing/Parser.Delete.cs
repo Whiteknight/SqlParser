@@ -5,7 +5,7 @@ namespace SqlParser.PostgreSql.Parsing
 {
     public partial class Parser
     {
-        private ISqlNode ParseDeleteStatement(Tokenizer t)
+        private ISqlNode ParseDeleteStatement(ITokenizer t)
         {
             var deleteToken = t.Expect(SqlTokenType.Keyword, "DELETE");
             // TODO: TOP clause

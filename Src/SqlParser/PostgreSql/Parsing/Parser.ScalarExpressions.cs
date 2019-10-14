@@ -5,7 +5,7 @@ namespace SqlParser.PostgreSql.Parsing
 {
     public partial class Parser
     {
-        private ISqlNode ParseCaseExpression(Tokenizer t)
+        private ISqlNode ParseCaseExpression(ITokenizer t)
         {
             // "CASE" <Expression>? <When>+ <Else>? "END"
             var caseToken = t.Expect(SqlTokenType.Keyword, "CASE");
@@ -49,20 +49,20 @@ namespace SqlParser.PostgreSql.Parsing
             }
         }
 
-        private ISqlNode ParseScalarExpression(Tokenizer t)
+        private ISqlNode ParseScalarExpression(ITokenizer t)
         {
             // Top-level general-purpose expression parsing method, redirects to the appropriate
             // precidence level
             return ParseScalarExpression4(t);
         }
 
-        private ISqlNode ParseScalarTerm(Tokenizer t)
+        private ISqlNode ParseScalarTerm(ITokenizer t)
         {
             // Parses only a single term
             return ParseScalarExpression0(t);
         }
 
-        private ISqlNode ParseScalarExpression4(Tokenizer t)
+        private ISqlNode ParseScalarExpression4(ITokenizer t)
         {
             // <CaseExpression> | <Expression3>
             if (t.Peek().IsKeyword("CASE"))
@@ -71,7 +71,7 @@ namespace SqlParser.PostgreSql.Parsing
             return ParseScalarExpression3(t);
         }
 
-        private ISqlNode ParseScalarExpression3(Tokenizer t)
+        private ISqlNode ParseScalarExpression3(ITokenizer t)
         {
             // Operators with + - precidence
             // <Expression2> (<op> <Expression2>)+
@@ -92,7 +92,7 @@ namespace SqlParser.PostgreSql.Parsing
             return left;
         }
 
-        private ISqlNode ParseScalarExpression2(Tokenizer t)
+        private ISqlNode ParseScalarExpression2(ITokenizer t)
         {
             // Operators with * / % precidence
             // <Expression1> (<op> <Expression1>)+
@@ -113,7 +113,7 @@ namespace SqlParser.PostgreSql.Parsing
             return left;
         }
 
-        private ISqlNode ParseScalarExpression1(Tokenizer t)
+        private ISqlNode ParseScalarExpression1(ITokenizer t)
         {
             // "NULL" | ("-" | "+" | "~") <Expression0> | <Expression0>
             var next = t.Peek();
@@ -137,7 +137,7 @@ namespace SqlParser.PostgreSql.Parsing
             return ParseScalarExpression0(t);
         }
 
-        private ISqlNode ParseScalarExpression0(Tokenizer t)
+        private ISqlNode ParseScalarExpression0(ITokenizer t)
         {
             // Terminal expression
             // <MethodCall> | <Identifier> | <Variable> | <String> | <Number> | "(" <Expression> ")"
@@ -196,7 +196,7 @@ namespace SqlParser.PostgreSql.Parsing
             throw ParsingException.CouldNotParseRule(nameof(ParseScalarExpression0), next);
         }
 
-        private ISqlNode ParseFunctionCall(Tokenizer t)
+        private ISqlNode ParseFunctionCall(ITokenizer t)
         {
             var name = t.GetNext();
             if (name.Type != SqlTokenType.Keyword && name.Type != SqlTokenType.Identifier)

@@ -1,5 +1,6 @@
 ﻿using SqlParser.SqlServer.Stringify;
 using SqlParser.SqlServer.Symbols;
+using SqlParser.Symbols;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
@@ -7,7 +8,7 @@ namespace SqlParser.Ast
     public class SqlSelectNode : ISqlNode, ISqlSymbolScopeNode
     {
         public string Modifier { get; set; }
-        public SqlSelectTopNode TopClause { get; set; }
+        public SqlTopLimitNode TopClause { get; set; }
         public SqlListNode<ISqlNode> Columns { get; set; }
         public ISqlNode FromClause { get; set; }
         public ISqlNode WhereClause { get; set; }
@@ -19,11 +20,11 @@ namespace SqlParser.Ast
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitSelect(this);
 
-        public override string ToString() => StringifyVisitor.ToString(this);
+        
 
         public Location Location { get; set; }
 
-        public SqlSelectNode Update(string modifier, SqlSelectTopNode top, SqlListNode<ISqlNode> columns, 
+        public SqlSelectNode Update(string modifier, SqlTopLimitNode top, SqlListNode<ISqlNode> columns, 
             ISqlNode from, ISqlNode where, SqlSelectOrderByClauseNode orderBy,
             ISqlNode groupBy, ISqlNode having)
         {

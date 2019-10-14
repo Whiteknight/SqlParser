@@ -248,9 +248,9 @@ namespace SqlParser.SqlServer.Validation
             return base.VisitStatementList(n);
         }
 
-        public override ISqlNode VisitTop(SqlSelectTopNode n)
+        public override ISqlNode VisitTopLimit(SqlTopLimitNode n)
         {
-            return base.VisitTop(n);
+            return base.VisitTopLimit(n);
         }
 
         public override ISqlNode VisitWith(SqlWithNode n)

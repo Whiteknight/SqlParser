@@ -7,4 +7,9 @@ namespace SqlParser.Tokenizing
         SqlToken GetNextToken();
         void PutBack(SqlToken token);
     }
+
+    public interface ITokenScanner
+    {
+        SqlToken ParseNext();
+    }
 }

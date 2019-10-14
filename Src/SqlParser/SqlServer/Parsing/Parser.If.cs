@@ -5,7 +5,7 @@ namespace SqlParser.SqlServer.Parsing
 {
     public partial class Parser
     {
-        private SqlIfNode ParseIf(Tokenizer t)
+        private SqlIfNode ParseIf(ITokenizer t)
         {
             // "IF" (("(" <Condition> ")") | <Condition>) <Statement> ("ELSE" <Statement>)?
             var ifToken = t.Expect(SqlTokenType.Keyword, "IF");

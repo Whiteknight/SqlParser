@@ -5,7 +5,7 @@ namespace SqlParser.PostgreSql.Parsing
 {
     public partial class Parser
     {
-        public SqlMergeNode ParseMergeStatement(Tokenizer t)
+        public SqlMergeNode ParseMergeStatement(ITokenizer t)
         {
             var mergeToken = t.Expect(SqlTokenType.Keyword, "MERGE");
             var mergeNode = new SqlMergeNode
@@ -47,7 +47,7 @@ namespace SqlParser.PostgreSql.Parsing
             return mergeNode;
         }
 
-        public ISqlNode ParseMergeMatched(Tokenizer t)
+        public ISqlNode ParseMergeMatched(ITokenizer t)
         {
             if (t.NextIs(SqlTokenType.Keyword, "UPDATE"))
             {
@@ -68,7 +68,7 @@ namespace SqlParser.PostgreSql.Parsing
             throw ParsingException.CouldNotParseRule(nameof(ParseMergeMatched), t.Peek());
         }
 
-        public SqlMergeInsertNode ParseMergeNotMatched(Tokenizer t)
+        public SqlMergeInsertNode ParseMergeNotMatched(ITokenizer t)
         {
             var insertToken = t.Expect(SqlTokenType.Keyword, "INSERT");
             var insertNode = new SqlMergeInsertNode

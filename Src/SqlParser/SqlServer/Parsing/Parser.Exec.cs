@@ -5,7 +5,7 @@ namespace SqlParser.SqlServer.Parsing
 {
     public partial class Parser
     {
-        public ISqlNode ParseExecute(Tokenizer t)
+        public ISqlNode ParseExecute(ITokenizer t)
         {
             // ("EXEC"|"EXECUTE") ( <stringExpression> | <objectIdentifier> <ListOfArgument> )
             // TODO: @return_status = ...
@@ -30,7 +30,7 @@ namespace SqlParser.SqlServer.Parsing
             return execNode;
         }
 
-        public SqlExecuteArgumentNode ParseExecArgument(Tokenizer t)
+        public SqlExecuteArgumentNode ParseExecArgument(ITokenizer t)
         {
             // (<parameter> "=")? (<Expression> | "DEFAULT" | <Variable> ("OUT"|"OUTPUT"))
             var next = t.GetNext();

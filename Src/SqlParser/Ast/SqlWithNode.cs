@@ -1,12 +1,13 @@
 ﻿using SqlParser.SqlServer.Stringify;
 using SqlParser.SqlServer.Symbols;
+using SqlParser.Symbols;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
     public class SqlWithNode : ISqlNode, ISqlSymbolScopeNode
     {
-        public override string ToString() => StringifyVisitor.ToString(this);
+        
 
         public Location Location { get; set; }
         public SqlListNode<SqlWithCteNode> Ctes { get; set; }
@@ -29,7 +30,7 @@ namespace SqlParser.Ast
 
     public class SqlWithCteNode : ISqlNode
     {
-        public override string ToString() => StringifyVisitor.ToString(this);
+        
 
         public Location Location { get; set; }
         public SqlIdentifierNode Name { get; set; }

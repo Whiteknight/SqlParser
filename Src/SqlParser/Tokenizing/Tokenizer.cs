@@ -1,29 +1,28 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using SqlParser.SqlServer.Tokenizing;
 
 namespace SqlParser.Tokenizing
 {
     public class Tokenizer : ITokenizer
     {
         private readonly Stack<SqlToken> _putbacks;
-        private readonly TokenScanner _scanner;
+        private readonly ITokenScanner _scanner;
 
-        public Tokenizer(string s)
-            : this(new StringCharacterSequence(s ?? ""))
-        {
-        }
-
-        public Tokenizer(ICharacterSequence chars)
-            : this(new TokenScanner(chars))
-        {
-        }
-
-        public Tokenizer(TokenScanner scanner)
+        public Tokenizer(ITokenScanner scanner)
         {
             _putbacks = new Stack<SqlToken>();
             _scanner = scanner ?? throw new ArgumentNullException(nameof(scanner));
+        }
+
+        public static ITokenizer ForSqlServer(string s)
+        {
+            return new Tokenizer(new SqlParser.SqlServer.Tokenizing.TokenScanner(new StringCharacterSequence(s)));
+        }
+
+        public static ITokenizer ForPostgreSql(string s)
+        {
+            return new Tokenizer(new SqlParser.PostgreSql.Tokenizing.TokenScanner(new StringCharacterSequence(s)));
         }
 
         public SqlToken GetNextToken()
@@ -36,6 +35,8 @@ namespace SqlParser.Tokenizing
                 return SqlToken.EndOfInput();
             return next;
         }
+
+
 
         public void PutBack(SqlToken token)
         {

@@ -4,7 +4,7 @@ using SqlParser.Tokenizing;
 
 namespace SqlParser.PostgreSql.Tokenizing
 {
-    public class TokenScanner
+    public class TokenScanner : ITokenScanner
     {
         private readonly ICharacterSequence _chars;
         private readonly SymbolSequence _operators;

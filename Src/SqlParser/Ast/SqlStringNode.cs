@@ -1,5 +1,4 @@
-﻿using SqlParser.SqlServer.Stringify;
-using SqlParser.Tokenizing;
+﻿using SqlParser.Tokenizing;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
@@ -21,7 +20,7 @@ namespace SqlParser.Ast
             Value = value;
         }
 
-        public override string ToString() => StringifyVisitor.ToString(this);
+        public override string ToString() => $"'{Value.Replace("'", "''")}'";
 
         public Location Location { get; set; }
 

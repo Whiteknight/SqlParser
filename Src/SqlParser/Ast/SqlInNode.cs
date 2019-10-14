@@ -9,7 +9,7 @@ namespace SqlParser.Ast
         public ISqlNode Search { get; set; }
         public SqlListNode<ISqlNode> Items { get; set; }
 
-        public override string ToString() => StringifyVisitor.ToString(this);
+        
 
         public Location Location { get; set; }
 

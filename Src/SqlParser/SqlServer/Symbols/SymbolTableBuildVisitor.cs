@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SqlParser.Ast;
+using SqlParser.Symbols;
 using SqlParser.Visiting;
 
 namespace SqlParser.SqlServer.Symbols
