@@ -49,7 +49,7 @@ MERGE table1 AS TARGET
                             Identifier = new SqlIdentifierNode("id")
                         }
                     },
-                    Matched = new SqlMergeUpdateNode
+                    Matched = new SqlUpdateNode
                     {
                         SetClause = new SqlListNode<SqlInfixOperationNode>
                         {
@@ -109,7 +109,7 @@ MERGE table1 AS TARGET
                             Identifier = new SqlIdentifierNode("id")
                         }
                     },
-                    NotMatchedByTarget = new SqlMergeInsertNode
+                    NotMatchedByTarget = new SqlInsertNode
                     {
                         Columns = new SqlListNode<SqlIdentifierNode>
                         {
@@ -170,7 +170,7 @@ MERGE table1 AS TARGET
                             Identifier = new SqlIdentifierNode("id")
                         }
                     },
-                    NotMatchedByTarget = new SqlMergeInsertNode
+                    NotMatchedByTarget = new SqlInsertNode
                     {
                         Columns = new SqlListNode<SqlIdentifierNode>
                         {

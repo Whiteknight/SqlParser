@@ -272,7 +272,7 @@ MERGE table1 AS TARGET
                                 Identifier = new SqlIdentifierNode("Id")
                             }
                         },
-                        Matched = new SqlMergeUpdateNode
+                        Matched = new SqlUpdateNode
                         {
                             SetClause = new SqlListNode<SqlInfixOperationNode>
                             {

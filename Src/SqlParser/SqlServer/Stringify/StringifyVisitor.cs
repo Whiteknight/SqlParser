@@ -218,15 +218,21 @@ namespace SqlParser.SqlServer.Stringify
 
         public ISqlNode VisitInsert(SqlInsertNode n)
         {
-            Append("INSERT INTO ");
-            Visit(n.Table);
+            Append("INSERT ");
+            if (n.Table != null)
+                Append("INTO ", n.Table);
+
             Append("(");
             Visit(n.Columns);
             AppendLine(")");
-            IncreaseIndent();
-            WriteIndent();
-            Visit(n.Source);
-            DecreaseIndent();
+            if (n.Source != null)
+            {
+                IncreaseIndent();
+                WriteIndent();
+                Visit(n.Source);
+                DecreaseIndent();
+            }
+
             return n;
         }
 
@@ -300,7 +306,7 @@ namespace SqlParser.SqlServer.Stringify
             if (n.NotMatchedByTarget != null)
             {
                 AppendLineAndIndent();
-                Append("WHEN NOT MATCHED BY TARGET ");
+                Append("WHEN NOT MATCHED BY TARGET");
                 Append(" THEN");
                 IncreaseIndent();
                 AppendLineAndIndent();
@@ -320,18 +326,6 @@ namespace SqlParser.SqlServer.Stringify
 
             DecreaseIndent();
 
-            return n;
-        }
-
-        public ISqlNode VisitMergeInsert(SqlMergeInsertNode n)
-        {
-            Append("INSERT (", n.Columns, ") ", n.Source);
-            return n;
-        }
-
-        public ISqlNode VisitMergeUpdate(SqlMergeUpdateNode n)
-        {
-            Append("UPDATE SET ", n.SetClause);
             return n;
         }
 

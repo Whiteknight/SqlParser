@@ -218,14 +218,19 @@ namespace SqlParser.PostgreSql.Stringify
 
         public ISqlNode VisitInsert(SqlInsertNode n)
         {
-            Append("INSERT INTO ");
-            Visit(n.Table);
+            Append("INSERT ");
+            if (n.Table != null)
+                Append("INTO ", n.Table);
+
             Append("(");
             Visit(n.Columns);
             AppendLine(")");
             IncreaseIndent();
-            WriteIndent();
-            Visit(n.Source);
+            if (n.Source != null)
+            {
+                WriteIndent();
+                Visit(n.Source);
+            }
             if (n.OnConflict != null)
             {
                 AppendLineAndIndent();
@@ -306,7 +311,7 @@ namespace SqlParser.PostgreSql.Stringify
             if (n.NotMatchedByTarget != null)
             {
                 AppendLineAndIndent();
-                Append("WHEN NOT MATCHED BY TARGET ");
+                Append("WHEN NOT MATCHED BY TARGET");
                 Append(" THEN");
                 IncreaseIndent();
                 AppendLineAndIndent();
@@ -326,18 +331,6 @@ namespace SqlParser.PostgreSql.Stringify
 
             DecreaseIndent();
 
-            return n;
-        }
-
-        public ISqlNode VisitMergeInsert(SqlMergeInsertNode n)
-        {
-            Append("INSERT (", n.Columns, ") ", n.Source);
-            return n;
-        }
-
-        public ISqlNode VisitMergeUpdate(SqlMergeUpdateNode n)
-        {
-            Append("UPDATE SET ", n.SetClause);
             return n;
         }
 
@@ -642,7 +635,8 @@ namespace SqlParser.PostgreSql.Stringify
         public ISqlNode VisitUpdate(SqlUpdateNode n)
         {
             Append("UPDATE ");
-            Visit(n.Source);
+            if (n.Source != null)
+                Visit(n.Source);
             IncreaseIndent();
             AppendLineAndIndent();
             AppendLine("SET");

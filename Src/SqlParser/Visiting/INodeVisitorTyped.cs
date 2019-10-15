@@ -28,8 +28,6 @@ namespace SqlParser.Visiting
             where TNode : class, ISqlNode;
 
         ISqlNode VisitMerge(SqlMergeNode n);
-        ISqlNode VisitMergeInsert(SqlMergeInsertNode n);
-        ISqlNode VisitMergeUpdate(SqlMergeUpdateNode n);
         ISqlNode VisitNull(SqlNullNode n);
         ISqlNode VisitNumber(SqlNumberNode n);
         ISqlNode VisitObjectIdentifier(SqlObjectIdentifierNode n);

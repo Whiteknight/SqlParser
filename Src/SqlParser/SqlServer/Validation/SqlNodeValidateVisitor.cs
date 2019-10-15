@@ -158,32 +158,15 @@ namespace SqlParser.SqlServer.Validation
             _result.AssertNotNull(n, nameof(n.MergeCondition), n.MergeCondition);
             if (n.Matched != null)
             {
-                if (!(n.Matched is SqlMergeUpdateNode || (n.Matched is SqlKeywordNode keyword && keyword.Keyword == "DELETE")))
+                if (!(n.Matched is SqlUpdateNode || (n.Matched is SqlKeywordNode keyword && keyword.Keyword == "DELETE")))
                     _result.AddError(n, nameof(n.Matched), "MATCHED clause must be valid UPDATE or DELETE");
             }
             if (n.NotMatchedBySource != null)
             {
-                if (!(n.NotMatchedBySource is SqlMergeUpdateNode || (n.NotMatchedBySource is SqlKeywordNode keyword && keyword.Keyword == "DELETE")))
+                if (!(n.NotMatchedBySource is SqlUpdateNode || (n.NotMatchedBySource is SqlKeywordNode keyword && keyword.Keyword == "DELETE")))
                     _result.AddError(n, nameof(n.NotMatchedBySource), "NOT MATCHED BY SOURCE clause must be valid UPDATE or DELETE");
             }
             return base.VisitMerge(n);
-        }
-
-        public override ISqlNode VisitMergeInsert(SqlMergeInsertNode n)
-        {
-            _result.AssertNotNull(n, nameof(n.Columns), n.Columns);
-            if (n.Columns.Count == 0)
-                _result.AddError(n, nameof(n.Columns), "Must specify at least one column");
-            _result.AssertNotNull(n, nameof(n.Source), n.Source);
-            return base.VisitMergeInsert(n);
-        }
-
-        public override ISqlNode VisitMergeUpdate(SqlMergeUpdateNode n)
-        {
-            _result.AssertNotNull(n, nameof(n.SetClause), n.SetClause);
-            if (n.SetClause.Count == 0)
-                _result.AddError(n, nameof(n.SetClause), "Must specify at least one column");
-            return base.VisitMergeUpdate(n);
         }
 
         public override ISqlNode VisitObjectIdentifier(SqlObjectIdentifierNode n)

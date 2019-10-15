@@ -53,7 +53,7 @@ namespace SqlParser.SqlServer.Parsing
             {
                 var updateToken = t.Expect(SqlTokenType.Keyword, "UPDATE");
                 var setList = ParseUpdateSetClause(t);
-                return new SqlMergeUpdateNode
+                return new SqlUpdateNode
                 {
                     Location = updateToken.Location,
                     SetClause = setList
@@ -68,10 +68,10 @@ namespace SqlParser.SqlServer.Parsing
             throw ParsingException.CouldNotParseRule(nameof(ParseMergeMatched), t.Peek());
         }
 
-        public SqlMergeInsertNode ParseMergeNotMatched(ITokenizer t)
+        public SqlInsertNode ParseMergeNotMatched(ITokenizer t)
         {
             var insertToken = t.Expect(SqlTokenType.Keyword, "INSERT");
-            var insertNode = new SqlMergeInsertNode
+            var insertNode = new SqlInsertNode
             {
                 Location = insertToken.Location,
                 Columns = ParseInsertColumnList(t)

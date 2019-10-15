@@ -154,22 +154,9 @@ namespace SqlParser.Visiting
             var source = Visit(n.Source);
             var cond = Visit(n.MergeCondition);
             var m = Visit(n.Matched);
-            var nmt = Visit(n.NotMatchedByTarget) as SqlMergeInsertNode;
+            var nmt = Visit(n.NotMatchedByTarget);
             var nms = Visit(n.NotMatchedBySource);
             return n.Update(target, source, cond, m, nmt, nms);
-        }
-
-        public virtual ISqlNode VisitMergeInsert(SqlMergeInsertNode n)
-        {
-            var cols = Visit(n.Columns) as SqlListNode<SqlIdentifierNode>;
-            var source = Visit(n.Source);
-            return n.Update(cols, source);
-        }
-
-        public virtual ISqlNode VisitMergeUpdate(SqlMergeUpdateNode n)
-        {
-            var cols = Visit(n.SetClause) as SqlListNode<SqlInfixOperationNode>;
-            return n.Update(cols);
         }
 
         public virtual ISqlNode VisitNull(SqlNullNode n) => n;
