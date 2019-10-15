@@ -565,6 +565,12 @@ namespace SqlParser.PostgreSql.Stringify
             return n;
         }
 
+        public ISqlNode VisitUnknown(SqlUnknownStatementNode n)
+        {
+            Append(n.ToString());
+            return n;
+        }
+
         public ISqlNode VisitUpdate(SqlUpdateNode n)
         {
             Append("UPDATE ");

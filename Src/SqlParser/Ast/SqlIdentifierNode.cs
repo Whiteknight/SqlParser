@@ -1,4 +1,5 @@
-﻿using SqlParser.SqlServer.Stringify;
+﻿using System.Text;
+using SqlParser.SqlServer.Stringify;
 using SqlParser.Tokenizing;
 using SqlParser.Visiting;
 
@@ -101,8 +102,6 @@ namespace SqlParser.Ast
         public SqlIdentifierNode Schema { get; set; }
         public SqlIdentifierNode Name { get; set; }
 
-        
-
         public Location Location { get; set; }
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitObjectIdentifier(this);
@@ -119,6 +118,31 @@ namespace SqlParser.Ast
                 Schema = schema,
                 Name = name
             };
+        }
+
+        // Get a simple string representation of this node, though StringifyVisitor.Visit(this) does a 
+        // correct job for a dialect
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            if (Server != null)
+            {
+                sb.Append(Server.Name);
+                sb.Append(".");
+            }
+            if (Database != null)
+            {
+                sb.Append(Database.Name);
+                sb.Append(".");
+            }
+            if (Schema != null)
+            {
+                sb.Append(Schema.Name);
+                sb.Append(".");
+            }
+
+            sb.Append(Name.Name);
+            return sb.ToString();
         }
     }
 }

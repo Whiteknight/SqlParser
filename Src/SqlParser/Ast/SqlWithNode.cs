@@ -1,4 +1,5 @@
-﻿using SqlParser.SqlServer.Stringify;
+﻿using System.Linq;
+using SqlParser.SqlServer.Stringify;
 using SqlParser.SqlServer.Symbols;
 using SqlParser.Symbols;
 using SqlParser.Visiting;
@@ -30,8 +31,6 @@ namespace SqlParser.Ast
 
     public class SqlWithCteNode : ISqlNode
     {
-        
-
         public Location Location { get; set; }
         public SqlIdentifierNode Name { get; set; }
         public ISqlNode Select { get; set; }
@@ -52,6 +51,11 @@ namespace SqlParser.Ast
                 Select = select,
                 Recursive = recursive
             };
+        }
+
+        public void DetectRecursion()
+        {
+            Recursive = Select.FindOfType<SqlIdentifierNode>().Any(n => n.Name == Name.Name);
         }
     }
 }

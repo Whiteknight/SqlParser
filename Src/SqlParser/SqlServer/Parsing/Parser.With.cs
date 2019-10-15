@@ -33,6 +33,7 @@ namespace SqlParser.SqlServer.Parsing
 
             t.Expect(SqlTokenType.Keyword, "AS");
             cteNode.Select = ParseParenthesis(t, ParseQueryExpression).Expression;
+            cteNode.DetectRecursion();
             return cteNode;
         }
 

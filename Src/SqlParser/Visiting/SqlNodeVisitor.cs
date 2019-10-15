@@ -267,6 +267,11 @@ namespace SqlParser.Visiting
             return n.Update(name, columns, select, n.Recursive);
         }
 
+        public ISqlNode VisitUnknown(SqlUnknownStatementNode n)
+        {
+            return n;
+        }
+
         public virtual ISqlNode VisitUpdate(SqlUpdateNode n)
         {
             var source = Visit(n.Source);

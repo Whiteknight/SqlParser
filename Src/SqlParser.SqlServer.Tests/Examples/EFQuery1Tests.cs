@@ -62,9 +62,9 @@ SELECT
             var ast = new Parser().Parse(Query);
             var result = ast.GetDataSources().ToList();
             result.Count.Should().Be(3);
-            //result.Should().Contain("[dbo].[Table1]");
-            //result.Should().Contain("[dbo].[Table2]");
-            //result.Should().Contain("[dbo].[Table3]");
+            result.Should().Contain("dbo.Table1");
+            result.Should().Contain("dbo.Table2");
+            result.Should().Contain("dbo.Table3");
         }
 
         [Test]
@@ -73,7 +73,7 @@ SELECT
             var ast = new Parser().Parse(Query);
             var result = ast.GetVariableNames();
             result.Count.Should().Be(1);
-            result.First().Name.Should().Be("@Z_7_p__linq__0");
+            result.First().Should().Be("@Z_7_p__linq__0");
         }
     }
 }
