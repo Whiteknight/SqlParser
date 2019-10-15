@@ -54,6 +54,64 @@ SELECT * FROM cte1;";
         }
 
         [Test]
+        public void With_RecursiveSelect()
+        {
+            const string s = @"
+WITH 
+RECURSIVE cte1 AS (
+    SELECT * FROM mytable
+    UNION ALL
+    SELECT * from cte1
+)
+SELECT * FROM cte1;";
+            var target = new Parser();
+            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlWithNode
+                {
+                    Ctes = new SqlListNode<SqlWithCteNode>
+                    {
+                        new SqlWithCteNode
+                        {
+                            Recursive = true,
+                            Select = new SqlInfixOperationNode
+                            {
+                                Left = new SqlSelectNode
+                                {
+                                    Columns = new SqlListNode<ISqlNode>
+                                    {
+                                        new SqlOperatorNode("*")
+                                    },
+                                    FromClause = new SqlObjectIdentifierNode("mytable")
+                                },
+                                Operator = new SqlOperatorNode("UNION ALL"),
+                                Right = new SqlSelectNode
+                                {
+                                    Columns = new SqlListNode<ISqlNode>
+                                    {
+                                        new SqlOperatorNode("*")
+                                    },
+                                    FromClause = new SqlObjectIdentifierNode("cte1")
+                                }
+                            },
+                            Name = new SqlIdentifierNode("cte1")
+                        }
+                    },
+                    Statement = new SqlSelectNode
+                    {
+                        Columns = new SqlListNode<ISqlNode>
+                        {
+                            new SqlOperatorNode("*")
+                        },
+                        FromClause = new SqlObjectIdentifierNode("cte1")
+                    }
+                }
+            );
+        }
+
+        [Test]
         public void With_ColumnNamesSelect()
         {
             const string s = @"

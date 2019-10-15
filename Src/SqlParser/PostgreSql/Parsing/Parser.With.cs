@@ -33,6 +33,7 @@ namespace SqlParser.PostgreSql.Parsing
                 cteNode.ColumnNames = ParseParenthesis(t, x => ParseList(x, ParseIdentifier)).Expression;
 
             t.Expect(SqlTokenType.Keyword, "AS");
+            // TODO: The CTE can contain INSERT, UPDATE and DELETE statements as well (usually with the RETURNING clause)
             cteNode.Select = ParseParenthesis(t, ParseQueryExpression).Expression;
             return cteNode;
         }

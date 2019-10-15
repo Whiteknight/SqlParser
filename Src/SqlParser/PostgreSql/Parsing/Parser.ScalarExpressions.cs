@@ -223,7 +223,7 @@ namespace SqlParser.PostgreSql.Parsing
                 t.PutBack(openParen);
             }
 
-            // TODO: "CONVERT" "(" <DataType>, <ScalarExpression> ("," <int>)? ")"
+            // TODO: <scalarExpression> "::" <DataType>
             // "CAST" "(" <ScalarExpression> "AS" <DataType> ")"
             if (name.IsKeyword("CAST"))
             {

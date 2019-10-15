@@ -18,14 +18,13 @@ namespace SqlParser.SqlServer.Parsing
 
         private SqlWithCteNode ParseCte(ITokenizer t)
         {
-            // "RECURSIVE"? <identifier> ("(" <columnList> ")")? "AS" "(" <QueryExpression> ")"
-            bool isRecursive = t.NextIs(SqlTokenType.Keyword, "RECURSIVE", true);
+            // <identifier> ("(" <columnList> ")")? "AS" "(" <QueryExpression> ")"
             var name = t.Expect(SqlTokenType.Identifier);
             var cteNode = new SqlWithCteNode
             {
                 Location = name.Location,
                 Name = new SqlIdentifierNode(name),
-                Recursive = isRecursive
+                Recursive = false
             };
 
             var lookahead = t.Peek();

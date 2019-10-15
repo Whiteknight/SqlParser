@@ -11,7 +11,7 @@ namespace SqlParser.SqlServer.Parsing
             // TODO: @return_status = ...
             // TODO: WITH <execute_option>
             var execToken = t.Expect(SqlTokenType.Keyword, "EXEC", "EXECUTE");
-            var execNode = new SqlExecuteNode()
+            var execNode = new SqlExecuteNode
             {
                 Location = execToken.Location,
             };

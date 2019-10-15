@@ -120,7 +120,8 @@ namespace SqlParser.Visiting
             var table = Visit(n.Table);
             var columns = Visit(n.Columns) as SqlListNode<SqlIdentifierNode>;
             var source = Visit(n.Source);
-            return n.Update(table, columns, source);
+            var onConflict = Visit(n.OnConflict);
+            return n.Update(table, columns, source, onConflict);
         }
 
         public virtual ISqlNode VisitValues(SqlValuesNode n)

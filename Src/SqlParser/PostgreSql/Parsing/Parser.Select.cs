@@ -48,9 +48,10 @@ namespace SqlParser.PostgreSql.Parsing
             selectNode.GroupByClause = ParseSelectGroupByClause(t);
             selectNode.HavingClause = ParseSelectHavingClause(t);
             selectNode.OrderByClause = ParseSelectOrderByClause(t);
+            selectNode.TopLimitClause = ParseSelectLimitClause(t);
             selectNode.OffsetClause = ParseSelectOffsetClause(t);
             selectNode.FetchClause = ParseSelectFetchClause(t);
-            selectNode.TopLimitClause = ParseSelectLimitClause(t);
+            
             return selectNode;
         }
 

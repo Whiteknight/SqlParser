@@ -16,7 +16,6 @@ namespace SqlParser.PostgreSql.Tests
             const string s = "INSERT INTO MyTable(Column1, Column2) VALUES (1, 'TEST');";
             var target = new Parser();
             var result = target.Parse(Tokenizer.ForPostgreSql(s));
-            var output = result.ToString();
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -99,6 +98,63 @@ namespace SqlParser.PostgreSql.Tests
                         new SqlIdentifierNode("column2")
                     },
                     Source = new SqlKeywordNode("DEFAULT VALUES")
+                }
+            );
+        }
+
+        [Test]
+        public void Insert_DefaultValuesOnConflictDoNothing()
+        {
+            const string s = "INSERT INTO MyTable(Column1, Column2) DEFAULT VALUES ON CONFLICT DO NOTHING;";
+            var target = new Parser();
+            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlInsertNode
+                {
+                    Table = new SqlObjectIdentifierNode("mytable"),
+                    Columns = new SqlListNode<SqlIdentifierNode>
+                    {
+                        new SqlIdentifierNode("column1"),
+                        new SqlIdentifierNode("column2")
+                    },
+                    Source = new SqlKeywordNode("DEFAULT VALUES"),
+                    OnConflict = new SqlKeywordNode("NOTHING")
+                }
+            );
+        }
+
+        [Test]
+        public void Insert_DefaultValuesOnConflictUpdate()
+        {
+            const string s = "INSERT INTO MyTable(Column1, Column2) DEFAULT VALUES ON CONFLICT DO UPDATE SET Column1 = 'TEST';";
+            var target = new Parser();
+            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlInsertNode
+                {
+                    Table = new SqlObjectIdentifierNode("mytable"),
+                    Columns = new SqlListNode<SqlIdentifierNode>
+                    {
+                        new SqlIdentifierNode("column1"),
+                        new SqlIdentifierNode("column2")
+                    },
+                    Source = new SqlKeywordNode("DEFAULT VALUES"),
+                    OnConflict = new SqlUpdateNode
+                    {
+                        SetClause = new SqlListNode<SqlInfixOperationNode>
+                        {
+                            new SqlInfixOperationNode
+                            {
+                                Left = new SqlIdentifierNode("column1"),
+                                Operator = new SqlOperatorNode("="),
+                                Right = new SqlStringNode("TEST")
+                            }
+                        }
+                    }
                 }
             );
         }

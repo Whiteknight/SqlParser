@@ -36,7 +36,37 @@ namespace SqlParser.PostgreSql.Parsing
             else
                 throw new ParsingException("INSERT INTO statement does not have a source");
 
+            insertNode.OnConflict = ParseInsertOnConflictClause(t);
+
+            // TODO: RETURNING clause
+
             return insertNode;
+        }
+
+        private ISqlNode ParseInsertOnConflictClause(ITokenizer t)
+        {
+            if (!t.Peek().IsKeyword("ON"))
+                return null;
+
+            t.GetNext();
+            t.Expect(SqlTokenType.Keyword, "CONFLICT");
+            t.Expect(SqlTokenType.Keyword, "DO");
+
+            var next = t.Peek();
+            if (next.IsKeyword("NOTHING"))
+                return new SqlKeywordNode(t.GetNext());
+            if (next.IsKeyword("UPDATE"))
+            {
+                var updateToken = t.Expect(SqlTokenType.Keyword, "UPDATE");
+                return new SqlUpdateNode
+                {
+                    Location = updateToken.Location,
+                    SetClause = ParseUpdateSetClause(t),
+                    WhereClause = ParseWhereClause(t)
+                };
+            }
+
+            throw new ParsingException("Cannot parse INSERT ... ON CONFLICT clause. Unexpected token " + next);
         }
 
         private SqlListNode<SqlIdentifierNode> ParseInsertColumnList(ITokenizer t)

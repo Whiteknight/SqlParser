@@ -29,6 +29,7 @@ namespace SqlParser.PostgreSql.Parsing
             // <Keyword> ("(" ("MAX" | <SizeList>)? ")")?
             var next = t.GetNext();
 
+            // TODO: Array types
             // TODO: Should we add TABLE declaration parsing?
             if (next.IsKeyword("TABLE"))
                 return null;

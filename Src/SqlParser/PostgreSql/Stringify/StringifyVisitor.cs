@@ -34,7 +34,7 @@ namespace SqlParser.PostgreSql.Stringify
             Append("CASE ");
             Visit(n.InputExpression);
             IncreaseIndent();
-
+            
             foreach (var when in n.WhenExpressions)
             {
                 AppendLineAndIndent();
@@ -226,6 +226,12 @@ namespace SqlParser.PostgreSql.Stringify
             IncreaseIndent();
             WriteIndent();
             Visit(n.Source);
+            if (n.OnConflict != null)
+            {
+                AppendLineAndIndent();
+                Append("ON CONFLICT DO ", n.OnConflict);
+            }
+
             DecreaseIndent();
             return n;
         }
@@ -614,6 +620,8 @@ namespace SqlParser.PostgreSql.Stringify
 
         public ISqlNode VisitWithCte(SqlWithCteNode n)
         {
+            if (n.Recursive)
+                Append("RECURSIVE ");
             Visit(n.Name);
             if (n.ColumnNames != null && n.ColumnNames.Any())
             {
