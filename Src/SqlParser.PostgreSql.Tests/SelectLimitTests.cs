@@ -26,7 +26,7 @@ namespace SqlParser.PostgreSql.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("mytable"),
-                    TopClause = new SqlTopLimitNode
+                    TopLimitClause = new SqlTopLimitNode
                     {
                         Value = new SqlNumberNode(10)
                     }
@@ -50,7 +50,7 @@ namespace SqlParser.PostgreSql.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("mytable"),
-                    TopClause = new SqlTopLimitNode
+                    TopLimitClause = new SqlTopLimitNode
                     {
                         Value = new SqlVariableNode("@limit")
                     }
@@ -74,7 +74,7 @@ namespace SqlParser.PostgreSql.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("mytable"),
-                    TopClause = new SqlTopLimitNode
+                    TopLimitClause = new SqlTopLimitNode
                     {
                         Value = new SqlNumberNode(10)
                     }
@@ -98,7 +98,7 @@ namespace SqlParser.PostgreSql.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("mytable"),
-                    TopClause = new SqlTopLimitNode
+                    TopLimitClause = new SqlTopLimitNode
                     {
                         Value = new SqlVariableNode("@limit")
                     }

@@ -26,7 +26,7 @@ namespace SqlParser.SqlServer.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    OrderByClause = new SqlSelectOrderByClauseNode
+                    OrderByClause = new SqlOrderByNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
                         {
@@ -57,7 +57,7 @@ namespace SqlParser.SqlServer.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    OrderByClause = new SqlSelectOrderByClauseNode
+                    OrderByClause = new SqlOrderByNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
                         {
@@ -88,7 +88,7 @@ namespace SqlParser.SqlServer.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    OrderByClause = new SqlSelectOrderByClauseNode
+                    OrderByClause = new SqlOrderByNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
                         {
@@ -119,7 +119,7 @@ namespace SqlParser.SqlServer.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    OrderByClause = new SqlSelectOrderByClauseNode
+                    OrderByClause = new SqlOrderByNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
                         {
@@ -149,7 +149,7 @@ namespace SqlParser.SqlServer.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    OrderByClause = new SqlSelectOrderByClauseNode
+                    OrderByClause = new SqlOrderByNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
                         {
@@ -157,10 +157,10 @@ namespace SqlParser.SqlServer.Tests
                             {
                                 Source = new SqlIdentifierNode("MyColumn")
                             }
-                        },
-                        Offset = new SqlNumberNode(5),
-                        Limit = new SqlNumberNode(10)
-                    }
+                        }
+                    },
+                    OffsetClause = new SqlNumberNode(5),
+                    FetchClause = new SqlNumberNode(10)
                 }
             );
         }
@@ -181,7 +181,7 @@ namespace SqlParser.SqlServer.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    OrderByClause = new SqlSelectOrderByClauseNode
+                    OrderByClause = new SqlOrderByNode
                     {
                         Entries = new SqlListNode<SqlOrderByEntryNode>
                         {

@@ -186,12 +186,10 @@ namespace SqlParser.Visiting
 
         public virtual ISqlNode VisitOperator(SqlOperatorNode n) => n;
 
-        public virtual ISqlNode VisitOrderBy(SqlSelectOrderByClauseNode n)
+        public virtual ISqlNode VisitOrderBy(SqlOrderByNode n)
         {
             var entries = Visit(n.Entries) as SqlListNode<SqlOrderByEntryNode>;
-            var offset = Visit(n.Offset);
-            var limit = Visit(n.Limit);
-            return n.Update(entries, offset, limit);
+            return n.Update(entries);
         }
 
         public virtual ISqlNode VisitOrderByEntry(SqlOrderByEntryNode n)
@@ -232,14 +230,16 @@ namespace SqlParser.Visiting
 
         public virtual ISqlNode VisitSelect(SqlSelectNode n)
         {
-            var top = Visit(n.TopClause) as SqlTopLimitNode;
+            var top = Visit(n.TopLimitClause) as SqlTopLimitNode;
             var columns = Visit(n.Columns) as SqlListNode<ISqlNode>;
             var from = Visit(n.FromClause);
             var where = Visit(n.WhereClause);
-            var orderBy = Visit(n.OrderByClause) as SqlSelectOrderByClauseNode;
+            var orderBy = Visit(n.OrderByClause) as SqlOrderByNode;
             var groupBy = Visit(n.GroupByClause);
             var having = Visit(n.HavingClause);
-            return n.Update(n.Modifier, top, columns, from, where, orderBy, groupBy, having);
+            var offset = Visit(n.OffsetClause);
+            var fetch = Visit(n.FetchClause);
+            return n.Update(n.Modifier, top, columns, from, where, orderBy, groupBy, having, offset, fetch);
         }
 
         public virtual ISqlNode VisitSet(SqlSetNode n)

@@ -34,7 +34,7 @@ namespace SqlParser.Visiting
         ISqlNode VisitNumber(SqlNumberNode n);
         ISqlNode VisitObjectIdentifier(SqlObjectIdentifierNode n);
         ISqlNode VisitOperator(SqlOperatorNode n);
-        ISqlNode VisitOrderBy(SqlSelectOrderByClauseNode n);
+        ISqlNode VisitOrderBy(SqlOrderByNode n);
         ISqlNode VisitOrderByEntry(SqlOrderByEntryNode n);
         ISqlNode VisitOver(SqlOverNode n);
 

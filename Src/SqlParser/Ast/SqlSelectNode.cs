@@ -1,6 +1,4 @@
-﻿using SqlParser.SqlServer.Stringify;
-using SqlParser.SqlServer.Symbols;
-using SqlParser.Symbols;
+﻿using SqlParser.Symbols;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
@@ -8,28 +6,30 @@ namespace SqlParser.Ast
     public class SqlSelectNode : ISqlNode, ISqlSymbolScopeNode
     {
         public string Modifier { get; set; }
-        public SqlTopLimitNode TopClause { get; set; }
+        public SqlTopLimitNode TopLimitClause { get; set; }
         public SqlListNode<ISqlNode> Columns { get; set; }
         public ISqlNode FromClause { get; set; }
         public ISqlNode WhereClause { get; set; }
-        public SqlSelectOrderByClauseNode OrderByClause { get; set; }
+        public SqlOrderByNode OrderByClause { get; set; }
         public ISqlNode GroupByClause { get; set; }
-
         public ISqlNode HavingClause { get; set; }
+        public ISqlNode OffsetClause { get; set; }
+        public ISqlNode FetchClause { get; set; }
+        
+
         public SymbolTable Symbols { get; set; }
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitSelect(this);
 
-        
-
         public Location Location { get; set; }
 
         public SqlSelectNode Update(string modifier, SqlTopLimitNode top, SqlListNode<ISqlNode> columns, 
-            ISqlNode from, ISqlNode where, SqlSelectOrderByClauseNode orderBy,
-            ISqlNode groupBy, ISqlNode having)
+            ISqlNode from, ISqlNode where, SqlOrderByNode orderBy,
+            ISqlNode groupBy, ISqlNode having, ISqlNode offset, ISqlNode fetch)
         {
-            if (modifier == Modifier && top == TopClause && columns == Columns && from == FromClause &&
-                where == WhereClause && orderBy == OrderByClause && groupBy == GroupByClause && having == HavingClause)
+            if (modifier == Modifier && top == TopLimitClause && columns == Columns && from == FromClause &&
+                where == WhereClause && orderBy == OrderByClause && groupBy == GroupByClause && having == HavingClause &&
+                fetch == FetchClause && offset == OffsetClause)
                 return this;
             return new SqlSelectNode
             {
@@ -40,8 +40,10 @@ namespace SqlParser.Ast
                 HavingClause = having,
                 Modifier = modifier,
                 OrderByClause = orderBy,
-                TopClause = top,
-                WhereClause = where
+                TopLimitClause = top,
+                WhereClause = where,
+                FetchClause = fetch,
+                OffsetClause = offset
             };
         }
     }

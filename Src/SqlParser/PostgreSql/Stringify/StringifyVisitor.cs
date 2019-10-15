@@ -377,30 +377,12 @@ namespace SqlParser.PostgreSql.Stringify
             return n;
         }
 
-        public ISqlNode VisitOrderBy(SqlSelectOrderByClauseNode n)
+        public ISqlNode VisitOrderBy(SqlOrderByNode n)
         {
             Append("ORDER BY");
             IncreaseIndent();
             AppendLineAndIndent();
             Visit(n.Entries);
-            if (n.Offset != null || n.Limit != null)
-            {
-                AppendLineAndIndent();
-                if (n.Offset != null)
-                {
-                    Append("OFFSET ");
-                    Visit(n.Offset);
-                    Append(" ROWS ");
-                }
-
-                if (n.Limit != null)
-                {
-                    Append("FETCH NEXT ");
-                    Visit(n.Limit);
-                    Append(" ROWS ONLY");
-                }
-            }
-
             return n;
         }
 
@@ -516,11 +498,6 @@ namespace SqlParser.PostgreSql.Stringify
                 DecreaseIndent();
             }
 
-            if (n.OrderByClause != null)
-            {
-                AppendLineAndIndent();
-                Visit(n.OrderByClause);
-            }
             if (n.GroupByClause != null)
             {
                 AppendLineAndIndent();
@@ -539,10 +516,25 @@ namespace SqlParser.PostgreSql.Stringify
                 Visit(n.HavingClause);
                 DecreaseIndent();
             }
-            if (n.TopClause != null)
+            if (n.OrderByClause != null)
             {
                 AppendLineAndIndent();
-                Visit(n.TopClause);
+                Visit(n.OrderByClause);
+            }
+            if (n.OffsetClause != null)
+            {
+                AppendLineAndIndent();
+                Append("OFFSET ", n.OffsetClause, " ROWS");
+            }
+            if (n.FetchClause != null)
+            {
+                AppendLineAndIndent();
+                Append("FETCH NEXT ", n.FetchClause, " ROWS ONLY");
+            }
+            if (n.TopLimitClause != null)
+            {
+                AppendLineAndIndent();
+                Visit(n.TopLimitClause);
             }
 
             DecreaseIndent();

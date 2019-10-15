@@ -26,7 +26,7 @@ namespace SqlParser.SqlServer.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    TopClause = new SqlTopLimitNode
+                    TopLimitClause = new SqlTopLimitNode
                     {
                         Value = new SqlNumberNode(10)
                     }
@@ -50,7 +50,7 @@ namespace SqlParser.SqlServer.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    TopClause = new SqlTopLimitNode
+                    TopLimitClause = new SqlTopLimitNode
                     {
                         Value = new SqlVariableNode("@limit")
                     }
@@ -74,7 +74,7 @@ namespace SqlParser.SqlServer.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    TopClause = new SqlTopLimitNode
+                    TopLimitClause = new SqlTopLimitNode
                     {
                         Value = new SqlNumberNode(10)
                     }
@@ -98,7 +98,7 @@ namespace SqlParser.SqlServer.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    TopClause = new SqlTopLimitNode
+                    TopLimitClause = new SqlTopLimitNode
                     {
                         Value = new SqlVariableNode("@limit")
                     }
@@ -122,7 +122,7 @@ namespace SqlParser.SqlServer.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    TopClause = new SqlTopLimitNode
+                    TopLimitClause = new SqlTopLimitNode
                     {
                         Value = new SqlNumberNode(10),
                         Percent = true
@@ -147,7 +147,7 @@ namespace SqlParser.SqlServer.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    TopClause = new SqlTopLimitNode
+                    TopLimitClause = new SqlTopLimitNode
                     {
                         Value = new SqlNumberNode(10),
                         WithTies = true
@@ -172,7 +172,7 @@ namespace SqlParser.SqlServer.Tests
                         new SqlOperatorNode("*")
                     },
                     FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    TopClause = new SqlTopLimitNode
+                    TopLimitClause = new SqlTopLimitNode
                     {
                         Value = new SqlNumberNode(10),
                         Percent = true,

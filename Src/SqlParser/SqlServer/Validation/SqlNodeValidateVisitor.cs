@@ -197,7 +197,7 @@ namespace SqlParser.SqlServer.Validation
             return base.VisitOperator(n);
         }
 
-        public override ISqlNode VisitOrderBy(SqlSelectOrderByClauseNode n)
+        public override ISqlNode VisitOrderBy(SqlOrderByNode n)
         {
             return base.VisitOrderBy(n);
         }

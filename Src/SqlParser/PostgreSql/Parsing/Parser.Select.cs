@@ -48,7 +48,9 @@ namespace SqlParser.PostgreSql.Parsing
             selectNode.GroupByClause = ParseSelectGroupByClause(t);
             selectNode.HavingClause = ParseSelectHavingClause(t);
             selectNode.OrderByClause = ParseSelectOrderByClause(t);
-            selectNode.TopClause = ParseSelectLimitClause(t);
+            selectNode.OffsetClause = ParseSelectOffsetClause(t);
+            selectNode.FetchClause = ParseSelectFetchClause(t);
+            selectNode.TopLimitClause = ParseSelectLimitClause(t);
             return selectNode;
         }
 
@@ -311,7 +313,7 @@ namespace SqlParser.PostgreSql.Parsing
             throw ParsingException.CouldNotParseRule(nameof(ParseSubexpression), lookahead);
         }
 
-        private SqlSelectOrderByClauseNode ParseSelectOrderByClause(ITokenizer t)
+        private SqlOrderByNode ParseSelectOrderByClause(ITokenizer t)
         {
             // "ORDER" "BY" <OrderTerm>+ ("OFFSET" <NumberOrVariable> "ROWS")? ("FETCH" "NEXT" <NumberOrVariable> "ROWS" "ONLY")?
             if (!t.NextIs(SqlTokenType.Keyword, "ORDER"))
@@ -320,28 +322,34 @@ namespace SqlParser.PostgreSql.Parsing
             var orderByToken = t.GetNext();
             t.Expect(SqlTokenType.Keyword, "BY");
             var orderByItems = ParseList(t, ParseOrderTerm);
-            var orderByNode = new SqlSelectOrderByClauseNode
+            return new SqlOrderByNode
             {
                 Location = orderByToken.Location,
                 Entries = orderByItems
-
             };
-            if (t.NextIs(SqlTokenType.Keyword, "OFFSET"))
-            {
-                t.GetNext();
-                orderByNode.Offset = ParseNumberOrVariable(t);
-                t.Expect(SqlTokenType.Keyword, "ROWS"); // TODO: Can also be "ROW"
-            }
-            if (t.NextIs(SqlTokenType.Keyword, "FETCH"))
-            {
-                t.GetNext();
-                t.Expect(SqlTokenType.Keyword, "NEXT"); // TODO: can also be "FIRST"
-                orderByNode.Limit = ParseNumberOrVariable(t);
-                t.Expect(SqlTokenType.Keyword, "ROWS"); // TODO: Can also be "ROW"
-                t.Expect(SqlTokenType.Keyword, "ONLY");
-            }
+        }
 
-            return orderByNode;
+        private ISqlNode ParseSelectOffsetClause(ITokenizer t)
+        {
+            if (!t.NextIs(SqlTokenType.Keyword, "OFFSET"))
+                return null;
+            t.GetNext();
+            var offset = ParseNumberOrVariable(t);
+            t.Expect(SqlTokenType.Keyword, "ROW", "ROWS");
+            return offset;
+        }
+
+        private ISqlNode ParseSelectFetchClause(ITokenizer t)
+        {
+            if (!t.NextIs(SqlTokenType.Keyword, "FETCH"))
+                return null;
+
+            t.GetNext();
+            t.Expect(SqlTokenType.Keyword, "FIRST", "NEXT");
+            var fetch = ParseNumberOrVariable(t);
+            t.Expect(SqlTokenType.Keyword, "ROW", "ROWS");
+            t.Expect(SqlTokenType.Keyword, "ONLY");
+            return fetch;
         }
 
         private SqlOrderByEntryNode ParseOrderTerm(ITokenizer t)

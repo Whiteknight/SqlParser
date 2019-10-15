@@ -1,31 +1,23 @@
-﻿using SqlParser.SqlServer.Stringify;
-using SqlParser.Visiting;
+﻿using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlSelectOrderByClauseNode : ISqlNode
+    public class SqlOrderByNode : ISqlNode
     {
         public SqlListNode<SqlOrderByEntryNode> Entries { get; set; }
 
-        public ISqlNode Offset { get; set; }
-        public ISqlNode Limit { get; set; }
-
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitOrderBy(this);
-
-        
 
         public Location Location { get; set; }
 
-        public SqlSelectOrderByClauseNode Update(SqlListNode<SqlOrderByEntryNode> entries, ISqlNode offset, ISqlNode limit)
+        public SqlOrderByNode Update(SqlListNode<SqlOrderByEntryNode> entries)
         {
-            if (entries == Entries && offset == Offset && limit == Limit)
+            if (entries == Entries)
                 return this;
-            return new SqlSelectOrderByClauseNode
+            return new SqlOrderByNode
             {
                 Location = Location,
-                Entries = entries,
-                Offset = offset,
-                Limit = limit
+                Entries = entries
             };
         }
     }
@@ -36,8 +28,6 @@ namespace SqlParser.Ast
         public string Direction { get; set; }
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitOrderByEntry(this);
-
-        
 
         public Location Location { get; set; }
 

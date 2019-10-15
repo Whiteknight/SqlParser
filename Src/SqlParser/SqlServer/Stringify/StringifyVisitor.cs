@@ -377,30 +377,12 @@ namespace SqlParser.SqlServer.Stringify
             return n;
         }
 
-        public ISqlNode VisitOrderBy(SqlSelectOrderByClauseNode n)
+        public ISqlNode VisitOrderBy(SqlOrderByNode n)
         {
             Append("ORDER BY");
             IncreaseIndent();
             AppendLineAndIndent();
             Visit(n.Entries);
-            if (n.Offset != null || n.Limit != null)
-            {
-                AppendLineAndIndent();
-                if (n.Offset != null)
-                {
-                    Append("OFFSET ");
-                    Visit(n.Offset);
-                    Append(" ROWS ");
-                }
-
-                if (n.Limit != null)
-                {
-                    Append("FETCH NEXT ");
-                    Visit(n.Limit);
-                    Append(" ROWS ONLY");
-                }
-            }
-
             return n;
         }
 
@@ -495,10 +477,10 @@ namespace SqlParser.SqlServer.Stringify
 
             IncreaseIndent();
 
-            if (n.TopClause != null)
+            if (n.TopLimitClause != null)
             {
                 AppendLineAndIndent();
-                Visit(n.TopClause);
+                Visit(n.TopLimitClause);
             }
             AppendLineAndIndent();
             VisitList(n.Columns, () => AppendLineAndIndent(","));
@@ -521,12 +503,6 @@ namespace SqlParser.SqlServer.Stringify
                 Visit(n.WhereClause);
                 DecreaseIndent();
             }
-
-            if (n.OrderByClause != null)
-            {
-                AppendLineAndIndent();
-                Visit(n.OrderByClause);
-            }
             if (n.GroupByClause != null)
             {
                 AppendLineAndIndent();
@@ -544,6 +520,23 @@ namespace SqlParser.SqlServer.Stringify
                 WriteIndent();
                 Visit(n.HavingClause);
                 DecreaseIndent();
+            }
+            if (n.OrderByClause != null)
+            {
+                AppendLineAndIndent();
+                Visit(n.OrderByClause);
+            }
+
+            if (n.OffsetClause != null)
+            {
+                AppendLineAndIndent();
+                Append("OFFSET ", n.OffsetClause, " ROWS");
+            }
+
+            if (n.FetchClause != null)
+            {
+                AppendLineAndIndent();
+                Append("FETCH NEXT ", n.FetchClause, " ROWS ONLY");
             }
 
             DecreaseIndent();
