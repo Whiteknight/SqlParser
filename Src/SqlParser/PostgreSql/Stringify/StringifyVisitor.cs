@@ -5,10 +5,8 @@ using SqlParser.Visiting;
 
 namespace SqlParser.PostgreSql.Stringify
 {
-    public partial class StringifyVisitor : ISqlNodeVisitor, INodeVisitorTyped
+    public partial class StringifyVisitor : INodeVisitorTyped
     {
-        public ISqlNode Visit(ISqlNode n) => n?.Accept(this);
-
         public ISqlNode VisitAlias(SqlAliasNode n)
         {
             Visit(n.Source);
@@ -485,7 +483,13 @@ namespace SqlParser.PostgreSql.Stringify
 
         public ISqlNode VisitSet(SqlSetNode n)
         {
-            Append("SET ", n.Variable, " ", n.Operator, " ", n.Right);
+            if (n.Operator.Operator == ":=" || n.Operator.Operator == "=")
+                Append(n.Variable, " := ", n.Right);
+            else if (n.Operator.Operator.Length == 2 && n.Operator.Operator[1] == '=')
+                Append(n.Variable, " := ", n.Variable, n.Operator.Operator[0].ToString(), n.Right);
+            else
+                Append(n.Variable, " := /* ERROR: Operator ", n.Operator, " unsupported in PostgreSQL */", n.Right);
+
             return n;
         }
 

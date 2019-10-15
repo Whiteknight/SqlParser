@@ -73,29 +73,39 @@ namespace SqlParser.PostgreSql.Parsing
         { 
             t.Skip(SqlTokenType.Whitespace);
             
-            var keyword = t.ExpectPeek(SqlTokenType.Keyword);
-            if (keyword.Value == "SELECT")
-                return ParseQueryExpression(t);
-            if (keyword.Value == "WITH")
-                return ParseWithStatement(t);
-            if (keyword.Value == "INSERT")
-                return ParseInsertStatement(t);
-            if (keyword.Value == "UPDATE")
-                return ParseUpdateStatement(t);
-            if (keyword.Value == "DELETE")
-                return ParseDeleteStatement(t);
-            if (keyword.Value == "DECLARE")
-                return ParseDeclare(t);
-            if (keyword.Value == "SET")
-                return ParseSet(t);
-            if (keyword.Value == "EXEC" || keyword.Value == "EXECUTE")
-                return ParseExecute(t);
-            if (keyword.Value == "BEGIN")
-                return ParseBeginEndStatementList(t);
-            if (keyword.Value == "IF")
-                return ParseIf(t);
-            if (keyword.Value == "MERGE")
-                return ParseMergeStatement(t);
+            var keyword = t.Peek();
+            if (keyword.Type == SqlTokenType.Keyword)
+            {
+                if (keyword.Value == "SELECT")
+                    return ParseQueryExpression(t);
+                if (keyword.Value == "WITH")
+                    return ParseWithStatement(t);
+                if (keyword.Value == "INSERT")
+                    return ParseInsertStatement(t);
+                if (keyword.Value == "UPDATE")
+                    return ParseUpdateStatement(t);
+                if (keyword.Value == "DELETE")
+                    return ParseDeleteStatement(t);
+                if (keyword.Value == "DECLARE")
+                    return ParseDeclare(t);
+                if (keyword.Value == "EXEC" || keyword.Value == "EXECUTE")
+                    return ParseExecute(t);
+                if (keyword.Value == "BEGIN")
+                    return ParseBeginEndStatementList(t);
+                if (keyword.Value == "IF")
+                    return ParseIf(t);
+                if (keyword.Value == "MERGE")
+                    return ParseMergeStatement(t);
+            }
+
+            if (keyword.Type == SqlTokenType.Identifier || keyword.Type == SqlTokenType.Variable)
+            {
+                var id = t.GetNext();
+                var op = t.Peek();
+                t.PutBack(id);
+                if (op.IsSymbol(":="))
+                    return ParseSet(t);
+            }
 
             // TODO: RETURN?
             // TODO: THROW/TRY/CATCH

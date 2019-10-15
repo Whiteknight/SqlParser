@@ -5,31 +5,11 @@ using SqlParser.Ast;
 using SqlParser.SqlServer.Symbols;
 using SqlParser.Symbols;
 
-namespace SqlParser.SqlServer.Tests
+namespace SqlParser.SqlServer.Tests.Symbols
 {
     [TestFixture]
-    public class SymbolTableTests
+    public class SymbolTableErrorsTests
     {
-        [Test]
-        public void BuildSymbolTable_TableName()
-        {
-            var ast = new SqlSelectNode
-            {
-                Columns = new SqlListNode<ISqlNode>
-                {
-                    new SqlQualifiedIdentifierNode
-                    {
-                        Qualifier = new SqlIdentifierNode("MyTable"),
-                        Identifier = new SqlIdentifierNode("ColumnA")
-                    }
-                },
-                FromClause = new SqlIdentifierNode { Name = "MyTable" }
-            };
-            ast.BuildSymbolTables();
-            ast.Symbols.GetInfoOrThrow("MyTable").DataType.Should().Be("TableExpression");
-            ast.Symbols.GetInfoOrThrow("ColumnA").DataType.Should().Be("Column");
-        }
-
         [Test]
         public void BuildSymbolTable_TableNameNotDefined()
         {
@@ -73,25 +53,7 @@ namespace SqlParser.SqlServer.Tests
             act.Should().Throw<SymbolAlreadyDefinedException>().And.Symbol.Should().Be("MyTable");
         }
 
-        [Test]
-        public void BuildSymbolTable_DeclareSet()
-        {
-            var ast = new SqlStatementListNode
-            {
-                new SqlDeclareNode
-                {
-                    Variable = new SqlVariableNode("@var"),
-                    DataType = new SqlKeywordNode("INT")
-                },
-                new SqlSetNode
-                {
-                    Variable = new SqlVariableNode("@var"),
-                    Right = new SqlNumberNode(5)
-                }
-            };
-            ast.BuildSymbolTables();
-            ast.Symbols.GetInfoOrThrow("@var").DataType.Should().Be("Variable");
-        }
+        
 
         [Test]
         public void BuildSymbolTable_SetWithoutDeclare()

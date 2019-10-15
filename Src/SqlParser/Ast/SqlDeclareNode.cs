@@ -5,18 +5,16 @@ namespace SqlParser.Ast
 { 
     public class SqlDeclareNode : ISqlNode
     {
-        public SqlVariableNode Variable { get; set; }
+        public ISqlNode Variable { get; set; }
 
         public ISqlNode DataType { get; set; }
         public ISqlNode Initializer { get; set; }
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitDeclare(this);
 
-        
-
         public Location Location { get; set; }
 
-        public SqlDeclareNode Update(SqlVariableNode v, ISqlNode dataType, ISqlNode init)
+        public SqlDeclareNode Update(ISqlNode v, ISqlNode dataType, ISqlNode init)
         {
             if (v == Variable && dataType == DataType && init == Initializer)
                 return this;

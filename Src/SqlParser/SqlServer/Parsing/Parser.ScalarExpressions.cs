@@ -244,7 +244,7 @@ namespace SqlParser.SqlServer.Parsing
             return new SqlFunctionCallNode
             {
                 Location = name.Location,
-                Name = new SqlIdentifierNode(name),
+                Name = Facts.IsBuiltInFunctionName(name.Value) ? (ISqlNode)new SqlKeywordNode(name.Value.ToUpperInvariant(), name.Location) : new SqlIdentifierNode(name),
                 Arguments = ParseParenthesis(t, x => ParseList(x, ParseScalarExpression)).Expression
             };
         }

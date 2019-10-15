@@ -6,7 +6,7 @@ using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
 using SqlParser.Tokenizing;
 
-namespace SqlParser.SqlServer.Tests
+namespace SqlParser.SqlServer.Tests.Parsing
 {
     [TestFixture]
     public class IfTests

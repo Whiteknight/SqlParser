@@ -12,8 +12,6 @@ namespace SqlParser.Ast
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitJoin(this);
 
-        
-
         public Location Location { get; set; }
 
         public SqlJoinNode Update(ISqlNode left, SqlOperatorNode op, ISqlNode right, ISqlNode cond)

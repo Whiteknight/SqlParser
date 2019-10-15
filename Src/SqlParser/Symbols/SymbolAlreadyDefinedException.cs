@@ -24,13 +24,15 @@ namespace SqlParser.Symbols
         {
         }
 
-        public string Symbol { get; set; }
+        public string Symbol { get; private set; }
+        public Location Location { get; private set; }
 
-        public static SymbolAlreadyDefinedException Create(string symbol)
+        public static SymbolAlreadyDefinedException Create(string symbol, Location l)
         {
-            return new SymbolAlreadyDefinedException($"Symbol {symbol} already defined. Cannot add duplicate definition.")
+            return new SymbolAlreadyDefinedException($"Symbol {symbol} already defined. Cannot add duplicate definition at {l}.")
             {
-                Symbol = symbol
+                Symbol = symbol,
+                Location = l
             };
         }
     }

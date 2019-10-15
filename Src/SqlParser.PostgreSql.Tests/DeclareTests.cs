@@ -12,7 +12,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Declare_Bigint()
         {
-            const string s = "DECLARE @var BIGINT;";
+            const string s = "DECLARE var BIGINT;";
             var target = new Parser();
             var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
@@ -20,7 +20,7 @@ namespace SqlParser.PostgreSql.Tests
             result.Statements.First().Should().MatchAst(
                 new SqlDeclareNode
                 {
-                    Variable = new SqlVariableNode("@var"),
+                    Variable = new SqlIdentifierNode("var"),
                     DataType = new SqlDataTypeNode
                     {
                         DataType = new SqlKeywordNode("BIGINT")
@@ -32,7 +32,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Declare_IntValue()
         {
-            const string s = "DECLARE @var INT := 5;";
+            const string s = "DECLARE var INT := 5;";
             var target = new Parser();
             var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
@@ -40,7 +40,7 @@ namespace SqlParser.PostgreSql.Tests
             result.Statements.First().Should().MatchAst(
                 new SqlDeclareNode
                 {
-                    Variable = new SqlVariableNode("@var"),
+                    Variable = new SqlIdentifierNode("var"),
                     DataType = new SqlDataTypeNode
                     {
                         DataType = new SqlKeywordNode("INT")
@@ -53,7 +53,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Declare_CharSize()
         {
-            const string s = "DECLARE @var CHAR(5);";
+            const string s = "DECLARE var CHAR(5);";
             var target = new Parser();
             var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
@@ -61,7 +61,7 @@ namespace SqlParser.PostgreSql.Tests
             result.Statements.First().Should().MatchAst(
                 new SqlDeclareNode
                 {
-                    Variable = new SqlVariableNode("@var"),
+                    Variable = new SqlIdentifierNode("var"),
                     DataType = new SqlDataTypeNode
                     {
                         DataType = new SqlKeywordNode("CHAR"),
@@ -77,7 +77,7 @@ namespace SqlParser.PostgreSql.Tests
         [Test]
         public void Declare_VarcharMax()
         {
-            const string s = "DECLARE @var VARCHAR(MAX);";
+            const string s = "DECLARE var VARCHAR(MAX);";
             var target = new Parser();
             var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
@@ -85,7 +85,7 @@ namespace SqlParser.PostgreSql.Tests
             result.Statements.First().Should().MatchAst(
                 new SqlDeclareNode
                 {
-                    Variable = new SqlVariableNode("@var"),
+                    Variable = new SqlIdentifierNode("var"),
                     DataType = new SqlDataTypeNode
                     {
                         DataType = new SqlKeywordNode("VARCHAR"),

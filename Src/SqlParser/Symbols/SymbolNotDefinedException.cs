@@ -24,13 +24,23 @@ namespace SqlParser.Symbols
         {
         }
 
-        public string Symbol { get; set; }
+        public string Symbol { get; private set; }
+        public Location Location { get; private set; }
 
-        public static SymbolNotDefinedException Create(string symbol)
+        public static SymbolNotDefinedException Create(string symbol, Location l)
         {
-            return new SymbolNotDefinedException($"Cannot find symbol {symbol}.")
+            if (l == null)
             {
-                Symbol = symbol
+                return new SymbolNotDefinedException($"Symbol {symbol} is used but is not defined.")
+                {
+                    Symbol = symbol
+                };
+            }
+
+            return new SymbolNotDefinedException($"Symbol {symbol} is used but is not defined at {l}.")
+            {
+                Symbol = symbol,
+                Location = l
             };
         }
     }

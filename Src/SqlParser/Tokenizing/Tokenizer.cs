@@ -25,7 +25,7 @@ namespace SqlParser.Tokenizing
             return new Tokenizer(new SqlParser.PostgreSql.Tokenizing.TokenScanner(new StringCharacterSequence(s)));
         }
 
-        public SqlToken GetNextToken()
+        public SqlToken ScanNext()
         {
             if (_putbacks.Count > 0)
                 return _putbacks.Pop();

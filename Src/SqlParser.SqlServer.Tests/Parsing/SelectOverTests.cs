@@ -5,7 +5,7 @@ using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
 using SqlParser.Tokenizing;
 
-namespace SqlParser.SqlServer.Tests
+namespace SqlParser.SqlServer.Tests.Parsing
 {
     [TestFixture]
     public class SelectOverTests
@@ -56,7 +56,7 @@ namespace SqlParser.SqlServer.Tests
                         {
                             Expression = new SqlFunctionCallNode
                             {
-                                Name = new SqlIdentifierNode("AVG"),
+                                Name = new SqlKeywordNode("AVG"),
                                 Arguments = new SqlListNode<ISqlNode>
                                 {
                                     new SqlIdentifierNode("ColumnA")

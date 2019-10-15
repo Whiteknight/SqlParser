@@ -16,17 +16,20 @@ namespace SqlParser.Ast
             Location = token.Location;
         }
 
-        public SqlVariableNode(string name)
+        public SqlVariableNode(string name, Location l = null)
         {
             Name = name;
+            Location = l;
         }
-
-        
 
         public Location Location { get; set; }
 
         public string Name { get; set; }
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitVariable(this);
+
+        public string GetBareName() => Name.StartsWith("@") ? Name.Substring(1) : Name;
+
+        public override string ToString() => Name;
     }
 }

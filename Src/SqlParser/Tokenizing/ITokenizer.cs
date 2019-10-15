@@ -4,7 +4,7 @@ namespace SqlParser.Tokenizing
 {
     public interface ITokenizer : IEnumerable<SqlToken>
     {
-        SqlToken GetNextToken();
+        SqlToken ScanNext();
         void PutBack(SqlToken token);
     }
 

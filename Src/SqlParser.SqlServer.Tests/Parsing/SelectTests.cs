@@ -6,7 +6,7 @@ using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
 using SqlParser.Tokenizing;
 
-namespace SqlParser.SqlServer.Tests
+namespace SqlParser.SqlServer.Tests.Parsing
 {
     [TestFixture]
     public class SelectTests
@@ -258,7 +258,7 @@ namespace SqlParser.SqlServer.Tests
                         {
                             Source = new SqlFunctionCallNode
                             {
-                                Name = new SqlIdentifierNode("GETUTCDATE")
+                                Name = new SqlKeywordNode("GETUTCDATE")
                             },
                             Alias = new SqlIdentifierNode("ColumnA")
                         }
@@ -314,7 +314,7 @@ namespace SqlParser.SqlServer.Tests
                         {
                             Source = new SqlFunctionCallNode
                             {
-                                Name = new SqlIdentifierNode("ABS"),
+                                Name = new SqlKeywordNode("ABS"),
                                 Arguments = new SqlListNode<ISqlNode>
                                 {
                                     new SqlNumberNode(1)
@@ -344,7 +344,7 @@ namespace SqlParser.SqlServer.Tests
                         {
                             Source = new SqlFunctionCallNode
                             {
-                                Name = new SqlIdentifierNode("COALESCE"),
+                                Name = new SqlKeywordNode("COALESCE"),
                                 Arguments = new SqlListNode<ISqlNode>
                                 {
                                     new SqlNullNode(),

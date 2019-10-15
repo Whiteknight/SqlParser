@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using SqlParser.Ast;
 
 namespace SqlParser.Symbols
 {
@@ -7,9 +9,17 @@ namespace SqlParser.Symbols
         private readonly SymbolTable _parent;
         private readonly Dictionary<string, SymbolInfo> _symbols;
 
-        public SymbolTable()
+        public SymbolTable(IEnumerable<SymbolInfo> environmentalSymbols)
         {
             _symbols = new Dictionary<string, SymbolInfo>();
+            foreach (var sym in (environmentalSymbols ?? Enumerable.Empty<SymbolInfo>()))
+            {
+                if (string.IsNullOrEmpty(sym.OriginalName))
+                    continue;
+                if (sym.OriginKind == SymbolOriginKind.Unknown)
+                    sym.OriginKind = SymbolOriginKind.Environmental;
+                _symbols.Add(sym.OriginalName, sym);
+            }
         }
 
         public SymbolTable(SymbolTable parent)
@@ -25,11 +35,11 @@ namespace SqlParser.Symbols
             return _parent?.GetInfo(symbol);
         }
 
-        public SymbolInfo GetInfoOrThrow(string symbol)
+        public SymbolInfo GetInfoOrThrow(string symbol, Location l)
         {
             var info = GetInfo(symbol);
             if (info == null)
-                throw SymbolNotDefinedException.Create(symbol);
+                throw SymbolNotDefinedException.Create(symbol, l);
             return info;
         }
 
@@ -43,14 +53,22 @@ namespace SqlParser.Symbols
         public void AddSymbol(string symbol, SymbolInfo info)
         {
             if (ContainsSymbol(symbol))
-                throw SymbolAlreadyDefinedException.Create(symbol);
+                throw SymbolAlreadyDefinedException.Create(symbol, info.DefinedAt);
             _symbols.Add(symbol, info);
         }
-    }
 
-    public class SymbolInfo
-    {
-        public Location DefinedAt { get; set; }
-        public string DataType { get; set; }
+        public ISqlNode ResolveIdentifier(ISqlNode n)
+        {
+            if (n is SqlIdentifierNode id)
+                return GetInfo(id.Name)?.Translate(n) ?? n;
+            if (n is SqlObjectIdentifierNode oid)
+                return GetInfo(oid.ToString())?.Translate(n) ?? n;
+            if (n is SqlQualifiedIdentifierNode qid)
+                return GetInfo(qid.ToString())?.Translate(n) ?? n;
+            if (n is SqlVariableNode v)
+                return GetInfo(v.Name)?.Translate(n) ?? GetInfo(v.GetBareName())?.Translate(n) ?? n;
+
+            return n;
+        }
     }
 }

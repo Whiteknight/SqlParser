@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using SqlParser.Ast;
+using SqlParser.Symbols;
 
 namespace SqlParser.PostgreSql.Stringify
 {
@@ -14,6 +16,8 @@ namespace SqlParser.PostgreSql.Stringify
         {
             _tw = tw ?? throw new ArgumentNullException(nameof(tw));
             _indent = 0;
+            _nonNullSymbolTables = new Stack<SymbolTable>();
+            _allSymbolTables = new Stack<SymbolTable>();
         }
 
         public StringifyVisitor(StringBuilder sb)

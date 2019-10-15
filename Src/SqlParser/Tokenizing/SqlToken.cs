@@ -24,7 +24,7 @@ namespace SqlParser.Tokenizing
 
         public static SqlToken Word(string s, Location location)
         {
-            if (Keywords.IsKeyword(s))
+            if (Facts.IsKeyword(s))
                 return new SqlToken(s.ToUpperInvariant(), SqlTokenType.Keyword, location);
             return new SqlToken(s, SqlTokenType.Identifier, location);
         }

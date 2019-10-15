@@ -7,17 +7,17 @@ namespace SqlParser.PostgreSql.Parsing
     {
         private SqlDeclareNode ParseDeclare(ITokenizer t)
         {
-            // "DECLARE" <variable> <DataType> (":=" <Expression>)?
-            // TODO: "DECLARE" <variable> <DataType> (":=" <Expression>)? ("," <variable> <DataType> (":=" <Expression>)?)*
+            // "DECLARE" <identifier> <DataType> (":=" <Expression>)?
+            // TODO: "DECLARE" <identifier> <DataType> (":=" <Expression>)? ("," <identifier> <DataType> (":=" <Expression>)?)*
             var declare = t.Expect(SqlTokenType.Keyword, "DECLARE");
-            var v = t.Expect(SqlTokenType.Variable);
+            var v = t.Expect(SqlTokenType.Identifier);
             // TODO: Improve data type parsing
             var dataType = ParseDataType(t);
             var declareNode = new SqlDeclareNode
             {
                 Location = declare.Location,
                 DataType = dataType,
-                Variable = new SqlVariableNode(v)
+                Variable = new SqlIdentifierNode(v)
             };
             if (t.NextIs(SqlTokenType.Symbol, ":=", true))
                 declareNode.Initializer = ParseScalarExpression(t);
@@ -56,16 +56,17 @@ namespace SqlParser.PostgreSql.Parsing
 
         private SqlSetNode ParseSet(ITokenizer t)
         {
-            // "SET" <variable> <assignOp> <Expression>
-            var setToken = t.Expect(SqlTokenType.Keyword, "SET");
-            var v = t.Expect(SqlTokenType.Variable);
-            var op = t.Expect(SqlTokenType.Symbol, "=", "+=", "-=", "*=", "/=", "%=", "&=", "^=", "|=");
+            // <variable> ":=" <Expression>
+            var v = t.GetNext();
+            if (v.Type != SqlTokenType.Identifier && v.Type != SqlTokenType.Variable)
+                throw ParsingException.CouldNotParseRule(nameof(ParseSet), v);
+            var op = t.Expect(SqlTokenType.Symbol, ":=");
             var expr = ParseScalarExpression(t);
 
             return new SqlSetNode
             {
-                Location = setToken.Location,
-                Variable = new SqlVariableNode(v),
+                Location = v.Location,
+                Variable = new SqlIdentifierNode(v),
                 Operator = new SqlOperatorNode(op),
                 Right = expr
             };

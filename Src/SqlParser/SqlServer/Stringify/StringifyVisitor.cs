@@ -5,10 +5,8 @@ using SqlParser.Visiting;
 
 namespace SqlParser.SqlServer.Stringify
 {
-    public partial class StringifyVisitor : ISqlNodeVisitor, INodeVisitorTyped
+    public partial class StringifyVisitor : INodeVisitorTyped
     {
-        public ISqlNode Visit(ISqlNode n) => n?.Accept(this);
-
         public ISqlNode VisitAlias(SqlAliasNode n)
         {
             Visit(n.Source);

@@ -1,20 +1,90 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SqlParser.SqlServer
 {
-    public class Keywords
+    public class Facts
     {
         private static HashSet<string> _reservedWords;
+        private static HashSet<string> _builtInFunctionNames;
 
         public static bool IsKeyword(string k)
         {
             k = (k ?? "").ToUpperInvariant();
 
             if (_reservedWords == null)
-                _reservedWords = new HashSet<string>(_keywords.Split('\n').Select(s => s.Trim()).Distinct());
+                _reservedWords = new HashSet<string>(_keywords.Split(new [] { '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Distinct());
             return _reservedWords.Contains(k);
         }
+
+        public static bool IsBuiltInFunctionName(string f)
+        {
+            f = (f ?? "").ToUpperInvariant();
+            if (_builtInFunctionNames == null)
+                _builtInFunctionNames = new HashSet<string>(_builtIns.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Distinct());
+            return _builtInFunctionNames.Contains(f);
+        }
+
+        private const string _builtIns = @"
+@@VERSION
+ABS
+ASCII
+AVG
+CASE
+CAST
+CEILING
+CHAR
+CHARINDEX
+COALESCE
+CONCAT
+CONVERT
+COUNT
+CURRENT_TIMESTAMP
+CURRENT_USER
+DATALENGTH
+DATEADD
+DATEDIFF
+DATENAME
+DATEPART
+DAY
+FLOOR
+GETDATE
+GETUTCDATE
+ISDATE
+ISNULL
+ISNUMERIC
+LAG
+LEAD
+LEFT
+LEN
+LOWER
+LTRIM
+MAX
+MIN
+MONTH
+NCHAR
+NULLIF
+PATINDEX
+RAND
+REPLACE
+RIGHT
+ROUND
+RTRIM
+SESSION_USER
+SESSIONPROPERTY
+SIGN
+SPACE
+STR
+STUFF
+SUBSTRING
+SUM
+SYSTEM_USER
+TRY_CAST
+TRY_CONVERT
+UPPER
+USER_NAME
+YEAR";
 
         private const string _keywords = @"
 A

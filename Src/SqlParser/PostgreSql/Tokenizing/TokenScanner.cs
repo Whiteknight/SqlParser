@@ -31,9 +31,6 @@ namespace SqlParser.PostgreSql.Tokenizing
 
             // Comparison operators
             _operators.Add("!=", "<>", ">", "<", ">=", "<=");
-
-            // Assignment operators
-            _operators.Add("+=", "-=", "*=", "/=", "%=", "&=", "^=", "|=");
         }
 
         public SqlToken ParseNext()
@@ -265,7 +262,7 @@ namespace SqlParser.PostgreSql.Tokenizing
             }
 
             var s = new string(chars.ToArray());
-            if (Keywords.IsKeyword(s))
+            if (Facts.IsKeyword(s))
                 return new SqlToken(s.ToUpperInvariant(), SqlTokenType.Keyword, l);
             return new SqlToken(s.ToLowerInvariant(), SqlTokenType.Identifier, l);
         }

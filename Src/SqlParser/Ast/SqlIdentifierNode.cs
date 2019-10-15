@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using SqlParser.SqlServer.Stringify;
 using SqlParser.Tokenizing;
 using SqlParser.Visiting;
 
@@ -17,18 +16,19 @@ namespace SqlParser.Ast
             Location = token.Location;
         }
 
-        public SqlIdentifierNode(string name)
+        public SqlIdentifierNode(string name, Location l = null)
         {
             Name = name;
+            Location = l;
         }
 
         public string Name { get; set; }
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitIdentifier(this);
 
-        
-
         public Location Location { get; set; }
+
+        public override string ToString() => Name;
     }
 
     public class SqlQualifiedIdentifierNode : ISqlNode
@@ -48,8 +48,6 @@ namespace SqlParser.Ast
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitQualifiedIdentifier(this);
 
-        
-
         public Location Location { get; set; }
 
         public SqlQualifiedIdentifierNode Update(SqlIdentifierNode qualfier, ISqlNode id)
@@ -62,6 +60,19 @@ namespace SqlParser.Ast
                 Identifier = id,
                 Qualifier = qualfier
             };
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            if (Qualifier != null)
+            {
+                sb.Append(Qualifier.Name);
+                sb.Append(".");
+            }
+
+            sb.Append(Identifier.ToString());
+            return sb.ToString();
         }
     }
 

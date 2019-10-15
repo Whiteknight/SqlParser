@@ -56,7 +56,7 @@ namespace SqlParser.Visiting
 
         public virtual ISqlNode VisitDeclare(SqlDeclareNode n)
         {
-            var v = Visit(n.Variable) as SqlVariableNode;
+            var v = Visit(n.Variable);
             var d = Visit(n.DataType);
             var i = Visit(n.Initializer);
             return n.Update(v, d, i);
@@ -232,7 +232,7 @@ namespace SqlParser.Visiting
 
         public virtual ISqlNode VisitSet(SqlSetNode n)
         {
-            var v = Visit(n.Variable) as SqlVariableNode;
+            var v = Visit(n.Variable);
             var op = Visit(n.Operator) as SqlOperatorNode;
             var r = Visit(n.Right);
             return n.Update(v, op, r);

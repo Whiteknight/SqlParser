@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using SqlParser.Ast;
+using SqlParser.Symbols;
 
 namespace SqlParser.SqlServer.Stringify
 {
@@ -14,6 +16,8 @@ namespace SqlParser.SqlServer.Stringify
         {
             _tw = tw ?? throw new ArgumentNullException(nameof(tw));
             _indent = 0;
+            _allSymbolTables = new Stack<SymbolTable>();
+            _nonNullSymbolTables = new Stack<SymbolTable>();
         }
 
         public StringifyVisitor(StringBuilder sb)

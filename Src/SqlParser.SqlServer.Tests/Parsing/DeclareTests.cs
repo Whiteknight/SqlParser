@@ -4,7 +4,7 @@ using SqlParser.Ast;
 using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
 
-namespace SqlParser.SqlServer.Tests
+namespace SqlParser.SqlServer.Tests.Parsing
 {
     [TestFixture]
     public class DeclareTests

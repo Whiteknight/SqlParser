@@ -9,7 +9,7 @@ namespace SqlParser.Tokenizing
         {
             while (true)
             {
-                var next = ITokenizer.GetNextToken();
+                var next = ITokenizer.ScanNext();
                 if (next == null || next.IsType(SqlTokenType.EndOfInput))
                     return SqlToken.EndOfInput();
                 if (next.Type == SqlTokenType.Comment && skipComments)

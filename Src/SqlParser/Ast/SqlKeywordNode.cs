@@ -16,9 +16,10 @@ namespace SqlParser.Ast
             Location = t.Location;
         }
 
-        public SqlKeywordNode(string keyword)
+        public SqlKeywordNode(string keyword, Location l = null)
         {
             Keyword = keyword;
+            Location = l;
         }
 
         public string Keyword { get; set; }
