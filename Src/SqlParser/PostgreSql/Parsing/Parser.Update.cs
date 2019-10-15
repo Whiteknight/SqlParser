@@ -12,7 +12,7 @@ namespace SqlParser.PostgreSql.Parsing
             // TODO: TOP clause
             var table = ParseMaybeAliasedScalar(t, ParseVariableOrObjectIdentifier);
             var setList = ParseUpdateSetClause(t);
-            // TODO: OUTPUT clause
+            // TODO: RETURNING clause
             var where = ParseWhereClause(t);
             return new SqlUpdateNode
             {

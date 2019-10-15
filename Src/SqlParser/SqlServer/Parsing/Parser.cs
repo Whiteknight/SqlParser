@@ -97,6 +97,7 @@ namespace SqlParser.SqlServer.Parsing
             if (keyword.Value == "MERGE")
                 return ParseMergeStatement(t);
 
+            // TODO: If we don't know what it is, Parse it into an Unknown node and continue
             // TODO: RETURN?
             // TODO: THROW/TRY/CATCH
             // TODO: WHILE/CONTINUE/BREAK

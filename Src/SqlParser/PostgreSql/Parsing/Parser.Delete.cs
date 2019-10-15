@@ -12,7 +12,7 @@ namespace SqlParser.PostgreSql.Parsing
             t.NextIs(SqlTokenType.Keyword, "FROM", true);
             var table = ParseObjectIdentifier(t);
             var where = ParseWhereClause(t);
-            // TODO: OUTPUT clause
+            // TODO: RETURNING clause
             return new SqlDeleteNode
             {
                 Location = deleteToken.Location,
