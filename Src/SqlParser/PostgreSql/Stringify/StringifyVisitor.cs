@@ -69,35 +69,23 @@ namespace SqlParser.PostgreSql.Stringify
         {
             Visit(n.DataType);
             if (n.Size != null)
-            {
-                Append("(");
-                Visit(n.Size);
-                Append(")");
-            }
+                Append("(", n.Size, ")");
 
             return n;
         }
 
         public ISqlNode VisitDeclare(SqlDeclareNode n)
         {
-            Append("DECLARE ");
-            Visit(n.Variable);
-            Append(" ");
-            Visit(n.DataType);
+            Append("DECLARE ", n.Variable, " ", n.DataType);
             if (n.Initializer != null)
-            {
-                Append(" = ");
-                Visit(n.Initializer);
-            }
+                Append(" = ", n.Initializer);
 
             return n;
         }
 
         public ISqlNode VisitDelete(SqlDeleteNode n)
         {
-            Append("DELETE FROM ");
-            Visit(n.Source);
-            Append(" ");
+            Append("DELETE FROM ", n.Source, " ");
             if (n.WhereClause != null)
             {
                 AppendLineAndIndent();
@@ -120,10 +108,7 @@ namespace SqlParser.PostgreSql.Stringify
         public ISqlNode VisitExecuteArgument(SqlExecuteArgumentNode n)
         {
             if (n.AssignVariable != null)
-            {
-                Visit(n.AssignVariable);
-                Append(" = ");
-            }
+                Append(n.AssignVariable, " = ");
 
             Visit(n.Value);
             if (n.IsOut)
@@ -145,9 +130,8 @@ namespace SqlParser.PostgreSql.Stringify
 
         public ISqlNode VisitIf(SqlIfNode n)
         {
-            Append("IF (");
-            Visit(n.Condition);
-            AppendLine(")");
+            Append("IF (", n.Condition, ")");
+            AppendLine();
             IncreaseIndent();
             Visit(n.Then);
             if (!(n.Then is SqlStatementListNode))
@@ -180,9 +164,7 @@ namespace SqlParser.PostgreSql.Stringify
             {
                 if (node is SqlInfixOperationNode)
                 {
-                    Append("(");
-                    Visit(node);
-                    Append(")");
+                    Append("(", node, ")");
                     return;
                 }
 
@@ -222,9 +204,7 @@ namespace SqlParser.PostgreSql.Stringify
             if (n.Table != null)
                 Append("INTO ", n.Table);
 
-            Append("(");
-            Visit(n.Columns);
-            AppendLine(")");
+            Append("(", n.Columns, ")");
             IncreaseIndent();
             if (n.Source != null)
             {
@@ -293,16 +273,13 @@ namespace SqlParser.PostgreSql.Stringify
             AppendLineAndIndent();
             Visit(n.Target);
             AppendLineAndIndent();
-            Append("USING ");
-            Visit(n.Source);
+            Append("USING ", n.Source);
             AppendLineAndIndent();
-            Append("ON ");
-            Visit(n.MergeCondition);
+            Append("ON ", n.MergeCondition);
             if (n.Matched != null)
             {
                 AppendLineAndIndent();
-                Append("WHEN MATCHED ");
-                Append(" THEN");
+                Append("WHEN MATCHED THEN");
                 IncreaseIndent();
                 AppendLineAndIndent();
                 Visit(n.Matched);
@@ -311,8 +288,7 @@ namespace SqlParser.PostgreSql.Stringify
             if (n.NotMatchedByTarget != null)
             {
                 AppendLineAndIndent();
-                Append("WHEN NOT MATCHED BY TARGET");
-                Append(" THEN");
+                Append("WHEN NOT MATCHED BY TARGET THEN");
                 IncreaseIndent();
                 AppendLineAndIndent();
                 Visit(n.NotMatchedByTarget);
@@ -321,8 +297,7 @@ namespace SqlParser.PostgreSql.Stringify
             if (n.NotMatchedBySource != null)
             {
                 AppendLineAndIndent();
-                Append("WHEN NOT MATCHED BY SOURCE");
-                Append(" THEN");
+                Append("WHEN NOT MATCHED BY SOURCE THEN");
                 IncreaseIndent();
                 AppendLineAndIndent();
                 Visit(n.NotMatchedBySource);
@@ -349,22 +324,13 @@ namespace SqlParser.PostgreSql.Stringify
         public ISqlNode VisitObjectIdentifier(SqlObjectIdentifierNode n)
         {
             if (n.Server != null)
-            {
-                Visit(n.Server);
-                Append(".");
-            }
+                Append(n.Server, ".");
 
             if (n.Database != null)
-            {
-                Visit(n.Database);
-                Append(".");
-            }
+                Append(n.Database, ".");
 
             if (n.Schema != null)
-            {
-                Visit(n.Schema);
-                Append(".");
-            }
+                Append(n.Schema, ".");
 
             Visit(n.Name);
             return n;
@@ -389,10 +355,7 @@ namespace SqlParser.PostgreSql.Stringify
         {
             Visit(n.Source);
             if (!string.IsNullOrEmpty(n.Direction))
-            {
-                Append(" ");
-                Append(n.Direction);
-            }
+                Append(" ", n.Direction);
 
             return n;
         }
@@ -404,20 +367,11 @@ namespace SqlParser.PostgreSql.Stringify
                 return n;
             Append(" OVER (");
             if (n.PartitionBy != null)
-            {
-                Append("PARTITION BY ");
-                Visit(n.PartitionBy);
-            }
+                Append("PARTITION BY ", n.PartitionBy);
             if (n.OrderBy != null)
-            {
-                Append(" ORDER BY ");
-                Visit(n.OrderBy);
-            }
+                Append(" ORDER BY ", n.OrderBy);
             if (n.RowsRange != null)
-            {
-                Append(" ROWS ");
-                Visit(n.RowsRange);
-            }
+                Append(" ROWS ", n.RowsRange);
 
             Append(")");
             return n;
@@ -439,14 +393,9 @@ namespace SqlParser.PostgreSql.Stringify
 
         public ISqlNode VisitPrefixOperation(SqlPrefixOperationNode n)
         {
-            Visit(n.Operator);
-            Append(" ");
+            Append(n.Operator, " ");
             if (n.Right is SqlInfixOperationNode)
-            {
-                Append("(");
-                Visit(n.Right);
-                Append(")");
-            }
+                Append("(", n.Right, ")");
             else
                 Visit(n.Right);
 
@@ -456,10 +405,7 @@ namespace SqlParser.PostgreSql.Stringify
         public ISqlNode VisitQualifiedIdentifier(SqlQualifiedIdentifierNode n)
         {
             if (n.Qualifier != null)
-            {
-                Visit(n.Qualifier);
-                Append(".");
-            }
+                Append(n.Qualifier, ".");
 
             Visit(n.Identifier);
             return n;
@@ -469,10 +415,7 @@ namespace SqlParser.PostgreSql.Stringify
         {
             Append("SELECT ");
             if (n.Modifier != null)
-            {
-                Append(n.Modifier);
-                Append(" ");
-            }
+                Append(n.Modifier, " ");
 
             IncreaseIndent();
             AppendLineAndIndent();
@@ -581,19 +524,13 @@ namespace SqlParser.PostgreSql.Stringify
 
         public ISqlNode VisitTopLimit(SqlTopLimitNode n)
         {
-            Append("LIMIT ");
-            Visit(n.Value);
+            Append("LIMIT ", n.Value);
             return n;
         }
 
         public ISqlNode VisitValues(SqlValuesNode n)
         {
-            void forEach(SqlListNode<ISqlNode> child)
-            {
-                Append("(");
-                Visit(child);
-                Append(")");
-            }
+            void forEach(SqlListNode<ISqlNode> child) => Append("(", child, ")");
 
             Append("VALUES ");
             forEach(n.Values.First());
@@ -617,11 +554,7 @@ namespace SqlParser.PostgreSql.Stringify
                 Append("RECURSIVE ");
             Visit(n.Name);
             if (n.ColumnNames != null && n.ColumnNames.Any())
-            {
-                Append("(");
-                Visit(n.ColumnNames);
-                Append(")");
-            }
+                Append("(", n.ColumnNames, ")");
             Append(" AS (");
             IncreaseIndent();
             AppendLineAndIndent();
