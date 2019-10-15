@@ -8,8 +8,6 @@ namespace SqlParser.Ast
 {
     public class SqlWithNode : ISqlNode, ISqlSymbolScopeNode
     {
-        
-
         public Location Location { get; set; }
         public SqlListNode<SqlWithCteNode> Ctes { get; set; }
         public ISqlNode Statement { get; set; }

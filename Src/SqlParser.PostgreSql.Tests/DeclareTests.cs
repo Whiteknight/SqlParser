@@ -30,6 +30,27 @@ namespace SqlParser.PostgreSql.Tests
         }
 
         [Test]
+        public void Declare_IntValue()
+        {
+            const string s = "DECLARE @var INT := 5;";
+            var target = new Parser();
+            var result = target.Parse(s);
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlDeclareNode
+                {
+                    Variable = new SqlVariableNode("@var"),
+                    DataType = new SqlDataTypeNode
+                    {
+                        DataType = new SqlKeywordNode("INT")
+                    },
+                    Initializer = new SqlNumberNode(5)
+                }
+            );
+        }
+
+        [Test]
         public void Declare_CharSize()
         {
             const string s = "DECLARE @var CHAR(5);";

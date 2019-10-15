@@ -8,25 +8,26 @@ namespace SqlParser.Visiting
     {
         private readonly Func<ISqlNode, bool> _predicate;
         private readonly ICollection<ISqlNode> _found;
+        private readonly int _limit;
 
-        public GetNodesVisitor(Func<ISqlNode, bool> predicate, ICollection<ISqlNode> found)
+        public GetNodesVisitor(Func<ISqlNode, bool> predicate, ICollection<ISqlNode> found, int limit = 0)
         {
             _predicate = predicate;
             _found = found;
-        }
-
-        public static IReadOnlyCollection<ISqlNode> OfType<T>(ISqlNode root)
-            where T : class, ISqlNode
-        {
-            var list = new List<ISqlNode>();
-            new GetNodesVisitor(n => n is T, list).Visit(root);
-            return list;
+            _limit = limit;
         }
 
         public override ISqlNode Visit(ISqlNode n)
         {
+            if (_limit > 0 && _found.Count >= _limit)
+                return n;
             if (_predicate(n))
+            {
                 _found.Add(n);
+                if (_limit > 0 && _found.Count >= _limit)
+                    return n;
+            }
+
             return base.Visit(n);
         }
     }

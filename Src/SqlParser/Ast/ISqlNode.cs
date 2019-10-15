@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
@@ -29,6 +30,20 @@ namespace SqlParser.Ast
         public static IReadOnlyCollection<ISqlNode> AllNodes(this ISqlNode root)
         {
             return root.Find(n => true);
+        }
+
+        public static string ToSqlServerString(this ISqlNode n)
+        {
+            var sb = new StringBuilder();
+            new SqlServer.Stringify.StringifyVisitor(sb).Visit(n);
+            return sb.ToString();
+        }
+
+        public static string ToPostgreSqlString(this ISqlNode n)
+        {
+            var sb = new StringBuilder();
+            new PostgreSql.Stringify.StringifyVisitor(sb).Visit(n);
+            return sb.ToString();
         }
     }
 }

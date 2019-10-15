@@ -26,8 +26,8 @@ namespace SqlParser.PostgreSql.Tokenizing
             // Unary ~. Unary - and + are covered above
             _operators.Add("~");
 
-            // "=" is both for comparison and assignment
-            _operators.Add("=");
+            // "=" is for comparison, ":=" is for assignment
+            _operators.Add("=", ":=");
 
             // Comparison operators
             _operators.Add("!=", "<>", ">", "<", ">=", "<=");

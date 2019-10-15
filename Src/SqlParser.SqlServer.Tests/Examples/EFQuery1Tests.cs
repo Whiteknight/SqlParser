@@ -2,6 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SqlParser.Analysis;
+using SqlParser.Ast;
 using SqlParser.SqlServer.Parsing;
 
 namespace SqlParser.SqlServer.Tests.Examples

@@ -78,7 +78,7 @@ namespace SqlParser.PostgreSql.Stringify
         {
             Append("DECLARE ", n.Variable, " ", n.DataType);
             if (n.Initializer != null)
-                Append(" = ", n.Initializer);
+                Append(" := ", n.Initializer);
 
             return n;
         }

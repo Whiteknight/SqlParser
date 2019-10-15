@@ -7,8 +7,8 @@ namespace SqlParser.PostgreSql.Parsing
     {
         private SqlDeclareNode ParseDeclare(ITokenizer t)
         {
-            // "DECLARE" <variable> <DataType> ("=" <Expression>)?
-            // TODO: "DECLARE" <variable> <DataType> ("=" <Expression>)? ("," <variable> <DataType> ("=" <Expression>)?)*
+            // "DECLARE" <variable> <DataType> (":=" <Expression>)?
+            // TODO: "DECLARE" <variable> <DataType> (":=" <Expression>)? ("," <variable> <DataType> (":=" <Expression>)?)*
             var declare = t.Expect(SqlTokenType.Keyword, "DECLARE");
             var v = t.Expect(SqlTokenType.Variable);
             // TODO: Improve data type parsing
@@ -19,7 +19,7 @@ namespace SqlParser.PostgreSql.Parsing
                 DataType = dataType,
                 Variable = new SqlVariableNode(v)
             };
-            if (t.NextIs(SqlTokenType.Symbol, "=", true))
+            if (t.NextIs(SqlTokenType.Symbol, ":=", true))
                 declareNode.Initializer = ParseScalarExpression(t);
             return declareNode;
         }
