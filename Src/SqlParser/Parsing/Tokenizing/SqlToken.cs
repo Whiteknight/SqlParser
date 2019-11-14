@@ -7,7 +7,13 @@ namespace SqlParser.Tokenizing
     {
         public string Value { get; }
         public SqlTokenType Type { get; }
-        public Location Location { get; }
+        public Location Location { get; set;  }
+
+        public SqlToken(string s, SqlTokenType type)
+        {
+            Value = s;
+            Type = type;
+        }
 
         public SqlToken(string s, SqlTokenType type, Location location)
         {

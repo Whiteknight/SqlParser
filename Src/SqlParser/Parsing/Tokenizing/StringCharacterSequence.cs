@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using SqlParser.Parsing;
 
 namespace SqlParser.Tokenizing
 {
-    public class StringCharacterSequence : ICharacterSequence
+    public class StringCharacterSequence : ISequence<char>
     {
         private readonly string _s;
         private readonly Stack<char> _putbacks;
@@ -23,7 +24,7 @@ namespace SqlParser.Tokenizing
         {
             var found = GetNext();
             if (found != expected)
-                throw ParsingException.UnexpectedCharacter(expected, found, GetLocation());
+                throw ParsingException.UnexpectedCharacter(expected, found, CurrentLocation);
         }
 
         public char Peek()
@@ -32,6 +33,9 @@ namespace SqlParser.Tokenizing
             PutBack(c);
             return c;
         }
+
+        public bool IsAtEnd => _putbacks.Count == 0 && _current >= _s.Length;
+        public Location CurrentLocation => new Location(_line, _lineChar);
 
         public char GetNext()
         {
@@ -56,11 +60,6 @@ namespace SqlParser.Tokenizing
             if (c == '\n')
                 _line--;
             _putbacks.Push(c);
-        }
-
-        public Location GetLocation()
-        {
-            return new Location(_line, _lineChar);
         }
     }
 }
