@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using SqlParser.Tokenizing;
 using SqlParser.Visiting;
 
@@ -106,6 +108,35 @@ namespace SqlParser.Ast
             if (!string.IsNullOrEmpty(schema))
                 Schema = new SqlIdentifierNode(schema);
             Name = new SqlIdentifierNode(name);
+        }
+
+        public SqlObjectIdentifierNode(IReadOnlyList<SqlIdentifierNode> idTokens)
+        {
+            
+            switch (idTokens.Count)
+            {
+                case 1:
+                    Name = idTokens[0];
+                    break;
+                case 2:
+                    Schema = idTokens[0];
+                    Name = idTokens[1];
+                    break;
+                case 3:
+                    Database = idTokens[0];
+                    Schema = idTokens[1];
+                    Name = idTokens[2];
+                    break;
+                case 4:
+                    Server = idTokens[0];
+                    Database = idTokens[1];
+                    Schema = idTokens[2];
+                    Name = idTokens[3];
+                    break;
+                default:
+                    throw new ArgumentException("Unexpected number of identifiers");
+            }
+            Location = idTokens[0].Location;
         }
 
         public SqlIdentifierNode Server { get; set; }

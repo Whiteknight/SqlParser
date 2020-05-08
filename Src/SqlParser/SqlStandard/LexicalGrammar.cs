@@ -1,50 +1,57 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using SqlParser.Parsing.Parsers;
+using ParserObjects;
 using SqlParser.Tokenizing;
-using static SqlParser.Parsing.Parsers.ParserMethods;
+using ParserObjects.Parsers;
+using static ParserObjects.Parsers.ParserMethods;
 
 namespace SqlParser.SqlStandard
 {
     // https://ronsavage.github.io/SQL/sql-2003-2.bnf.html#character%20set%20specification
-    public class LexicalGrammar
+    public static partial class LexicalGrammar
     {
-        public LexicalGrammar()
-        {
-            InitializeParsers();
-        }
+        private static readonly Lazy<IParser<char, SqlToken>> _parser = new Lazy<IParser<char, SqlToken>>(InitializeParsers);
 
-        private void InitializeParsers()
+        public static IParser<char, SqlToken> GetParser() => _parser.Value;
+
+        private static IParser<char, SqlToken> InitializeParsers()
         {
-            var idStart = Match<char>(c => char.IsLetter(c) || c == '_' || c == '$' || c == '@');
+            var idStart = Match<char>(c => char.IsLetter(c) || c == '_');
             var idPart = Match<char>(c => char.IsLetter(c) || char.IsDigit(c) || c == '_' || c == '$' || c == '@');
             var regularIdentifier = Rule(
                 idStart,
-                idPart.List(c => c.ToArray()),
+                idPart.List().Transform(c => c.ToArray()),
 
                 (start, parts) => start + new string(parts)
             );
+            var variable = Rule(
+                Match<char>(c => c == '$' || c == '@'),
+                regularIdentifier,
+
+                (prefix, name) => prefix + name
+            );
             var delimitedIdentifierPart = First(
-                Match<char, string>(c => c != '"', c => c.ToString()),
-                Characters("\"\"", c => new string(c))
+                Match<char>(c => c != '"').Transform(c => c.ToString()),
+                Match<char>("\"\"").Transform(c => new string(c.ToArray()))
             );
             var delimitedIdentifier = Rule(
-                Characters("\""),
-                delimitedIdentifierPart.List(s => string.Join("", s)),
-                Characters("\""),
+                Match('\"'),
+                delimitedIdentifierPart.List().Transform(s => string.Join("", s)),
+                Match('\"'),
 
                 (open, parts, close) => parts
             );
-            var notEqualsOperator = Characters("<>");
-            var greaterThanOrEqualsOperator = Characters(">=");
-            var lessThanOrEqualsOperator = Characters("<=");
-            var concatenationOperator = Characters("||");
-            var rightArrow = Characters("->");
-            var doubleColon = Characters("::");
-            var doublePeriod = Characters("..");
+            var notEqualsOperator = CharacterString("<>");
+            var greaterThanOrEqualsOperator = CharacterString(">=");
+            var lessThanOrEqualsOperator = CharacterString("<=");
+            var concatenationOperator = CharacterString("||");
+            var rightArrow = CharacterString("->");
+            var doubleColon = CharacterString("::");
+            var doublePeriod = CharacterString("..");
             var simpleComment = Rule(
-                Characters("--"),
-                Match<char>(c => c != '\r' && c != '\n').List(c => c),
+                CharacterString("--"),
+                Match<char>(c => c != '\r' && c != '\n').List(),
                 Optional(Match<char>(c => c == '\r'), () => '\0'),
                 Match<char>(c => c == '\n'),
 
@@ -52,17 +59,17 @@ namespace SqlParser.SqlStandard
             );
             var bracketedCommentContentChar = First(
                 Rule(
-                    Characters("*", c => '*'),
+                    CharacterString("*"),
                     Match<char>(c => c != '/'),
 
-                    (asterisk, slash) => new[] { asterisk, slash }
+                    (asterisk, slash) => new[] { asterisk[0], slash }
                 ),
-                Match<char, char[]>(c => c != '*', c => new[] { c })
+                Match<char>(c => c != '*').Transform(c => new[] { c })
             );
             var bracketedComment = Rule(
-                Characters("/*"),
-                bracketedCommentContentChar.List(c => ""),
-                Characters("*/"),
+                CharacterString("/*"),
+                bracketedCommentContentChar.List(),
+                CharacterString("*/"),
 
                 (introducer, body, terminator) => ""
             );
@@ -70,53 +77,53 @@ namespace SqlParser.SqlStandard
                 simpleComment,
                 bracketedComment
             );
-            var whitespace = Match<char>(char.IsWhiteSpace).List(c => "");
+            var whitespace = Match<char>(char.IsWhiteSpace).List();
             var separatorItem = First(
-                    comment,
-                    whitespace
-                );
-            var separator = separatorItem.List(c => "");
+                comment,
+                whitespace
+            );
+            var separator = separatorItem.List();
 
             // TODO: Need this to be case-insensitive
             var booleanLiteral = First(
-                Characters("TRUE"),
-                Characters("FALSE"),
-                Characters("UNKNOWN")
+                CharacterString("TRUE"),
+                CharacterString("FALSE"),
+                CharacterString("UNKNOWN")
             );
 
             var sign = First(
-                Characters("+"),
-                Characters("-")
+                CharacterString("+"),
+                CharacterString("-")
             );
-            var unsignedInteger = Match<char>(char.IsDigit).List(c => new string(c.ToArray()));
+            var unsignedInteger = Match<char>(char.IsDigit).ListCharToString();
             var signedInteger = Rule(
                 sign,
-                Match<char>(char.IsDigit).List(c => new string(c.ToArray())),
+                Match<char>(char.IsDigit).ListCharToString(),
                 (s, value) => s + value
             );
 
             var hexDigits = new HashSet<char>("0123456789abcdefABCDEF");
             var hexit = Match<char>(c => hexDigits.Contains(c));
             var binaryStringLiteral = Rule(
-                Characters("X\""),
-                hexit.List(c => new string(c.ToArray())),
-                Characters("\""),
+                CharacterString("X\""),
+                hexit.ListCharToString(),
+                CharacterString("\""),
                 (introducer, body, terminator) => introducer + body + terminator
             );
             var stringCharacter = First(
-                Characters("\"\""),
-                Match<char, string>(c => c != '"', c => c.ToString())
+                CharacterString("\"\""),
+                Match<char>(c => c != '"').Transform(c => c.ToString())
             );
             var nationalStringLiteral = Rule(
-                Characters("N\""),
-                stringCharacter.List(s => string.Join("", s)),
-                Characters("\""),
+                CharacterString("N\""),
+                stringCharacter.List().Transform(s => string.Join("", s)),
+                CharacterString("\""),
                 (introducer, body, terminator) => introducer + body + terminator
             );
             var stringLiteral = Rule(
-                Characters("\""),
-                stringCharacter.List(s => string.Join("", s)),
-                Characters("\""),
+                CharacterString("\""),
+                stringCharacter.List().Transform(s => string.Join("", s)),
+                CharacterString("\""),
                 (introducer, body, terminator) => introducer + body + terminator
             );
 
@@ -126,6 +133,7 @@ namespace SqlParser.SqlStandard
             );
 
             var tokens = First(
+                variable.Transform(c => new SqlToken(c, SqlTokenType.Variable)),
                 // TODO: Unquoted identifiers might be keywords
                 identifier.Transform(c => new SqlToken(c, SqlTokenType.Identifier)),
                 stringLiteral.Transform(c => new SqlToken(c, SqlTokenType.QuotedString)),
@@ -145,29 +153,31 @@ namespace SqlParser.SqlStandard
                 rightArrow.Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
                 doubleColon.Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
                 doublePeriod.Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("%").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("&").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("(").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters(")").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("*").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("+").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters(",").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("-").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters(".").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("/").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters(":").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters(";").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("<").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("=").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters(">").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("?").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("[").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("]").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("^").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("|").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("{").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                Characters("}").Transform(c => new SqlToken(c, SqlTokenType.Symbol))
+                CharacterString("%").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("&").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("(").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString(")").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("*").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("+").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString(",").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("-").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString(".").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("/").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString(":").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString(";").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("<").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("=").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString(">").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("?").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("[").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("]").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("^").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("|").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("{").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("}").Transform(c => new SqlToken(c, SqlTokenType.Symbol))
             );
+
+            return tokens;
         }
     }
 }
