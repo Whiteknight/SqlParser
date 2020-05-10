@@ -2,9 +2,8 @@
 using System.Linq;
 using NUnit.Framework;
 using SqlParser.Ast;
-using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
-using SqlParser.Tokenizing;
+using SqlParser.SqlStandard;
 
 namespace SqlParser.SqlServer.Tests.Parsing
 {
@@ -16,8 +15,10 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT 'TEST'";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
-            result.Should().PassValidation().And.RoundTrip();
+            var result = target.Parse(s);
+            result.Should().PassValidation()
+                .And.RoundTrip()
+                ;
 
             result.Statements.First().Should().MatchAst(
                 new SqlSelectNode
@@ -38,7 +39,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT 'TEST' AS ColumnA";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -64,7 +65,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT 10";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -86,7 +87,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT -10";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -94,11 +95,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
                 {
                     Columns = new SqlListNode<ISqlNode>
                     {
-                        new SqlPrefixOperationNode
-                        {
-                            Operator = new SqlOperatorNode("-"),
-                            Right = new SqlNumberNode(10)
-                        }
+                        new SqlNumberNode(-10)
                     }
                 }
             );
@@ -109,7 +106,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT ~+-10";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -123,11 +120,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
                             Right = new SqlPrefixOperationNode
                             {
                                 Operator = new SqlOperatorNode("+"),
-                                Right = new SqlPrefixOperationNode
-                                {
-                                    Operator = new SqlOperatorNode("-"),
-                                    Right = new SqlNumberNode(10)
-                                }
+                                Right = new SqlNumberNode(-10)
                             }
                         }
                     }
@@ -140,7 +133,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT 10.123";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -162,7 +155,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT @value";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -181,7 +174,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT @$#_abc123@";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -200,7 +193,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT -@value";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -223,7 +216,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT @value AS ColumnA";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -244,9 +237,32 @@ namespace SqlParser.SqlServer.Tests.Parsing
         [Test]
         public void Select_FunctionCall()
         {
+            const string s = "SELECT GETUTCDATE()";
+            var target = new Parser();
+            var result = target.Parse(s);
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<ISqlNode>
+                    {
+                        new SqlFunctionCallNode
+                        {
+                            Name = new SqlIdentifierNode("GETUTCDATE"),
+                            Arguments = new SqlListNode<ISqlNode>()
+                        }
+                    }
+                }
+            );
+        }
+
+        [Test]
+        public void Select_FunctionCall_Aliased()
+        {
             const string s = "SELECT GETUTCDATE() AS ColumnA";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -258,7 +274,8 @@ namespace SqlParser.SqlServer.Tests.Parsing
                         {
                             Source = new SqlFunctionCallNode
                             {
-                                Name = new SqlKeywordNode("GETUTCDATE")
+                                Name = new SqlIdentifierNode("GETUTCDATE"),
+                                Arguments = new SqlListNode<ISqlNode>()
                             },
                             Alias = new SqlIdentifierNode("ColumnA")
                         }
@@ -270,9 +287,35 @@ namespace SqlParser.SqlServer.Tests.Parsing
         [Test]
         public void Select_CountStar()
         {
+            const string s = "SELECT COUNT(*)";
+            var target = new Parser();
+            var result = target.Parse(s);
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<ISqlNode>
+                    {
+                        new SqlFunctionCallNode
+                        {
+                            Name = new SqlKeywordNode("COUNT"),
+                            Arguments = new SqlListNode<ISqlNode>
+                            {
+                                new SqlOperatorNode("*")
+                            }
+                        }
+                    }
+                }
+            );
+        }
+
+        [Test]
+        public void Select_CountStar_Aliased()
+        {
             const string s = "SELECT COUNT(*) AS ColumnA";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -300,9 +343,9 @@ namespace SqlParser.SqlServer.Tests.Parsing
         [Test]
         public void Select_FunctionCallArgument()
         {
-            const string s = "SELECT ABS(1) AS ColumnA";
+            const string s = "SELECT ABS(1)";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -310,17 +353,13 @@ namespace SqlParser.SqlServer.Tests.Parsing
                 {
                     Columns = new SqlListNode<ISqlNode>
                     {
-                        new SqlAliasNode
+                        new SqlFunctionCallNode
                         {
-                            Source = new SqlFunctionCallNode
+                            Name = new SqlIdentifierNode("ABS"),
+                            Arguments = new SqlListNode<ISqlNode>
                             {
-                                Name = new SqlKeywordNode("ABS"),
-                                Arguments = new SqlListNode<ISqlNode>
-                                {
-                                    new SqlNumberNode(1)
-                                }
-                            },
-                            Alias = new SqlIdentifierNode("ColumnA")
+                                new SqlNumberNode(1)
+                            }
                         }
                     }
                 }
@@ -330,9 +369,9 @@ namespace SqlParser.SqlServer.Tests.Parsing
         [Test]
         public void Select_FunctionCall2Arguments()
         {
-            const string s = "SELECT COALESCE(NULL, 0) AS ColumnA";
+            const string s = "SELECT COALESCE(NULL, 0)";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -340,18 +379,14 @@ namespace SqlParser.SqlServer.Tests.Parsing
                 {
                     Columns = new SqlListNode<ISqlNode>
                     {
-                        new SqlAliasNode
+                        new SqlFunctionCallNode
                         {
-                            Source = new SqlFunctionCallNode
+                            Name = new SqlIdentifierNode("COALESCE"),
+                            Arguments = new SqlListNode<ISqlNode>
                             {
-                                Name = new SqlKeywordNode("COALESCE"),
-                                Arguments = new SqlListNode<ISqlNode>
-                                {
-                                    new SqlNullNode(),
-                                    new SqlNumberNode(0)
-                                }
-                            },
-                            Alias = new SqlIdentifierNode("ColumnA")
+                                new SqlNullNode(),
+                                new SqlNumberNode(0)
+                            }
                         }
                     }
                 }
@@ -361,9 +396,28 @@ namespace SqlParser.SqlServer.Tests.Parsing
         [Test]
         public void Select_Null()
         {
+            const string s = "SELECT NULL";
+            var target = new Parser();
+            var result = target.Parse(s);
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<ISqlNode>
+                    {
+                        new SqlNullNode()
+                    }
+                }
+            );
+        }
+
+        [Test]
+        public void Select_Null_Aliased()
+        {
             const string s = "SELECT NULL AS ColumnA";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -386,7 +440,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT 'TEST1' SELECT 'TEST2'";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Should().MatchAst(
@@ -421,7 +475,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT 'TEST1'; SELECT 'TEST2'";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Should().MatchAst(

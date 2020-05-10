@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using SqlParser.Ast;
-using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
+using SqlParser.SqlStandard;
 using SqlParser.Tokenizing;
 
 namespace SqlParser.SqlServer.Tests.Parsing
@@ -20,7 +20,7 @@ Cte1 AS (
 )
 SELECT * FROM Cte1;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -63,7 +63,7 @@ Cte1(ColumnA) AS (
 )
 SELECT * FROM Cte1;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -113,7 +113,7 @@ Cte2 AS (
 )
 SELECT * FROM Cte2;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             var output = result.ToString();
             result.Should().PassValidation().And.RoundTrip();
 
@@ -170,7 +170,7 @@ Cte1 AS (
 INSERT INTO MyTable(ColumnA) 
     SELECT cola FROM Cte1;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using SqlParser.Ast;
-using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
+using SqlParser.SqlStandard;
 using SqlParser.Tokenizing;
 
 namespace SqlParser.SqlServer.Tests.Parsing
@@ -15,7 +15,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "UPDATE MyTable SET ColumnA = 1 WHERE ColumnB = 2;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             var output = result.ToString();
             result.Should().PassValidation().And.RoundTrip();
 
@@ -47,7 +47,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "UPDATE MyTable SET ColumnA = NULL;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -72,7 +72,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "UPDATE MyTable SET ColumnA = DEFAULT;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(

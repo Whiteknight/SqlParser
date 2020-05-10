@@ -1,9 +1,10 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using ParserObjects;
 using SqlParser.Ast;
 using SqlParser.Tokenizing;
 using ParserObjects.Parsers;
-using static ParserObjects.Parsers.ParserMethods;
+using static ParserObjects.Parsers.ParserMethods<SqlParser.Tokenizing.SqlToken>;
 
 namespace SqlParser.SqlStandard
 {
@@ -11,9 +12,17 @@ namespace SqlParser.SqlStandard
     {
         public static IParser<SqlToken, SqlKeywordNode> Keyword(params string[] words)
         {
-            var matchers = words.Select(w => Match<SqlToken>(t => t.IsKeyword(w))).ToList();
+            var matchers = words.Select(w => Match(t => t
+                .IsKeyword(w))).ToList();
             if (matchers.Count == 1)
-                return matchers.First().Transform(t => new SqlKeywordNode(t));
+                return matchers.First().Transform(t => 
+                    new SqlKeywordNode(t)).Examine(
+                        before: (p, i) =>
+                        {
+                            var next = i.Peek();
+                            Debug.WriteLine($"Before Keyword {words[0]} next={next?.Value}");
+                        },
+                    after: (p, i, r) => Debug.WriteLine($"After Keyword {words[0]} Success={r.Success}"));
             // TODO: Clean this up
             return new RuleParser<SqlToken, SqlKeywordNode>(matchers, r =>
             {
@@ -26,7 +35,8 @@ namespace SqlParser.SqlStandard
 
         public static IParser<SqlToken, SqlOperatorNode> Operator(string op)
         {
-            return Match<SqlToken>(t => t.IsSymbol(op)).Transform(t => new SqlOperatorNode(t));
+            return Match(t => t
+                .IsSymbol(op)).Transform(t => new SqlOperatorNode(t));
         }
 
         // TODO: Move these into the grammar
@@ -46,12 +56,12 @@ namespace SqlParser.SqlStandard
 
         public static IParser<SqlToken, SqlToken> Token(SqlTokenType type)
         {
-            return Match<SqlToken>(t => t.IsType(type));
+            return Match(t => t.IsType(type));
         }
 
         public static IParser<SqlToken, SqlToken> Token(SqlTokenType type, string value)
         {
-            return Match<SqlToken>(t => t.IsType(type) && t.Value == value);
+            return Match(t => t.IsType(type) && t.Value == value);
         }
 
     }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SqlParser.SqlServer
+namespace SqlParser.SqlStandard
 {
     public class Facts
     {

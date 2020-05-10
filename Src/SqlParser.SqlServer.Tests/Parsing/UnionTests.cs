@@ -2,8 +2,8 @@
 using System.Linq;
 using NUnit.Framework;
 using SqlParser.Ast;
-using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
+using SqlParser.SqlStandard;
 using SqlParser.Tokenizing;
 
 namespace SqlParser.SqlServer.Tests.Parsing
@@ -19,7 +19,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             string s = $"SELECT * FROM Table1 {op} SELECT * FROM Table2";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
             var o1 = result.ToString();
 
@@ -58,7 +58,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM Table1 UNION SELECT * FROM Table2 UNION ALL SELECT * FROM Table3;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             var output = result.ToString();
             result.Should().PassValidation().And.RoundTrip();
 

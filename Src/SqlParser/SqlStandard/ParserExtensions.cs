@@ -1,9 +1,8 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using ParserObjects;
+﻿using ParserObjects;
 using ParserObjects.Parsers;
 using SqlParser.Ast;
 using SqlParser.Tokenizing;
-using static ParserObjects.Parsers.ParserMethods;
+using static ParserObjects.Parsers.ParserMethods<SqlParser.Tokenizing.SqlToken>;
 using static SqlParser.SqlStandard.ParserMethods;
 
 namespace SqlParser.SqlStandard

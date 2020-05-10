@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using SqlParser.Ast;
-using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
+using SqlParser.SqlStandard;
 using SqlParser.Tokenizing;
 
 namespace SqlParser.SqlServer.Tests.Parsing
@@ -15,7 +15,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn DESC;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -46,7 +46,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable ORDER BY 1 DESC;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -77,7 +77,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn ASC;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -108,7 +108,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -138,7 +138,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -170,7 +170,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable ORDER BY MyColumn1 ASC, MyColumn2 DESC;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(

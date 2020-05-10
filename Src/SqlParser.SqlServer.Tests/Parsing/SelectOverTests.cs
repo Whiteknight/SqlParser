@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using SqlParser.Ast;
-using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
+using SqlParser.SqlStandard;
 using SqlParser.Tokenizing;
 
 namespace SqlParser.SqlServer.Tests.Parsing
@@ -15,7 +15,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT ROW_NUMBER() OVER (PARTITION BY ColumnA)";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -27,7 +27,8 @@ namespace SqlParser.SqlServer.Tests.Parsing
                         {
                             Expression = new SqlFunctionCallNode
                             {
-                                Name = new SqlIdentifierNode("ROW_NUMBER")
+                                Name = new SqlIdentifierNode("ROW_NUMBER"),
+                                Arguments = new SqlListNode<ISqlNode>()
                             },
                             PartitionBy = new SqlListNode<ISqlNode>
                             {
@@ -44,7 +45,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT AVG(ColumnA) OVER (ORDER BY ColumnA) FROM MyTable";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -56,7 +57,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
                         {
                             Expression = new SqlFunctionCallNode
                             {
-                                Name = new SqlKeywordNode("AVG"),
+                                Name = new SqlIdentifierNode("AVG"),
                                 Arguments = new SqlListNode<ISqlNode>
                                 {
                                     new SqlIdentifierNode("ColumnA")

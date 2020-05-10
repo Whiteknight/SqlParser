@@ -2,8 +2,8 @@
 using System.Linq;
 using NUnit.Framework;
 using SqlParser.Ast;
-using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
+using SqlParser.SqlStandard;
 using SqlParser.Tokenizing;
 
 namespace SqlParser.SqlServer.Tests.Parsing
@@ -17,7 +17,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT CASE 5 WHEN 6 THEN 'A' ELSE 'B' END;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
             var output = result.ToString();
 
@@ -49,7 +49,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT CASE ValueA WHEN 6 THEN 'A' ELSE 'B' END AS ColumnA, ColumnB;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(

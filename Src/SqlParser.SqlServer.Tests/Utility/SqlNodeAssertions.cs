@@ -7,10 +7,10 @@ using FluentAssertions;
 using FluentAssertions.Common;
 using FluentAssertions.Primitives;
 using SqlParser.Ast;
-using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Stringify;
 using SqlParser.SqlServer.Symbols;
 using SqlParser.SqlServer.Validation;
+using SqlParser.SqlStandard;
 using SqlParser.Symbols;
 
 namespace SqlParser.SqlServer.Tests.Utility

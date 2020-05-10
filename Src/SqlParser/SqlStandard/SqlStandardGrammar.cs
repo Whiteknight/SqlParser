@@ -1,25 +1,22 @@
-﻿using System.Linq;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using ParserObjects;
 using ParserObjects.Parsers;
 using SqlParser.Ast;
 using SqlParser.Tokenizing;
-using static ParserObjects.Parsers.ParserMethods;
+using static ParserObjects.Parsers.ParserMethods<SqlParser.Tokenizing.SqlToken>;
 using static SqlParser.SqlStandard.ParserMethods;
 
 namespace SqlParser.SqlStandard
 {
-    public class SqlStandardGrammar
+    public static class SqlStandardGrammar
     {
-        private readonly IParser<SqlToken, ISqlNode> _parser;
+        private static readonly Lazy<IParser<SqlToken, ISqlNode>> _parser = new Lazy<IParser<SqlToken, ISqlNode>>(InitializeParser);
 
-        public SqlStandardGrammar()
-        {
-            _parser = InitializeParser();
-        }
+        public static IParser<SqlToken, ISqlNode> GetParser() => _parser.Value;
 
-        public IParser<SqlToken, ISqlNode> GetParser() => _parser;
-
-        private IParser<SqlToken, ISqlNode> InitializeParser()
+        private static IParser<SqlToken, ISqlNode> InitializeParser()
         {
             var identifierToken = Token(SqlTokenType.Identifier);
             var identifier = identifierToken.Transform(t => new SqlIdentifierNode(t));
@@ -28,13 +25,25 @@ namespace SqlParser.SqlStandard
             var dot = Token(SqlTokenType.Symbol, ".");
             var star = Operator("*");
             var comma = Token(SqlTokenType.Symbol, ",");
+            var equals = Token(SqlTokenType.Symbol, "=").Transform(t => new SqlOperatorNode(t));
+            var assignmentOperator = Match(t => t.IsSymbol("=", "+=", "-=", "*=", "/=", "%=", "&=", "^=", "|=")).Transform(t => new SqlOperatorNode(t));
             var identifierOrKeywordAsIdentifier = First(identifierToken, keywordToken).Transform(t => new SqlIdentifierNode(t));
             var number = Token(SqlTokenType.Number).Transform(t => new SqlNumberNode(t));
             var openParen = Token(SqlTokenType.Symbol, "(");
             var closeParen = Token(SqlTokenType.Symbol, ")");
-            var quotedString = Token(SqlTokenType.QuotedString).Transform(t => new SqlStringNode(t));
+            var quotedString = Token(SqlTokenType.QuotedString).Transform(t => new SqlStringNode(t))
+                .Examine(
+                    before: (p, i) =>
+                    {
+                        Debug.WriteLine("Entering quotedString");
+                    },
+                    after: (p, i, r) =>
+                    {
+                        Debug.WriteLine($"After quotedString: {r.Success} {r.Value?.Value}");
+                    }
+                );
             var variable = Token(SqlTokenType.Variable).Transform(t => new SqlVariableNode(t));
-            var constant = First<SqlToken, ISqlNode>(
+            var constant = First<ISqlNode>(
                 quotedString,
                 number
             );
@@ -42,18 +51,23 @@ namespace SqlParser.SqlStandard
                 variable,
                 constant
             );
-            var queryExpressionInternal = Empty<SqlToken>().Transform(x => (ISqlNode) null);
+            var variableOrNumber = First<ISqlNode>(
+                variable,
+                number
+            );
+            
+            var queryExpressionInternal = Empty().Transform(x => (ISqlNode) null);
             var queryExpression = Deferred(() => queryExpressionInternal);
 
-            var booleanExpressionInternal = Empty<SqlToken>().Transform(x => (ISqlNode) null);
+            var booleanExpressionInternal = Empty().Transform(x => (ISqlNode) null);
             var booleanExpression = Deferred(() => booleanExpressionInternal);
-            var scalarExpressionInternal = Empty<SqlToken>().Transform(x => (ISqlNode)null);
+            var scalarExpressionInternal = Empty().Transform(x => (ISqlNode)null);
             var scalarExpression = Deferred(() => scalarExpressionInternal);
 
             var qualifierDotIdentifier = Rule(
                 identifierOrKeywordAsIdentifier,
                 dot,
-                First<SqlToken, ISqlNode>(
+                First<ISqlNode>(
                     star,
                     identifierOrKeywordAsIdentifier
                 ),
@@ -67,6 +81,10 @@ namespace SqlParser.SqlStandard
             var qualifiedIdentifier = First(
                 qualifierDotIdentifier,
                 identifierOrKeywordAsIdentifier
+            );
+            var variableOrQualifiedIdentifier = First(
+                variable,
+                qualifiedIdentifier
             );
 
             var countStarFunctionCall = Rule(
@@ -82,15 +100,13 @@ namespace SqlParser.SqlStandard
                 }
             );
 
-            var dataTypeSize = Parenthesized(
-                First<SqlToken, ISqlNode>(
+            var dataTypeSize = First<ISqlNode>(
                     Keyword("MAX"),
                     number.ListSeparatedBy(comma, true).Transform(n => new SqlListNode<SqlNumberNode>(n.ToList()))
-                )
-            );
+                ).Parenthesized().Transform(p => p.Expression);
 
             var dataType = Rule(
-                Match<SqlToken>(t => t.IsKeyword()).Transform(k => new SqlKeywordNode(k)),
+                keyword,
                 dataTypeSize.Optional(),
                 (n, s) => new SqlDataTypeNode {
                     Location = n.Location,
@@ -114,56 +130,64 @@ namespace SqlParser.SqlStandard
                 }
             );
 
-            var functionCall = First<SqlToken, ISqlNode>(
+            var functionCall = First<ISqlNode>(
                 countStarFunctionCall,
                 castFunctionCall,
                 Rule(
-                    First<SqlToken, ISqlNode>(
+                    First<ISqlNode>(
                         keyword,
                         identifier
                     ),
-                    scalarExpression.List().Transform(args => new SqlListNode<ISqlNode>(args.ToList())).Parenthesized(),
+                    scalarExpression.ListSeparatedBy(comma).Transform(args => new SqlListNode<ISqlNode>(args.ToList())).Parenthesized(),
                     (name, args) => new SqlFunctionCallNode
                     {
                         Location = name.Location,
                         Name = name,
                         Arguments = args?.Expression
                     }
-                )
+                ).Examine(before: (p, i) =>
+                {
+                },
+                after: (p, i, r) =>
+                {
+                })
             );
 
-            var nullTerm = Match<SqlToken>(t => t.IsKeyword("NULL")).Transform(t => new SqlNullNode(t));
+            var nullTerm = Match(t => t.IsKeyword("NULL")).Transform(t => new SqlNullNode(t));
 
             var scalarTerm = First(
-                nullTerm,
                 variable,
                 quotedString,
                 number,
                 functionCall,
                 qualifiedIdentifier,
                 queryExpression.Parenthesized(),
-                scalarExpression.Parenthesized()
+                scalarExpression.Parenthesized().Transform(p => p.Expression)
             );
-                
-            // TODO: Make this rule property recursive (right-associative)
-            var arithmeticPrefix = First<SqlToken, ISqlNode>(
+
+            // TODO: Make this rule properly recursive (right-associative) (NULL doesn't recurse and can't have the operators applied)
+            var arithmeticPrefixOperator = Match(t => t.IsSymbol("-", "+", "~")).Transform(t => new SqlOperatorNode(t));
+            var arithmeticPrefixInternal = Empty().Transform(t => (ISqlNode)null);
+            var arithmeticPrefix = Deferred(() => arithmeticPrefixInternal);
+            arithmeticPrefixInternal = First(
+                nullTerm, 
+                scalarTerm,
                 Rule(
-                    Match<SqlToken>(t => t.IsSymbol("-", "+", "~")).Transform(t => new SqlOperatorNode(t)),
-                    scalarTerm,
+                    arithmeticPrefixOperator,
+                    arithmeticPrefix,
                     (op, expr) => new SqlPrefixOperationNode {
                         Location = op.Location,
                         Operator = op,
                         Right = expr
                     }
-                ),
-                scalarTerm
+                )
             );
 
             var multiplicative = LeftApply(
                 arithmeticPrefix,
                 left => Rule(
                     left,
-                    Match<SqlToken>(t => t.IsSymbol("*", "/", "%")).Transform(t => new SqlOperatorNode(t)),
+                    Match(t => t.IsSymbol("*", "/", "%")).Transform(t => new SqlOperatorNode(t)),
                     arithmeticPrefix,
                     (l, op, r) => new SqlInfixOperationNode
                     {
@@ -179,7 +203,7 @@ namespace SqlParser.SqlStandard
                 multiplicative,
                 left => Rule(
                     left,
-                    Match<SqlToken>(t => t.IsSymbol("+", "-", "&", "^", "|")).Transform(t => new SqlOperatorNode(t)),
+                    Match(t => t.IsSymbol("+", "-", "&", "^", "|")).Transform(t => new SqlOperatorNode(t)),
                     multiplicative,
                     (l, op, r) => new SqlInfixOperationNode
                     {
@@ -229,31 +253,53 @@ namespace SqlParser.SqlStandard
             var caseExpression = First(
                 caseBlock,
                 additive
+            ).Examine(
+                before: (p, i) =>
+                {
+                    Debug.WriteLine("Entering caseExpression");
+                },
+                after: (p, i, r) =>
+                {
+                    Debug.WriteLine($"After caseExpression: {r.Success}");
+                }
             );
 
             scalarExpressionInternal = caseExpression;
 
-            var booleanComparison = Match<SqlToken>(t => t.IsSymbol(">", "<", "=", "<=", ">=", "!=", "<>")).Transform(t => new SqlOperatorNode(t));
+            var booleanComparison = Match(t => t.IsSymbol(">", "<", "=", "<=", ">=", "!=", "<>")).Transform(t => new SqlOperatorNode(t));
             var booleanComparisonModifier = First(
                 Keyword("ALL"),
                 Keyword("ANY"),
                 Keyword("SOME")
             );
 
+            // TODO: Left apply Zero or One
             var booleanTerm = LeftApply(
                 scalarExpression,
-                left => First<SqlToken, ISqlNode>(
+                left => First<ISqlNode>(
                     Rule(
                         left,
                         booleanComparison,
-                        booleanComparisonModifier,
-                        queryExpression,
+                        booleanComparisonModifier.Optional(),
+                        queryExpression.Parenthesized(),
                         (l, comp, mod, query) => new SqlInfixOperationNode
                         {
                             Location = l.Location,
                             Left = l,
                             Right = query,
-                            Operator = new SqlOperatorNode($"{comp.Operator} {mod.Keyword}", comp.Location)
+                            Operator = mod != null ? new SqlOperatorNode($"{comp.Operator} {mod.Keyword}", comp.Location) : comp
+                        }
+                    ),
+                    Rule(
+                        left,
+                        booleanComparison,
+                        scalarExpression,
+                        (l, comp, r) => new SqlInfixOperationNode
+                        {
+                            Location = l.Location,
+                            Left = l,
+                            Right = r,
+                            Operator = comp
                         }
                     ),
                     Rule(
@@ -291,7 +337,7 @@ namespace SqlParser.SqlStandard
                     ),
                     Rule(
                         left,
-                        Keyword("NOT").Optional(), 
+                        Keyword("NOT").Optional(),
                         Keyword("IN"),
                         variableOrConstant.ListSeparatedBy(comma, true).Transform(l => new SqlListNode<ISqlNode>(l.ToList())).Parenthesized(),
                         (l, not, @in, values) => new SqlInNode
@@ -306,14 +352,20 @@ namespace SqlParser.SqlStandard
                         left,
                         Keyword("NOT").Optional(),
                         Keyword("LIKE"),
-                        quotedString.MaybeParenthesized(),
-                        (l, not, like, pattern) => new SqlOperatorNode
+                        quotedString.MaybeParenthesized().Transform(p => p.Expression),
+                        (l, not, like, pattern) => new SqlInfixOperationNode
                         {
-                            Location = like.Location,
-                            Operator = (not != null ? "NOT " : "") + "LIKE"
+                            Left = l,
+                            Operator = new SqlOperatorNode
+                            {
+                                Location = like.Location,
+                                Operator = (not != null ? "NOT " : "") + "LIKE",
+                            },
+                            Right = pattern
                         }
                     )
-                )
+                ),
+                ApplyArity.ZeroOrOne
             );
 
             var existsExpression = Rule(
@@ -329,14 +381,21 @@ namespace SqlParser.SqlStandard
 
             var booleanExists = First(
                 existsExpression,
-                booleanTerm
-            ).MaybeParenthesized();
+                // If we see a '(' at this point, it might be "(5) = 5" or it might be "(5 == 5)", so we 
+                // go to <booleanTerm> first because the scalar parser will cover the first case. Otherwise
+                // we fallback to Parenthesized(<booleanExpression>) to try it that way. Extra backtracking
+                // but it's what we have to do.
+                booleanTerm,
+                Parenthesized(
+                    booleanExpression
+                ).Transform(p => p.Expression)
+            );
 
             var invertedBoolean = Rule(
                 Keyword("NOT").Optional(),
-                existsExpression,
+                booleanExists,
                 (not, expr) => not == null
-                    ? expr
+                    ? (ISqlNode)expr
                     : new SqlPrefixOperationNode
                     {
                         Operator = new SqlOperatorNode(not.Keyword, not.Location),
@@ -345,12 +404,12 @@ namespace SqlParser.SqlStandard
                     }
             );
 
-            var combinedBoolean = LeftApply<SqlToken, ISqlNode>(
+            var combinedBoolean = LeftApply<ISqlNode>(
                 invertedBoolean,
                 left =>
                     Rule(
                         left,
-                        Match<SqlToken>(t => t.IsKeyword("AND", "OR")).Transform(t => new SqlOperatorNode(t)),
+                        Match(t => t.IsKeyword("AND", "OR")).Transform(t => new SqlOperatorNode(t)),
                         invertedBoolean,
                         (l, op, r) => new SqlInfixOperationNode
                         {
@@ -370,7 +429,7 @@ namespace SqlParser.SqlStandard
             ).Optional();
 
             var orderColumn = Rule(
-                First<SqlToken, ISqlNode>(
+                First<ISqlNode>(
                     qualifiedIdentifier,
                     number
                 ),
@@ -378,21 +437,11 @@ namespace SqlParser.SqlStandard
                 (col, dir) => new SqlOrderByEntryNode
                 {
                     Source = col,
-                    Direction = dir?.Keyword ?? "ASC",
+                    Direction = dir?.Keyword,
                     Location = col.Location
                 }
             );
             var orderColumnList = orderColumn.ListSeparatedBy(comma, true);
-
-            var selectOrderByClause = Rule(
-                Keyword("ORDER", "BY"),
-                orderColumnList,
-                (k, cols) => new SqlOrderByNode
-                {
-                    Location = k.Location,
-                    Entries = new SqlListNode<SqlOrderByEntryNode>(cols.ToList())
-                }
-            ).Optional();
 
             var rowOrRows = First(
                 Keyword("ROW"),
@@ -418,13 +467,43 @@ namespace SqlParser.SqlStandard
                 (o, qty, r) => qty
             ).Optional();
 
-            
-
-            
+            var selectOrderByClause = Rule(
+                Keyword("ORDER", "BY"),
+                orderColumnList,
+                (k, cols) => new SqlOrderByNode
+                {
+                    // TODO: Integrate offset/fetch into this
+                    Location = k.Location,
+                    Entries = new SqlListNode<SqlOrderByEntryNode>(cols.ToList())
+                }
+            ).Optional();
 
             var objectIdentifier = identifier
                 .ListSeparatedBy(dot, 1, 4)
                 .Transform(i => new SqlObjectIdentifierNode(i.ToList()));
+            var variableOrObjectIdentifier = First<ISqlNode>(
+                variable,
+                objectIdentifier
+            );
+            var maybeAliasedTable = LeftApply<ISqlNode>(
+                objectIdentifier,
+                left => Rule(
+                    left,
+                    Keyword("AS"),
+                    identifier,
+                    Parenthesized(
+                        identifier.ListSeparatedBy(comma, true).Transform(l => new SqlListNode<SqlIdentifierNode>(l.ToList()))
+                    ).Optional(),
+                    (source, a, alias, columns) => new SqlAliasNode
+                    {
+                        Location = source.Location,
+                        Source = source,
+                        Alias = alias,
+                        ColumnNames = columns?.Expression
+                    }
+                ),
+                ApplyArity.ZeroOrOne
+            );
 
             var valuesClause = Rule(
                 Keyword("VALUES"),
@@ -441,18 +520,35 @@ namespace SqlParser.SqlStandard
                 }
             );
 
-            IParser<SqlToken, SqlSelectNode> selectQueryInternal = null;
-            var selectQuery = Deferred(() => selectQueryInternal);
-
-            var subexpression = First<SqlToken, ISqlNode>(
-                selectQuery,
+            var subexpression = First<ISqlNode>(
+                queryExpression,
                 valuesClause
             ).Parenthesized();
 
-            var tableOrSubexpression = First<SqlToken, ISqlNode>(
+            var tableOrSubexpression = First<ISqlNode>(
                 objectIdentifier,
                 variable,
                 subexpression
+            );
+
+            var maybeAliasedTableOrSubexpression = LeftApply(
+                tableOrSubexpression,
+                left => Rule(
+                    left,
+                    Keyword("AS").Optional(),
+                    identifier,
+                    Parenthesized(
+                        identifier.ListSeparatedBy(comma, true).Transform(l => new SqlListNode<SqlIdentifierNode>(l.ToList()))
+                    ).Optional(),
+                    (source, a, alias, columns) => new SqlAliasNode
+                    {
+                        Location = source.Location,
+                        Source = source,
+                        Alias = alias,
+                        ColumnNames = columns?.Expression
+                    }
+                ),
+                ApplyArity.ZeroOrOne
             );
 
             var joinOperatorRequiringOnClause = First(
@@ -460,6 +556,7 @@ namespace SqlParser.SqlStandard
                 Keyword("CROSS", "JOIN").Transform(k => new SqlOperatorNode(k.Keyword, k.Location)),
                 Keyword("INNER", "JOIN").Transform(k => new SqlOperatorNode(k.Keyword, k.Location)),
                 Keyword("OUTER", "APPLY").Transform(k => new SqlOperatorNode(k.Keyword, k.Location)),
+                // TODO: hints: "MERGE" | "HASH" | "REDISTRIBUTE" | "REPLICATE" | "REDUCE"
                 Rule(
                     First(
                         Token(SqlTokenType.Keyword, "FULL"),
@@ -475,8 +572,6 @@ namespace SqlParser.SqlStandard
                 Keyword("NATURAL", "JOIN").Transform(k => new SqlOperatorNode(k.Keyword, k.Location))
             );
 
-            
-
             var joinCondition = Rule(
                 Keyword("ON"),
                 booleanExpression,
@@ -484,12 +579,14 @@ namespace SqlParser.SqlStandard
             );
 
             var join = LeftApply(
-                tableOrSubexpression,
+                maybeAliasedTableOrSubexpression,
+                // TODO: <TableExpression> ("WITH" <Hint>)?
+                // TODO: Aliased table expressions
                 left => First(
                     Rule(
                         left,
                         joinOperatorRequiringOnClause,
-                        tableOrSubexpression,
+                        maybeAliasedTableOrSubexpression,
                         joinCondition,
                         (l, op, r, cond) => new SqlJoinNode
                         {
@@ -503,7 +600,7 @@ namespace SqlParser.SqlStandard
                     Rule(
                         left,
                         joinOperatorNotRequiringOnClause,
-                        tableOrSubexpression,
+                        maybeAliasedTableOrSubexpression,
                         (l, op, r) => new SqlJoinNode
                         {
                             Location = l.Location,
@@ -531,53 +628,120 @@ namespace SqlParser.SqlStandard
                 orderColumnList.Transform(l => new SqlListNode<SqlOrderByEntryNode>(l.ToList())),
                 (k, cols) => cols
             );
+
             // TODO: This
-            var overRows = Empty<SqlToken>().Transform(x => (ISqlNode)null);
+            var overRows = Empty().Transform(x => (ISqlNode)null);
 
-
-            var selectColumnOverExpression = Rule(
-                Keyword("OVER"),
-                openParen,
-                overPartition.Optional(),
-                overOrderBy.Optional(),
-                overRows.Optional(),
-                closeParen,
-                (k, o, p, ob, r, c) => new SqlOverNode {
-                    Location = k.Location,
-                    // TODO: HAve to invert this, the column has an over, not the over has an expression
-                    Expression = null,
-                    PartitionBy = p,
-                    OrderBy = ob,
-                    RowsRange = r
-                }
+            var variableColumn = First<ISqlNode>(
+                Rule(
+                    variable,
+                    Match(t => t.IsSymbol("=")).Transform(t => new SqlOperatorNode(t)),
+                    scalarExpression,
+                    (var, op, expr) => new SqlInfixOperationNode
+                    {
+                        Location = var.Location,
+                        Left = var,
+                        Operator = op,
+                        Right = expr
+                    }
+                ),
+                variable
             );
 
-            var selectColumnExpression = Rule(
+            // TODO: Create an SqlSelectColumnNode
+            var selectColumnExpression = LeftApply(
                 scalarExpression,
-                selectColumnOverExpression.Optional(),
-                // TODO: Need to account for OVER
-                // TODO: Create an SqlSelectColumnNode
-                (expr, over) => expr
+                left => Rule(
+                    left,
+                    Keyword("OVER"),
+                    openParen,
+                    overPartition.Optional(),
+                    overOrderBy.Optional(),
+                    overRows.Optional(),
+                    closeParen,
+                    (l, k, o, p, ob, r, c) => new SqlOverNode
+                    {
+                        Location = k.Location,
+                        // TODO: HAve to invert this, the column has an over, not the over has an expression
+                        Expression = l,
+                        PartitionBy = p,
+                        OrderBy = ob,
+                        RowsRange = r
+                    }
+                )
             );
 
-            var selectColumn = First(
-                star,
-                // TODO: <variable> ('=' <scalarExpression>)?
-
-                // TODO: maybe aliased
+            var aliasableColumn = First(
+                variableColumn,
                 selectColumnExpression
             );
 
-            var selectColumnList = selectColumn.ListSeparatedBy(comma, true).Transform(l => new SqlListNode<ISqlNode>(l.ToList()));
+            // TODO: Left apply zero or more
+            var maybeAliasedColumn = LeftApply(
+                aliasableColumn,
+                left => Rule(
+                    left,
+                    Keyword("AS"),
+                    identifier,
+                    (col, asOp, name) => new SqlAliasNode
+                    {
+                        Location = col.Location,
+                        Source = col,
+                        Alias = name
+                    }
+                )
+            );
+                
+
+            var selectColumn = First(
+                star,
+                maybeAliasedColumn
+            )
+                .Examine(
+                    before: (p, i) =>
+                    {
+                        Debug.WriteLine("Entering selectColumn");
+                    },
+                    after: (p, i, r) =>
+                    {
+                        Debug.WriteLine($"After selectColumn: {r.Success}");
+                    }
+                );
+
+            var selectColumnList = selectColumn
+                .ListSeparatedBy(comma, true)
+                .Transform(l => new SqlListNode<ISqlNode>(l.ToList()))
+                .Examine(
+                    before: (p, i) =>
+                    {
+                        Debug.WriteLine("Entering selectColumnList");
+                    },
+                    after: (p, i, r) =>
+                    {
+                        Debug.WriteLine($"After selectColumnList: {r.Success}");
+                    }
+                );
 
             var selectHavingClause = Rule(
                 Keyword("HAVING"),
                 booleanExpression,
                 (k, expr) => expr
             );
-            // TODO: TOP clause (is that in standard or only T-SQL?)
 
-            var selectWhereClause = Rule(
+            var selectTopClause = Rule(
+                Keyword("TOP"),
+                variableOrNumber.MaybeParenthesized().Transform(p => p.Expression),
+                Keyword("PERCENT").Optional(),
+                Keyword("WITH", "TIES").Optional(),
+                (top, expr, percent, withTies) => new SqlTopLimitNode {
+                    Location = top.Location,
+                    Value = expr,
+                    Percent = percent != null,
+                    WithTies = withTies != null
+                }
+            );
+
+            var whereClause = Rule(
                 Keyword("WHERE"),
                 booleanExpression,
                 (k, expr) => expr
@@ -592,74 +756,494 @@ namespace SqlParser.SqlStandard
             var selectModifier = First(
                 Keyword("ALL"),
                 Keyword("DISTINCT")
-            ).Optional();
+            );
+
+            var keywordSelect = Keyword("SELECT");
+
+            var selectClause = Rule(
+                keywordSelect,
+                selectModifier.Optional(),
+                selectTopClause.Optional(),
+                selectColumnList,
+                (select, mod, top, columns) => new
+                {
+                    Select = select,
+                    Modifiers = mod,
+                    Top = top,
+                    Columns = columns
+                }
+            );
 
             // TODO: Need to reduce the size of this list to 9 or less
             var querySpecification = Rule(
-                Keyword("SELECT"),
-                //selectModifier,
-                // TODO: TOP
-                selectColumnList,
-                selectFromClause,
-                selectWhereClause,
-                selectGroupByClause,
-                selectHavingClause,
-                selectOrderByClause,
-                selectOffsetClause,
-                selectFetchClause,
-                (k, /*mod,*/ cols, from, where, gb, having, ob, offset, fetch) => new SqlSelectNode
+                selectClause,
+                selectFromClause.Optional(),
+                whereClause.Optional(),
+                selectGroupByClause.Optional(),
+                selectHavingClause.Optional(),
+                selectOrderByClause.Optional(),
+                selectOffsetClause.Optional(),
+                selectFetchClause.Optional(),
+                (select, from, where, gb, having, orderBy, offset, fetch) => new SqlSelectNode
                 {
-                    Location = k.Location,
-                    // TODO: "ALL"|"DISTINCT"
-                    // TODO: TOP
-                    //Modifier = mod,
-                    Columns = cols,
+                    Location = select.Select.Location,
+                    TopLimitClause = select.Top,
+                    // TODO: .Modifier should be an SqlKeywordNode
+                    Modifier = select.Modifiers?.Keyword,
+                    Columns = select.Columns,
                     FromClause = from,
                     WhereClause = where,
                     GroupByClause = gb,
                     HavingClause = having,
-                    OrderByClause = ob,
+                    OrderByClause = orderBy,
                     OffsetClause = offset,
                     FetchClause = fetch
                 }
-            );
+            )
+                .Examine(
+                    before: (p, i) =>
+                    {
+                        Debug.WriteLine("Entering querySpecification");
+                    },
+                    after: (p, i, r) =>
+                    {
+                        Debug.WriteLine($"After querySpecification: {r.Success}");
+                    }
+                );
 
             var unionOperator = First(
-                Keyword("UNION", "ALL"),
-                Keyword("UNION"),
-                Keyword("EXCEPT"),
-                Keyword("INTERSECT")
-            ).Transform(k => new SqlOperatorNode(k.Keyword, k.Location));
+                    Keyword("UNION", "ALL"),
+                    Keyword("UNION"),
+                    Keyword("EXCEPT"),
+                    Keyword("INTERSECT")
+                )
+                .Transform(k => new SqlOperatorNode(k.Keyword, k.Location));
 
-            queryExpressionInternal = LeftApply<SqlToken, ISqlNode>(
+            queryExpressionInternal = RightApply<SqlOperatorNode, ISqlNode>(
                 querySpecification,
-                left => Rule(
-                    left,
-                    unionOperator,
-                    querySpecification,
-                    (l, op, r) => new SqlInfixOperationNode
+                unionOperator,
+                (l, op, r) => new SqlInfixOperationNode
+                {
+                    Location = l.Location,
+                    Left = l,
+                    Operator = op,
+                    Right = r
+                }
+            ).Examine(
+                    before: (p, i) =>
                     {
-                        Location = l.Location,
-                        Left = l,
-                        Operator = op,
-                        Right = r
+                        Debug.WriteLine("Entering queryExpression");
+                    },
+                    after: (p, i, r) =>
+                    {
+                        Debug.WriteLine($"After queryExpression: {r.Success}");
+                    }
+                )
+
+            ;
+
+            var deleteStatement = Rule(
+                Keyword("DELETE", "FROM"),
+                // TODO: TOP clause
+                objectIdentifier,
+                whereClause,
+                // TODO: OUTPUT clause
+                (delete, id, where) => new SqlDeleteNode
+                {
+                    Location = delete.Location,
+                    Source = id,
+                    WhereClause = where
+                }
+            );
+
+            var insertColumnList = identifier
+                .ListSeparatedBy(comma, true)
+                .Transform(l => new SqlListNode<SqlIdentifierNode>(l.ToList()))
+                .Parenthesized();
+
+            var valuesLiteral = Rule(
+                Keyword("VALUES"),
+                variableOrConstant
+                    .ListSeparatedBy(comma, true)
+                    .Transform(t => new SqlListNode<ISqlNode>(t.ToList()))
+                    .Parenthesized()
+                    .Transform(p => p.Expression)
+                    .ListSeparatedBy(comma, true)
+                    .Transform(t => new SqlListNode<SqlListNode<ISqlNode>>(t.ToList())),
+                (values, list) => new SqlValuesNode
+                {
+                    Location = values.Location,
+                    Values = list
+                }
+            );
+
+            var insertSource = First(
+                valuesLiteral,
+                queryExpression
+                // TODO: EXEC/EXECUTE
+                // TODO: DEFAULT VALUES
+            );
+
+            var insertStatement = Rule(
+                Keyword("INSERT", "INTO"),
+                objectIdentifier,
+                insertColumnList,
+                insertSource,
+                (insertInto, table, columns, source) => new SqlInsertNode
+                {
+                    Location = insertInto.Location,
+                    Table = table,
+                    Columns = columns.Expression,
+                    Source = source
+                }
+            );
+
+            var updateColumnAssignExpression = Rule(
+                variableOrQualifiedIdentifier,
+                assignmentOperator,
+                First(
+                    Keyword("DEFAULT"),
+                    scalarExpression
+                ),
+                (name, op, expr) => new SqlInfixOperationNode
+                {
+                    Left = name,
+                    Location = name.Location,
+                    Operator = op,
+                    Right = expr
+                }
+            );
+
+            var updateSetClause = Rule(
+                Keyword("SET"),
+                updateColumnAssignExpression.ListSeparatedBy(comma, true).Transform(l => new SqlListNode<SqlInfixOperationNode>(l.ToList())),
+                (set, assigns) => assigns
+            );
+
+            var updateStatement = Rule(
+                Keyword("UPDATE"),
+                // TODO: TOP clause
+                // TODO: Alias
+                variableOrObjectIdentifier,
+                updateSetClause,
+                // TODO: OUTPUT clause
+                whereClause,
+                (update, table, set, where) => new SqlUpdateNode
+                {
+                    Location = update.Location,
+                    Source = table,
+                    SetClause = set,
+                    WhereClause = where
+                }
+            );
+
+            var mergeOnMatched = First<ISqlNode>(
+                Rule(
+                    Keyword("UPDATE"),
+                    updateSetClause,
+                    (update, set) => new SqlUpdateNode
+                    {
+                        Location = update.Location,
+                        SetClause = set
+                    }
+                ),
+                Keyword("DELETE")
+            );
+            var mergeOnNotMatched = Rule(
+                Keyword("INSERT"),
+                insertColumnList,
+                Keyword("VALUES"),
+                scalarExpression
+                    .ListSeparatedBy(comma, true)
+                    .Transform(t => new SqlListNode<ISqlNode>(t.ToList()))
+                    .Parenthesized()
+                    .Transform(p => p.Expression)
+                    .ListSeparatedBy(comma, true)
+                    .Transform(t => new SqlListNode<SqlListNode<ISqlNode>>(t.ToList())),
+                (insert, columns, values, exprs) => new SqlInsertNode
+                {
+                    Location = insert.Location,
+                    Columns = columns.Expression,
+                    Source = exprs
+                }
+            );
+
+            var mergeMatchedClause = Rule(
+                Keyword("WHEN"),
+                Keyword("MATCHED"),
+                // TODO: "AND" <clauseSearchCondition>
+                Keyword("THEN"),
+                mergeOnMatched,
+                (when, matched, then, onMatched) => new SqlKeywordNode("WHEN MATCHED", when.Location)
+            );
+            var mergeNotMatchedByTarget = First(
+                Rule(
+                    Keyword("WHEN"),
+                    Keyword("NOT"),
+                    Keyword("MATCHED"),
+                    Keyword("BY"),
+                    Keyword("TARGET"),
+                    // TODO: "AND" <clauseSearchCondition>
+                    Keyword("THEN"),
+                    mergeOnNotMatched,
+                    (when, not, matched, by, target, then, onNotMatched) => new SqlKeywordNode("WHEN NOT MATCHED BY TARGET")
+                ),
+                Rule(
+                    Keyword("WHEN"),
+                    Keyword("NOT"),
+                    Keyword("MATCHED"),
+                    // TODO: "AND" <clauseSearchCondition>
+                    Keyword("THEN"),
+                    mergeOnNotMatched,
+                    (when, not, matched, then, onNotMatched) => new SqlKeywordNode("WHEN NOT MATCHED")
+                )
+            );
+
+            var mergeNotMatchedBySource = Rule(
+                Keyword("WHEN"),
+                Keyword("NOT"),
+                Keyword("MATCHED"),
+                Keyword("BY"),
+                Keyword("SOURCE"),
+                // TODO: "AND" <clauseSearchCondition>
+                Keyword("THEN"),
+                mergeOnMatched,
+                (when, not, matched, by, source, then, onMatched) => new SqlKeywordNode("WHEN NOT MATCHED BY SOURCE")
+            );
+
+            var mergeMatchingClause = First(
+                mergeMatchedClause,
+                mergeNotMatchedByTarget,
+                mergeNotMatchedBySource
+            );
+
+            var mergeIntoClause = Rule(
+                Keyword("INTO").Optional(),
+                maybeAliasedTable,
+                (into, table) => table
+            );
+            var mergeUsingClause = Rule(
+                Keyword("USING"),
+                maybeAliasedTable,
+                (u, table) => table
+            );
+            var mergeOnClause = Rule(
+                Keyword("ON"),
+                booleanExpression,
+                (on, cond) => cond
+            );
+
+            var mergeStatement = Rule(
+                Keyword("MERGE"),
+                mergeIntoClause,
+                mergeUsingClause,
+                mergeOnClause,
+                mergeMatchingClause.List(true),
+                // TODO: Output clause
+                // TODO: OPTION clause
+                (merge, into, u, on, matched) => new SqlMergeNode
+                {
+                    Location = merge.Location,
+                    Target = into, 
+                    Source = u,
+                    MergeCondition = on
+                    // TODO: Change the node to accept multiple matching clauses
+                    //Matched = matched,
+                    //NotMatchedByTarget = nmbt,
+                    //NotMatchedBySource = nmbs
+                }
+            );
+
+            var withCte = Rule(
+                identifier,
+                identifier.ListSeparatedBy(comma, true).Transform(l => new SqlListNode<SqlIdentifierNode>(l.ToList())).Parenthesized().Optional(),
+                Keyword("AS"),
+                queryExpression.Parenthesized(),
+                (id, cols, a, query) =>
+                {
+                    var cte = new SqlWithCteNode
+                    {
+                        Location = id.Location,
+                        Name = id,
+                        ColumnNames = cols?.Expression,
+                        Select = query
+                    };
+                    cte.DetectRecursion();
+                    return cte;
+                }
+            );
+
+            var withChildStatement = First(
+                queryExpression,
+                deleteStatement,
+                insertStatement,
+                updateStatement,
+                mergeStatement
+            );
+
+            var withStatement = Rule(
+                Keyword("WITH"),
+                withCte.ListSeparatedBy(comma).Transform(c => new SqlListNode<SqlWithCteNode>(c.ToList())),
+                withChildStatement,
+                (with, ctes, child) => new SqlWithNode
+                {
+                    Location = with.Location,
+                    Ctes = ctes,
+                    Statement = child
+                }
+            );
+
+            var assignmentExpression = Rule(
+                Match(t => t.IsSymbol("=")),
+                scalarExpression,
+                (eq, expr) => expr
+            );
+
+            var declareStatement = Rule(
+                // TODO: "DECLARE" <variable> <DataType> ("=" <Expression>)? ("," <variable> <DataType> ("=" <Expression>)?)*
+                Keyword("DECLARE"),
+                variable,
+                dataType,
+                assignmentExpression.Optional(),
+                (declare, vari, type, init) => new SqlDeclareNode
+                {
+                    Location = declare.Location,
+                    Variable = vari,
+                    DataType = type,
+                    Initializer = init
+                }
+            );
+
+            var setStatement = Rule(
+                Keyword("SET"),
+                variable,
+                assignmentOperator,
+                scalarExpression,
+                (set, v, op, expr) => new SqlSetNode
+                {
+                    Location = set.Location,
+                    Variable = v,
+                    Operator = op,
+                    Right = expr
+                }
+            );
+
+            var outputKeyword = First(
+                Keyword("OUTPUT"),
+                Keyword("OUT")
+            );
+            var maybeOutputKeyword = outputKeyword.Optional();
+
+            var execArgument = First(
+                Keyword("DEFAULT").Transform(k =>
+                    new SqlExecuteArgumentNode
+                    {
+                        Location = k.Location,
+                        Value = k
+                    }
+                ),
+                Rule(
+                    variable,
+                    equals,
+                    scalarExpression,
+                    maybeOutputKeyword,
+                    (v, eq, expr, output) => new SqlExecuteArgumentNode
+                    {
+                        Location = v.Location,
+                        AssignVariable = v,
+                        Value = expr,
+                        IsOut = outputKeyword != null
+                    }
+                ),
+                Rule(
+                    scalarExpression,
+                    maybeOutputKeyword,
+                    (expr, output) => new SqlExecuteArgumentNode
+                    {
+                        Location = expr.Location,
+                        Value = expr,
+                        IsOut = outputKeyword != null
                     }
                 )
             );
 
-            var unterminatedStatement = First(
-                queryExpression,
-                // TODO: Other expression types
-                Empty<SqlToken>().Transform(x => (ISqlNode)null)
+            var executeStatement = Rule(
+                // TODO: @return_status = ...
+                First(
+                    Keyword("EXECUTE"),
+                    Keyword("EXEC")
+                ),
+                // TODO: WITH <execute_option>
+                objectIdentifier,
+
+                // TODO: EXEC '(' <string> ')'
+                execArgument.ListSeparatedBy(comma).Transform(l => new SqlListNode<SqlExecuteArgumentNode>(l.ToList())),
+                (exec, name, args) => new SqlExecuteNode
+                {
+                    Location = exec.Location,
+                    Name = name,
+                    Arguments = args
+                }
             );
 
-            var statement = Rule(
+            var statementInternal = Empty().Transform(t => (ISqlNode) null);
+            var statement = Deferred(() => statementInternal);
+            var statementList = statement.List().Transform(l => 
+                new SqlStatementListNode(l.ToList()));
+
+            var ifStatement = Rule(
+                Keyword("IF"),
+                booleanExpression.MaybeParenthesized(),
+                statement,
+                Rule(
+                    Keyword("ELSE"),
+                    statement,
+                    (e, stmt) => stmt
+                ).Optional(),
+                (i, cond, onThen, onElse) => new SqlIfNode
+                {
+                    Location = i.Location,
+                    Condition = cond,
+                    Then = onThen,
+                    Else = onElse
+                }
+            );
+
+            var beginBlock = Rule(
+                Keyword("BEGIN"),
+                statementList,
+                Keyword("END"),
+                (begin, stmts, e) => stmts
+            );
+
+            // TODO: "GO" which starts a new logical block and also sets scope limits for variables
+
+            var unterminatedStatement = First(
+                //withStatement,
+                queryExpression
+                //,
+                //declareStatement, 
+                //setStatement,
+                //deleteStatement,
+                //insertStatement,
+                //updateStatement,
+                //mergeStatement,
+                //executeStatement,
+                //ifStatement,
+                //beginBlock,
+                // TODO: If we don't know what it is, Parse it into an Unknown node and continue
+                // TODO: RETURN?
+                // TODO: THROW/TRY/CATCH
+                // TODO: WHILE/CONTINUE/BREAK
+                // TODO: CREATE/DROP/ALTER? Do we want to handle DDL statments here?
+                //Empty().Transform(x => (ISqlNode)null)
+            );
+
+            statementInternal = Rule(
                 unterminatedStatement,
-                Token(SqlTokenType.Symbol, ";"),
+                Token(SqlTokenType.Symbol, ";").Optional(),
                 (stmt, semicolon) => stmt
             );
-
-            var statementList = statement.List().Transform(l => new SqlStatementListNode(l.ToList()));
 
             return statementList;
         }

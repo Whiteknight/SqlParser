@@ -26,9 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ParserObjects">
-      <Version>1.1.1</Version>
-    </PackageReference>
+    <ProjectReference Include="..\..\..\ParserObjects\ParserObjects\ParserObjects.csproj" />
   </ItemGroup>
 
 </Project>

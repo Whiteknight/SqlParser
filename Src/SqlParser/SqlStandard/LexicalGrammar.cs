@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ParserObjects;
 using SqlParser.Tokenizing;
 using ParserObjects.Parsers;
 using static ParserObjects.Parsers.ParserMethods;
+using static ParserObjects.Parsers.ParserMethods<char>;
 
 namespace SqlParser.SqlStandard
 {
     // https://ronsavage.github.io/SQL/sql-2003-2.bnf.html#character%20set%20specification
-    public static partial class LexicalGrammar
+    public static class LexicalGrammar
     {
         private static readonly Lazy<IParser<char, SqlToken>> _parser = new Lazy<IParser<char, SqlToken>>(InitializeParsers);
 
@@ -17,8 +19,8 @@ namespace SqlParser.SqlStandard
 
         private static IParser<char, SqlToken> InitializeParsers()
         {
-            var idStart = Match<char>(c => char.IsLetter(c) || c == '_');
-            var idPart = Match<char>(c => char.IsLetter(c) || char.IsDigit(c) || c == '_' || c == '$' || c == '@');
+            var idStart = Match(c => char.IsLetter(c) || c == '_');
+            var idPart = Match(c => char.IsLetter(c) || char.IsDigit(c) || c == '_' || c == '$' || c == '@' || c == '#');
             var regularIdentifier = Rule(
                 idStart,
                 idPart.List().Transform(c => c.ToArray()),
@@ -26,19 +28,30 @@ namespace SqlParser.SqlStandard
                 (start, parts) => start + new string(parts)
             );
             var variable = Rule(
-                Match<char>(c => c == '$' || c == '@'),
-                regularIdentifier,
+                Match(c => c == '$' || c == '@'),
+                idPart.List().Transform(c => new string(c.ToArray())),
 
                 (prefix, name) => prefix + name
             );
+            //var delimitedIdentifierPart = First(
+            //    Match(c => c != '"').Transform(c => c.ToString()),
+            //    Match("\"\"").Transform(c => new string(c.ToArray()))
+            //);
             var delimitedIdentifierPart = First(
-                Match<char>(c => c != '"').Transform(c => c.ToString()),
-                Match<char>("\"\"").Transform(c => new string(c.ToArray()))
+                Match(c => c != ']').Transform(c => c.ToString()),
+                Match("[]").Transform(c => new string(c.ToArray()))
             );
+            //var delimitedIdentifier = Rule(
+            //    Match('\"'),
+            //    delimitedIdentifierPart.List().Transform(s => string.Join("", s)),
+            //    Match('\"'),
+
+            //    (open, parts, close) => parts
+            //);
             var delimitedIdentifier = Rule(
-                Match('\"'),
+                Match('['),
                 delimitedIdentifierPart.List().Transform(s => string.Join("", s)),
-                Match('\"'),
+                Match(']'),
 
                 (open, parts, close) => parts
             );
@@ -51,20 +64,20 @@ namespace SqlParser.SqlStandard
             var doublePeriod = CharacterString("..");
             var simpleComment = Rule(
                 CharacterString("--"),
-                Match<char>(c => c != '\r' && c != '\n').List(),
-                Optional(Match<char>(c => c == '\r'), () => '\0'),
-                Match<char>(c => c == '\n'),
+                Match(c => c != '\r' && c != '\n').List(),
+                Optional(Match(c => c == '\r'), () => '\0'),
+                Match(c => c == '\n'),
 
                 (introducer, commentChars, carriageReturn, newline) => ""
             );
             var bracketedCommentContentChar = First(
                 Rule(
                     CharacterString("*"),
-                    Match<char>(c => c != '/'),
+                    Match(c => c != '/'),
 
                     (asterisk, slash) => new[] { asterisk[0], slash }
                 ),
-                Match<char>(c => c != '*').Transform(c => new[] { c })
+                Match(c => c != '*').Transform(c => new[] { c })
             );
             var bracketedComment = Rule(
                 CharacterString("/*"),
@@ -77,7 +90,7 @@ namespace SqlParser.SqlStandard
                 simpleComment,
                 bracketedComment
             );
-            var whitespace = Match<char>(char.IsWhiteSpace).List();
+            var whitespace = Match(char.IsWhiteSpace).List(true);
             var separatorItem = First(
                 comment,
                 whitespace
@@ -95,36 +108,65 @@ namespace SqlParser.SqlStandard
                 CharacterString("+"),
                 CharacterString("-")
             );
-            var unsignedInteger = Match<char>(char.IsDigit).ListCharToString();
-            var signedInteger = Rule(
-                sign,
-                Match<char>(char.IsDigit).ListCharToString(),
+            var integer = Rule(
+                sign.Optional(),
+                Match(char.IsDigit).ListCharToString(true),
                 (s, value) => s + value
+            );
+            var number = Rule(
+                integer,
+                CharacterString("."),
+                integer,
+                (whole, dot, fract) => $"{whole}.{fract}"
             );
 
             var hexDigits = new HashSet<char>("0123456789abcdefABCDEF");
-            var hexit = Match<char>(c => hexDigits.Contains(c));
+            var hexit = Match(c => hexDigits.Contains(c));
+            //var binaryStringLiteral = Rule(
+            //    CharacterString("X\""),
+            //    hexit.ListCharToString(),
+            //    CharacterString("\""),
+            //    (introducer, body, terminator) => introducer + body + terminator
+            //);
+            //var stringCharacter = First(
+            //    CharacterString("\"\""),
+            //    Match(c => c != '"').Transform(c => c.ToString())
+            //);
+            //var nationalStringLiteral = Rule(
+            //    CharacterString("N\""),
+            //    stringCharacter.List().Transform(s => string.Join("", s)),
+            //    CharacterString("\""),
+            //    (introducer, body, terminator) => introducer + body + terminator
+            //);
+            //var stringLiteral = Rule(
+            //    CharacterString("\""),
+            //    stringCharacter.List().Transform(s => string.Join("", s)),
+            //    CharacterString("\""),
+            //    (introducer, body, terminator) => introducer + body + terminator
+            //);
+
             var binaryStringLiteral = Rule(
-                CharacterString("X\""),
+                CharacterString("X\'"),
                 hexit.ListCharToString(),
-                CharacterString("\""),
+                CharacterString("\'"),
                 (introducer, body, terminator) => introducer + body + terminator
             );
             var stringCharacter = First(
-                CharacterString("\"\""),
-                Match<char>(c => c != '"').Transform(c => c.ToString())
+                CharacterString("\'\'").Transform(c => '\''),
+                Match(c => c != '\'')
             );
             var nationalStringLiteral = Rule(
-                CharacterString("N\""),
+                CharacterString("N\'"),
                 stringCharacter.List().Transform(s => string.Join("", s)),
-                CharacterString("\""),
+                CharacterString("\'"),
                 (introducer, body, terminator) => introducer + body + terminator
             );
             var stringLiteral = Rule(
-                CharacterString("\""),
-                stringCharacter.List().Transform(s => string.Join("", s)),
-                CharacterString("\""),
-                (introducer, body, terminator) => introducer + body + terminator
+                CharacterString("\'"),
+                stringCharacter.List().Transform(s => new string(s.ToArray())),
+                CharacterString("\'"),
+                (introducer, body, terminator) => 
+                    body
             );
 
             var identifier = First(
@@ -133,19 +175,25 @@ namespace SqlParser.SqlStandard
             );
 
             var tokens = First(
+                End().Transform(c => 
+                    new SqlToken(null, SqlTokenType.EndOfInput)),
                 variable.Transform(c => new SqlToken(c, SqlTokenType.Variable)),
                 // TODO: Unquoted identifiers might be keywords
-                identifier.Transform(c => new SqlToken(c, SqlTokenType.Identifier)),
-                stringLiteral.Transform(c => new SqlToken(c, SqlTokenType.QuotedString)),
-                nationalStringLiteral.Transform(c => new SqlToken(c, SqlTokenType.QuotedString)),
+                identifier.Transform(c => new SqlToken(c, Facts.IsKeyword(c) ? SqlTokenType.Keyword : SqlTokenType.Identifier)),
+                stringLiteral.Transform(c => 
+                    new SqlToken(c, SqlTokenType.QuotedString))
+                ,
+                //nationalStringLiteral.Transform(c => new SqlToken(c, SqlTokenType.QuotedString)),
                 // TODO: Binary literal isn't really a quoted string
-                binaryStringLiteral.Transform(c => new SqlToken(c, SqlTokenType.QuotedString)),
+                //binaryStringLiteral.Transform(c => new SqlToken(c, SqlTokenType.QuotedString)),
                 // TODO: Unicode strings,
                 // TODO: Interval literals
                 // TODO: Date/Time literals
-                booleanLiteral.Transform(c => new SqlToken(c, SqlTokenType.Keyword)),
-                signedInteger.Transform(c => new SqlToken(c, SqlTokenType.Number)),
-                unsignedInteger.Transform(c => new SqlToken(c, SqlTokenType.Number)),
+                //booleanLiteral.Transform(c => new SqlToken(c, SqlTokenType.Keyword)),
+                number.Transform(c => new SqlToken(c, SqlTokenType.Number)),
+                integer.Transform(c => new SqlToken(c, SqlTokenType.Number)),
+
+                // TODO: Convert all these operators to use a Trie
                 notEqualsOperator.Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
                 greaterThanOrEqualsOperator.Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
                 lessThanOrEqualsOperator.Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
@@ -174,10 +222,17 @@ namespace SqlParser.SqlStandard
                 CharacterString("^").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
                 CharacterString("|").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
                 CharacterString("{").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("}").Transform(c => new SqlToken(c, SqlTokenType.Symbol))
-            );
+                CharacterString("}").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
+                CharacterString("~").Transform(c => new SqlToken(c, SqlTokenType.Symbol))
+            )
+                .Examine(after: (p, i, r) => 
+                    Debug.WriteLine($"Creating token {r.Value.Type}={r.Value.Value}"));
 
-            return tokens;
+            return Rule(
+                separator,
+                tokens,
+                (s, t) => t
+            );
         }
     }
 }

@@ -41,14 +41,14 @@ namespace SqlParser.SqlServer.Validation
             if (!AssertNotNull(parent, name, child))
                 return false;
             var childType = child.GetType();
-            // TODO: Fix this
-            if (!new[]
-            {
-                typeof(SqlNumberNode), typeof(SqlNullNode), typeof(SqlInfixOperationNode),
-                typeof(SqlPrefixOperationNode), typeof(SqlStringNode),
-                typeof(SqlIdentifierNode), typeof(SqlQualifiedIdentifierNode), typeof(SqlVariableNode)
-            }.Contains(childType))
-                return AddError(parent, name, "Is not an acceptable scalar expression node");
+            // TODO: Fix this, needs to accept parenthesis, etc
+            //if (!new[]
+            //{
+            //    typeof(SqlNumberNode), typeof(SqlNullNode), typeof(SqlInfixOperationNode),
+            //    typeof(SqlPrefixOperationNode), typeof(SqlStringNode),
+            //    typeof(SqlIdentifierNode), typeof(SqlQualifiedIdentifierNode), typeof(SqlVariableNode)
+            //}.Contains(childType))
+            //    return AddError(parent, name, "Is not an acceptable scalar expression node");
 
             return true;
         }
@@ -58,13 +58,14 @@ namespace SqlParser.SqlServer.Validation
             if (!AssertNotNull(parent, name, child))
                 return false;
             // TODO: Fix this
-            if (child is SqlInfixOperationNode childExpr)
-            {
-                if (childExpr.IsComparisonOperation() || childExpr.IsBooleanOperation())
-                    return true;
-            }
+            //if (child is SqlInfixOperationNode childExpr)
+            //{
+            //    if (childExpr.IsComparisonOperation() || childExpr.IsBooleanOperation())
+            //        return true;
+            //}
 
-            return AddError(parent, name, "Is not an acceptable boolean expression node");
+            //return AddError(parent, name, "Is not an acceptable boolean expression node");
+            return true;
         }
 
         public bool AssertIsUnionStatement(ISqlNode parent, string name, ISqlNode child)

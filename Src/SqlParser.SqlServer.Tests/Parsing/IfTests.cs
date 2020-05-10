@@ -2,8 +2,8 @@
 using System.Linq;
 using NUnit.Framework;
 using SqlParser.Ast;
-using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
+using SqlParser.SqlStandard;
 using SqlParser.Tokenizing;
 
 namespace SqlParser.SqlServer.Tests.Parsing
@@ -16,7 +16,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = @"IF 5 = 6 SELECT 'TEST';";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -47,7 +47,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = @"IF (5 = 6) SELECT 'TEST';";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -83,7 +83,7 @@ BEGIN
     SELECT 'TEST2';
 END";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             var thenStatementList = new SqlStatementListNode
@@ -131,7 +131,7 @@ END";
             const string s = @"IF 5 = 6 SELECT 'TEST1'; ELSE SELECT 'TEST2';";
             
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -182,7 +182,7 @@ BEGIN
     SELECT 'TEST4';
 END";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             var thenStatementList = new SqlStatementListNode

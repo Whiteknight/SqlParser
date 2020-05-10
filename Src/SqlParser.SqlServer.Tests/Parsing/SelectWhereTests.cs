@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using SqlParser.Ast;
-using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
+using SqlParser.SqlStandard;
 using SqlParser.Tokenizing;
 
 namespace SqlParser.SqlServer.Tests.Parsing
@@ -15,7 +15,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE MyColumn = 1;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -41,7 +41,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE MyColumn1 = MyColumn2 + 1;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -72,7 +72,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE MyColumn1 = 1 AND MyColumn2 = 2;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -108,7 +108,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE MyColumn BETWEEN 1 AND 2;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -134,7 +134,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE MyColumn IN (1, 2, 3);";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -165,7 +165,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE MyColumn IS NULL;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -191,7 +191,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE MyColumn IS NOT NULL;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -217,7 +217,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE MyColumn LIKE '%test%';";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -243,7 +243,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE MyColumn NOT LIKE '%test%';";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -269,7 +269,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable1 WHERE EXISTS (SELECT * FROM MyTable2);";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -301,7 +301,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable1 WHERE NOT EXISTS (SELECT * FROM MyTable2);";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -337,7 +337,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE MyColumn = ALL (SELECT 5);";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -372,7 +372,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE MyColumn1 = 1 AND (MyColumn2 = 2 OR MyColumn3 = 3);";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -418,7 +418,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE MyColumn1 = 1 AND MyColumn2 = 2 OR MyColumn3 = 3;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -464,7 +464,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE (MyColumn1 = 1 AND MyColumn2 = 2) OR MyColumn3 = 3;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -510,7 +510,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE NOT MyColumn1 = 1 OR MyColumn2 = 2;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -550,7 +550,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable WHERE NOT (MyColumn1 = 1 OR MyColumn2 = 2);";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(

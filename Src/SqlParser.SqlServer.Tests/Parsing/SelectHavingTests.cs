@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using SqlParser.Ast;
-using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
+using SqlParser.SqlStandard;
 using SqlParser.Tokenizing;
 
 namespace SqlParser.SqlServer.Tests.Parsing
@@ -15,7 +15,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable HAVING MyColumn = 1;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -41,7 +41,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable HAVING MyColumn1 = 1 AND MyColumn2 = 2;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -77,7 +77,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable HAVING MyColumn BETWEEN 1 AND 2;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -103,7 +103,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT * FROM MyTable HAVING MyColumn IN (1, 2, 3);";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             var output = result.ToString();
             result.Should().PassValidation().And.RoundTrip();
 

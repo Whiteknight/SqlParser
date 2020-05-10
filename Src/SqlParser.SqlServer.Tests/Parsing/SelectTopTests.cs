@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using SqlParser.Ast;
-using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
+using SqlParser.SqlStandard;
 using SqlParser.Tokenizing;
 
 namespace SqlParser.SqlServer.Tests.Parsing
@@ -15,7 +15,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT TOP 10 * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -39,7 +39,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT TOP @limit * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -63,7 +63,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT TOP (10) * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -87,7 +87,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT TOP (@limit) * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -111,7 +111,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT TOP (10) PERCENT * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -136,7 +136,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT TOP (10) WITH TIES * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
@@ -161,7 +161,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         {
             const string s = "SELECT TOP (10) PERCENT WITH TIES * FROM MyTable;";
             var target = new Parser();
-            var result = target.Parse(Tokenizer.ForSqlServer(s));
+            var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
 
             result.Statements.First().Should().MatchAst(
