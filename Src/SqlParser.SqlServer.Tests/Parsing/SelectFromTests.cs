@@ -64,7 +64,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
                 * 
                 FROM 
                     MyTable
-                    -- INNER JOIN SomeOtherTable ON MyTableId = SomeOtherTableId;";
+                    -- INNER JOIN SomeOtherTable ON MyTableId = SomeOtherTableId                    ;";
             var target = new Parser();
             var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();

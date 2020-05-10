@@ -16,13 +16,7 @@ namespace SqlParser.SqlStandard
                 .IsKeyword(w))).ToList();
             if (matchers.Count == 1)
                 return matchers.First().Transform(t => 
-                    new SqlKeywordNode(t)).Examine(
-                        before: (p, i) =>
-                        {
-                            var next = i.Peek();
-                            Debug.WriteLine($"Before Keyword {words[0]} next={next?.Value}");
-                        },
-                    after: (p, i, r) => Debug.WriteLine($"After Keyword {words[0]} Success={r.Success}"));
+                    new SqlKeywordNode(t));
             // TODO: Clean this up
             return new RuleParser<SqlToken, SqlKeywordNode>(matchers, r =>
             {

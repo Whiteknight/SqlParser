@@ -31,17 +31,7 @@ namespace SqlParser.SqlStandard
             var number = Token(SqlTokenType.Number).Transform(t => new SqlNumberNode(t));
             var openParen = Token(SqlTokenType.Symbol, "(");
             var closeParen = Token(SqlTokenType.Symbol, ")");
-            var quotedString = Token(SqlTokenType.QuotedString).Transform(t => new SqlStringNode(t))
-                .Examine(
-                    before: (p, i) =>
-                    {
-                        Debug.WriteLine("Entering quotedString");
-                    },
-                    after: (p, i, r) =>
-                    {
-                        Debug.WriteLine($"After quotedString: {r.Success} {r.Value?.Value}");
-                    }
-                );
+            var quotedString = Token(SqlTokenType.QuotedString).Transform(t => new SqlStringNode(t));
             var variable = Token(SqlTokenType.Variable).Transform(t => new SqlVariableNode(t));
             var constant = First<ISqlNode>(
                 quotedString,
@@ -145,12 +135,7 @@ namespace SqlParser.SqlStandard
                         Name = name,
                         Arguments = args?.Expression
                     }
-                ).Examine(before: (p, i) =>
-                {
-                },
-                after: (p, i, r) =>
-                {
-                })
+                )
             );
 
             var nullTerm = Match(t => t.IsKeyword("NULL")).Transform(t => new SqlNullNode(t));
@@ -253,15 +238,6 @@ namespace SqlParser.SqlStandard
             var caseExpression = First(
                 caseBlock,
                 additive
-            ).Examine(
-                before: (p, i) =>
-                {
-                    Debug.WriteLine("Entering caseExpression");
-                },
-                after: (p, i, r) =>
-                {
-                    Debug.WriteLine($"After caseExpression: {r.Success}");
-                }
             );
 
             scalarExpressionInternal = caseExpression;
@@ -696,31 +672,11 @@ namespace SqlParser.SqlStandard
             var selectColumn = First(
                 star,
                 maybeAliasedColumn
-            )
-                .Examine(
-                    before: (p, i) =>
-                    {
-                        Debug.WriteLine("Entering selectColumn");
-                    },
-                    after: (p, i, r) =>
-                    {
-                        Debug.WriteLine($"After selectColumn: {r.Success}");
-                    }
-                );
+            );
 
             var selectColumnList = selectColumn
                 .ListSeparatedBy(comma, true)
-                .Transform(l => new SqlListNode<ISqlNode>(l.ToList()))
-                .Examine(
-                    before: (p, i) =>
-                    {
-                        Debug.WriteLine("Entering selectColumnList");
-                    },
-                    after: (p, i, r) =>
-                    {
-                        Debug.WriteLine($"After selectColumnList: {r.Success}");
-                    }
-                );
+                .Transform(l => new SqlListNode<ISqlNode>(l.ToList()));
 
             var selectHavingClause = Rule(
                 Keyword("HAVING"),
@@ -799,17 +755,7 @@ namespace SqlParser.SqlStandard
                     OffsetClause = offset,
                     FetchClause = fetch
                 }
-            )
-                .Examine(
-                    before: (p, i) =>
-                    {
-                        Debug.WriteLine("Entering querySpecification");
-                    },
-                    after: (p, i, r) =>
-                    {
-                        Debug.WriteLine($"After querySpecification: {r.Success}");
-                    }
-                );
+            );
 
             var unionOperator = First(
                     Keyword("UNION", "ALL"),
@@ -829,24 +775,13 @@ namespace SqlParser.SqlStandard
                     Operator = op,
                     Right = r
                 }
-            ).Examine(
-                    before: (p, i) =>
-                    {
-                        Debug.WriteLine("Entering queryExpression");
-                    },
-                    after: (p, i, r) =>
-                    {
-                        Debug.WriteLine($"After queryExpression: {r.Success}");
-                    }
-                )
-
-            ;
+            );
 
             var deleteStatement = Rule(
                 Keyword("DELETE", "FROM"),
                 // TODO: TOP clause
                 objectIdentifier,
-                whereClause,
+                whereClause.Optional(),
                 // TODO: OUTPUT clause
                 (delete, id, where) => new SqlDeleteNode
                 {
@@ -1152,7 +1087,7 @@ namespace SqlParser.SqlStandard
                         Location = v.Location,
                         AssignVariable = v,
                         Value = expr,
-                        IsOut = outputKeyword != null
+                        IsOut = output != null
                     }
                 ),
                 Rule(
@@ -1162,28 +1097,59 @@ namespace SqlParser.SqlStandard
                     {
                         Location = expr.Location,
                         Value = expr,
-                        IsOut = outputKeyword != null
+                        IsOut = output != null
                     }
                 )
             );
 
-            var executeStatement = Rule(
+            var executeStatement = LeftApply<ISqlNode>(
                 // TODO: @return_status = ...
                 First(
                     Keyword("EXECUTE"),
                     Keyword("EXEC")
                 ),
-                // TODO: WITH <execute_option>
-                objectIdentifier,
-
-                // TODO: EXEC '(' <string> ')'
-                execArgument.ListSeparatedBy(comma).Transform(l => new SqlListNode<SqlExecuteArgumentNode>(l.ToList())),
-                (exec, name, args) => new SqlExecuteNode
-                {
-                    Location = exec.Location,
-                    Name = name,
-                    Arguments = args
-                }
+                left => First<ISqlNode>(
+                    Rule(
+                        left,
+                        // TODO: WITH <execute_option>
+                        objectIdentifier,
+                        execArgument.ListSeparatedBy(comma).Transform(l => new SqlListNode<SqlExecuteArgumentNode>(l.ToList())),
+                        (exec, name, args) => new SqlExecuteNode
+                        {
+                            Location = exec.Location,
+                            Name = name,
+                            Arguments = args
+                        }
+                    ),
+                    Rule(
+                        left,
+                        scalarExpression.Parenthesized(),
+                        (exec, expr) => new SqlExecuteNode
+                        {
+                            Location = exec.Location,
+                            Name = expr
+                        }
+                    ),
+                    Rule(
+                        left,
+                        quotedString,
+                        (exec, str) => new SqlExecuteNode
+                        {
+                            Location = exec.Location,
+                            Name = str
+                        }
+                    ),
+                    Rule(
+                        left,
+                        variable,
+                        (exec, str) => new SqlExecuteNode
+                        {
+                            Location = exec.Location,
+                            Name = str
+                        }
+                    )
+                ),
+                ApplyArity.ExactlyOne
             );
 
             var statementInternal = Empty().Transform(t => (ISqlNode) null);
@@ -1219,18 +1185,17 @@ namespace SqlParser.SqlStandard
             // TODO: "GO" which starts a new logical block and also sets scope limits for variables
 
             var unterminatedStatement = First(
-                //withStatement,
-                queryExpression
-                //,
-                //declareStatement, 
-                //setStatement,
-                //deleteStatement,
-                //insertStatement,
-                //updateStatement,
-                //mergeStatement,
-                //executeStatement,
-                //ifStatement,
-                //beginBlock,
+                withStatement,
+                queryExpression,
+                declareStatement,
+                setStatement,
+                deleteStatement,
+                insertStatement,
+                updateStatement,
+                mergeStatement,
+                executeStatement,
+                ifStatement,
+                beginBlock
                 // TODO: If we don't know what it is, Parse it into an Unknown node and continue
                 // TODO: RETURN?
                 // TODO: THROW/TRY/CATCH
@@ -1246,6 +1211,11 @@ namespace SqlParser.SqlStandard
             );
 
             return statementList;
+            //return Rule(
+            //    statementList,
+            //    //Match(t => t.Type == SqlTokenType.EndOfInput),
+            //    (stmts, eof) => stmts
+            //);
         }
     }
 }

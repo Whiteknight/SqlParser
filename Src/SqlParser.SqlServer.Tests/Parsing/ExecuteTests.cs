@@ -23,6 +23,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
                 new SqlExecuteNode
                 {
                     Name = new SqlObjectIdentifierNode("myProc"),
+                    Arguments = new SqlListNode<SqlExecuteArgumentNode>()
                 }
             );
         }
@@ -39,6 +40,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
                 new SqlExecuteNode
                 {
                     Name = new SqlObjectIdentifierNode("myProc"),
+                    Arguments = new SqlListNode<SqlExecuteArgumentNode>()
                 }
             );
         }
@@ -177,8 +179,8 @@ namespace SqlParser.SqlServer.Tests.Parsing
             // of any variety.
             const string s = "EXECUTE 'SELECT * ' + 'FROM MyTable';";
             var target = new Parser();
-            Action act  = () => target.Parse(s);
-            FluentAssertions.AssertionExtensions.Should(act).Throw<Exception>();
+            var result = target.Parse(s);
+            result.Should().BeNull();
         }
 
         [Test]

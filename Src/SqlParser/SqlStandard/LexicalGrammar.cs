@@ -55,13 +55,6 @@ namespace SqlParser.SqlStandard
 
                 (open, parts, close) => parts
             );
-            var notEqualsOperator = CharacterString("<>");
-            var greaterThanOrEqualsOperator = CharacterString(">=");
-            var lessThanOrEqualsOperator = CharacterString("<=");
-            var concatenationOperator = CharacterString("||");
-            var rightArrow = CharacterString("->");
-            var doubleColon = CharacterString("::");
-            var doublePeriod = CharacterString("..");
             var simpleComment = Rule(
                 CharacterString("--"),
                 Match(c => c != '\r' && c != '\n').List(),
@@ -193,37 +186,40 @@ namespace SqlParser.SqlStandard
                 number.Transform(c => new SqlToken(c, SqlTokenType.Number)),
                 integer.Transform(c => new SqlToken(c, SqlTokenType.Number)),
 
-                // TODO: Convert all these operators to use a Trie
-                notEqualsOperator.Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                greaterThanOrEqualsOperator.Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                lessThanOrEqualsOperator.Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                concatenationOperator.Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                rightArrow.Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                doubleColon.Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                doublePeriod.Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("%").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("&").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("(").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString(")").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("*").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("+").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString(",").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("-").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString(".").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("/").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString(":").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString(";").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("<").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("=").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString(">").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("?").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("[").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("]").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("^").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("|").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("{").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("}").Transform(c => new SqlToken(c, SqlTokenType.Symbol)),
-                CharacterString("~").Transform(c => new SqlToken(c, SqlTokenType.Symbol))
+                Trie<string>(trie => trie
+                        .Add("<>")
+                        .Add(">=")
+                        .Add("<=")
+                        .Add("::")
+                        .Add("..")
+                        .Add("+=")
+                        .Add("-=")
+                        .Add("*=")
+                        .Add("/=")
+                        .Add("%=")
+                        .Add("&=")
+                        .Add("^=")
+                        .Add("|=")
+                        .Add("=")
+                        .Add("%")
+                        .Add("&")
+                        .Add("(")
+                        .Add(")")
+                        .Add("*")
+                        .Add("+")
+                        .Add("-")
+                        .Add(",")
+                        .Add(".")
+                        .Add(":")
+                        .Add(";")
+                        .Add("<")
+                        .Add(">")
+                        .Add("?")
+                        .Add("^")
+                        .Add("|")
+                        .Add("~")
+                    )
+                    .Transform(s => new SqlToken(s, SqlTokenType.Symbol))
             )
                 .Examine(after: (p, i, r) => 
                     Debug.WriteLine($"Creating token {r.Value.Type}={r.Value.Value}"));
