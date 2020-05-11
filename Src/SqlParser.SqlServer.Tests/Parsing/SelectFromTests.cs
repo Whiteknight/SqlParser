@@ -64,7 +64,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
                 * 
                 FROM 
                     MyTable
-                    -- INNER JOIN SomeOtherTable ON MyTableId = SomeOtherTableId                    ;";
+                    -- INNER JOIN SomeOtherTable ON MyTableId = SomeOtherTableId;";
             var target = new Parser();
             var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
@@ -473,7 +473,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         [Test]
         public void Select_ColumnsFromTable()
         {
-            const string s = "SELECT ColumnA, ColumnB FROM MyTable;";
+            const string s = @"SELECT ColumnA, ColumnB FROM MyTable;";
             var target = new Parser();
             var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();
@@ -497,7 +497,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         [Test]
         public void Select_NegativeColumnFromTable()
         {
-            const string s = "SELECT -ColumnA FROM MyTable;";
+            const string s = "SELECT -ColumnA FROM MyTable";
             var target = new Parser();
             var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();

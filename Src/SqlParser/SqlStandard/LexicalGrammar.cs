@@ -55,40 +55,6 @@ namespace SqlParser.SqlStandard
 
                 (open, parts, close) => parts
             );
-            var simpleComment = Rule(
-                CharacterString("--"),
-                Match(c => c != '\r' && c != '\n').List(),
-                Optional(Match(c => c == '\r'), () => '\0'),
-                Match(c => c == '\n'),
-
-                (introducer, commentChars, carriageReturn, newline) => ""
-            );
-            var bracketedCommentContentChar = First(
-                Rule(
-                    CharacterString("*"),
-                    Match(c => c != '/'),
-
-                    (asterisk, slash) => new[] { asterisk[0], slash }
-                ),
-                Match(c => c != '*').Transform(c => new[] { c })
-            );
-            var bracketedComment = Rule(
-                CharacterString("/*"),
-                bracketedCommentContentChar.List(),
-                CharacterString("*/"),
-
-                (introducer, body, terminator) => ""
-            );
-            var comment = First(
-                simpleComment,
-                bracketedComment
-            );
-            var whitespace = Match(char.IsWhiteSpace).List(true);
-            var separatorItem = First(
-                comment,
-                whitespace
-            );
-            var separator = separatorItem.List();
 
             // TODO: Need this to be case-insensitive
             var booleanLiteral = First(
@@ -224,6 +190,38 @@ namespace SqlParser.SqlStandard
                 .Examine(after: (p, i, r) => 
                     Debug.WriteLine($"Creating token {r.Value.Type}={r.Value.Value}"));
 
+            var simpleComment = Rule(
+                CharacterString("--"),
+                Match(c => c != '\r' && c != '\n').List(),
+
+                (introducer, commentChars) => ""
+            );
+            var bracketedCommentContentChar = First(
+                Rule(
+                    CharacterString("*"),
+                    Match(c => c != '/'),
+
+                    (asterisk, slash) => new[] { asterisk[0], slash }
+                ),
+                Match(c => c != '*').Transform(c => new[] { c })
+            );
+            var bracketedComment = Rule(
+                CharacterString("/*"),
+                bracketedCommentContentChar.List(),
+                CharacterString("*/"),
+
+                (introducer, body, terminator) => ""
+            );
+            var comment = First(
+                simpleComment,
+                bracketedComment
+            );
+            var whitespace = Match(char.IsWhiteSpace).List(true);
+            var separatorItem = First(
+                comment,
+                whitespace
+            );
+            var separator = separatorItem.List();
             return Rule(
                 separator,
                 tokens,

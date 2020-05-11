@@ -1207,15 +1207,20 @@ namespace SqlParser.SqlStandard
             statementInternal = Rule(
                 unterminatedStatement,
                 Token(SqlTokenType.Symbol, ";").Optional(),
-                (stmt, semicolon) => stmt
+                (stmt, semicolon) => 
+                stmt
             );
 
-            return statementList;
-            //return Rule(
-            //    statementList,
-            //    //Match(t => t.Type == SqlTokenType.EndOfInput),
-            //    (stmts, eof) => stmts
-            //);
+
+            //return statementList;
+            return Rule(
+                statementList,
+                First(
+                    End().Transform(b => (object)null),
+                    Match(t => t.Type == SqlTokenType.EndOfInput)
+                ),
+                (stmts, eof) => stmts
+            );
         }
     }
 }
