@@ -134,14 +134,11 @@ namespace SqlParser.SqlStandard
             );
 
             var tokens = First(
-                End().Transform(c => 
-                    new SqlToken(null, SqlTokenType.EndOfInput)),
+                End().Transform(c => new SqlToken(null, SqlTokenType.EndOfInput)),
                 variable.Transform(c => new SqlToken(c, SqlTokenType.Variable)),
                 // TODO: Unquoted identifiers might be keywords
                 identifier.Transform(c => new SqlToken(c, Facts.IsKeyword(c) ? SqlTokenType.Keyword : SqlTokenType.Identifier)),
-                stringLiteral.Transform(c => 
-                    new SqlToken(c, SqlTokenType.QuotedString))
-                ,
+                stringLiteral.Transform(c => new SqlToken(c, SqlTokenType.QuotedString)),
                 //nationalStringLiteral.Transform(c => new SqlToken(c, SqlTokenType.QuotedString)),
                 // TODO: Binary literal isn't really a quoted string
                 //binaryStringLiteral.Transform(c => new SqlToken(c, SqlTokenType.QuotedString)),

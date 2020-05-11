@@ -466,7 +466,7 @@ namespace SqlParser.SqlStandard
                 left => Rule(
                     left,
                     Keyword("AS"),
-                    identifier,
+                    identifierOrKeywordAsIdentifier,
                     Parenthesized(
                         identifier.ListSeparatedBy(comma, true).Transform(l => new SqlListNode<SqlIdentifierNode>(l.ToList()))
                     ).Optional(),
@@ -862,7 +862,7 @@ namespace SqlParser.SqlStandard
                 variableOrObjectIdentifier,
                 updateSetClause,
                 // TODO: OUTPUT clause
-                whereClause,
+                whereClause.Optional(),
                 (update, table, set, where) => new SqlUpdateNode
                 {
                     Location = update.Location,
@@ -1001,7 +1001,7 @@ namespace SqlParser.SqlStandard
                         Location = id.Location,
                         Name = id,
                         ColumnNames = cols?.Expression,
-                        Select = query
+                        Select = query.Expression
                     };
                     cte.DetectRecursion();
                     return cte;
@@ -1207,10 +1207,8 @@ namespace SqlParser.SqlStandard
             statementInternal = Rule(
                 unterminatedStatement,
                 Token(SqlTokenType.Symbol, ";").Optional(),
-                (stmt, semicolon) => 
-                stmt
+                (stmt, semicolon) => stmt
             );
-
 
             //return statementList;
             return Rule(
