@@ -912,30 +912,10 @@ namespace SqlParser.SqlStandard
             );
 
             var insertStatement = Rule(
-                Keyword("INSERT", "INTO").Examine((p, i) =>
-                    {
-                    }, (p, i, r) =>
-                    {
-                    }
-                ),
-                objectIdentifier.Examine((p, i) =>
-                    {
-                    }, (p, i, r) =>
-                    {
-                    }
-                ),
-                insertColumnList.Examine((p, i) =>
-                    {
-                    }, (p, i, r) =>
-                    {
-                    }
-                ),
-                insertSource.Examine((p, i) =>
-                    {
-                    }, (p, i, r) =>
-                    {
-                    }
-                ),
+                Keyword("INSERT", "INTO"),
+                objectIdentifier,
+                insertColumnList,
+                insertSource,
                 (insertInto, table, columns, source) => new SqlInsertNode
                 {
                     Location = insertInto.Location,
@@ -1191,7 +1171,7 @@ namespace SqlParser.SqlStandard
 
             var ifStatement = Rule(
                 Keyword("IF"),
-                booleanExpression.MaybeParenthesized(),
+                booleanExpression.MaybeParenthesized().Transform(p => p.Expression),
                 statement,
                 Rule(
                     Keyword("ELSE"),
@@ -1211,7 +1191,11 @@ namespace SqlParser.SqlStandard
                 Keyword("BEGIN"),
                 statementList,
                 Keyword("END"),
-                (begin, stmts, e) => stmts
+                (begin, stmts, e) =>
+                {
+                    stmts.UseBeginEnd = true;
+                    return stmts;
+                }
             );
 
             // TODO: "GO" which starts a new logical block and also sets scope limits for variables
