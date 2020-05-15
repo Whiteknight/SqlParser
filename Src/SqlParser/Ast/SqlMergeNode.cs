@@ -8,17 +8,15 @@ namespace SqlParser.Ast
         public ISqlNode Target { get; set; }
         public ISqlNode Source { get; set; }
         public ISqlNode MergeCondition { get; set; }
-        public ISqlNode Matched { get; set; }
-        public ISqlNode NotMatchedByTarget { get; set; }
-        public ISqlNode NotMatchedBySource { get; set; }
+        public SqlListNode<SqlMergeMatchClauseNode> MatchClauses { get; set; }
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitMerge(this);
 
         public Location Location { get; set; }
 
-        public SqlMergeNode Update(ISqlNode target, ISqlNode source, ISqlNode condition, ISqlNode matched, ISqlNode nmatchtarget, ISqlNode nmatchsource)
+        public SqlMergeNode Update(ISqlNode target, ISqlNode source, ISqlNode condition, SqlListNode<SqlMergeMatchClauseNode> matchClauses)
         {
-            if (Target == target && Source == source && MergeCondition == condition && Matched == matched && NotMatchedByTarget == nmatchtarget && NotMatchedBySource == nmatchsource)
+            if (Target == target && Source == source && MergeCondition == condition && MatchClauses == matchClauses)
                 return this;
             return new SqlMergeNode
             {
@@ -26,10 +24,20 @@ namespace SqlParser.Ast
                 Target = target,
                 Source = source,
                 MergeCondition = condition,
-                Matched = matched,
-                NotMatchedBySource = nmatchsource,
-                NotMatchedByTarget = nmatchtarget
+                MatchClauses = matchClauses
             };
         }
+    }
+
+    public class SqlMergeMatchClauseNode : ISqlNode
+    {
+        public SqlKeywordNode Keyword { get; set; }
+        public ISqlNode Condition { get; set; }
+        public ISqlNode Action { get; set; }
+        public Location Location { get; set; }
+
+        // TODO: This
+        public ISqlNode Accept(INodeVisitorTyped visitor) => this;
+        // TODO: Update
     }
 }

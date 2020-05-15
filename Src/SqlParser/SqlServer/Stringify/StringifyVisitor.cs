@@ -291,34 +291,15 @@ namespace SqlParser.SqlServer.Stringify
             AppendLineAndIndent();
             Append("ON ");
             Visit(n.MergeCondition);
-            if (n.Matched != null)
+            foreach (var matchClause in n.MatchClauses)
             {
                 AppendLineAndIndent();
-                Append("WHEN MATCHED ");
+                Visit(matchClause.Keyword);
+                // TODO: Condition
                 Append(" THEN");
                 IncreaseIndent();
                 AppendLineAndIndent();
-                Visit(n.Matched);
-                DecreaseIndent();
-            }
-            if (n.NotMatchedByTarget != null)
-            {
-                AppendLineAndIndent();
-                Append("WHEN NOT MATCHED BY TARGET");
-                Append(" THEN");
-                IncreaseIndent();
-                AppendLineAndIndent();
-                Visit(n.NotMatchedByTarget);
-                DecreaseIndent();
-            }
-            if (n.NotMatchedBySource != null)
-            {
-                AppendLineAndIndent();
-                Append("WHEN NOT MATCHED BY SOURCE");
-                Append(" THEN");
-                IncreaseIndent();
-                AppendLineAndIndent();
-                Visit(n.NotMatchedBySource);
+                Visit(matchClause.Action);
                 DecreaseIndent();
             }
 

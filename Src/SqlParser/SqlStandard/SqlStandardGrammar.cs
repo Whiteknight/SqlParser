@@ -405,7 +405,7 @@ namespace SqlParser.SqlStandard
             ).Optional();
 
             var orderColumn = Rule(
-                First<ISqlNode>(
+                First(
                     qualifiedIdentifier,
                     number
                 ),
@@ -496,7 +496,7 @@ namespace SqlParser.SqlStandard
                 }
             );
 
-            var subexpression = First<ISqlNode>(
+            var subexpression = First(
                 queryExpression,
                 valuesClause
             ).Parenthesized();
@@ -887,19 +887,12 @@ namespace SqlParser.SqlStandard
             var mergeOnNotMatched = Rule(
                 Keyword("INSERT"),
                 insertColumnList,
-                Keyword("VALUES"),
-                scalarExpression
-                    .ListSeparatedBy(comma, true)
-                    .Transform(t => new SqlListNode<ISqlNode>(t.ToList()))
-                    .Parenthesized()
-                    .Transform(p => p.Expression)
-                    .ListSeparatedBy(comma, true)
-                    .Transform(t => new SqlListNode<SqlListNode<ISqlNode>>(t.ToList())),
-                (insert, columns, values, exprs) => new SqlInsertNode
+                valuesLiteral,
+                (insert, columns, values) => new SqlInsertNode
                 {
                     Location = insert.Location,
                     Columns = columns.Expression,
-                    Source = exprs
+                    Source = values
                 }
             );
 
@@ -909,7 +902,11 @@ namespace SqlParser.SqlStandard
                 // TODO: "AND" <clauseSearchCondition>
                 Keyword("THEN"),
                 mergeOnMatched,
-                (when, matched, then, onMatched) => new SqlKeywordNode("WHEN MATCHED", when.Location)
+                (when, matched, then, onMatched) => new SqlMergeMatchClauseNode {
+                    Location = when.Location,
+                    Keyword = new SqlKeywordNode("WHEN MATCHED", when.Location),
+                    Action = onMatched
+                }
             );
             var mergeNotMatchedByTarget = First(
                 Rule(
@@ -921,7 +918,12 @@ namespace SqlParser.SqlStandard
                     // TODO: "AND" <clauseSearchCondition>
                     Keyword("THEN"),
                     mergeOnNotMatched,
-                    (when, not, matched, by, target, then, onNotMatched) => new SqlKeywordNode("WHEN NOT MATCHED BY TARGET")
+                    (when, not, matched, by, target, then, onNotMatched) => new SqlMergeMatchClauseNode
+                    {
+                        Location = when.Location,
+                        Keyword = new SqlKeywordNode("WHEN NOT MATCHED BY TARGET", when.Location),
+                        Action = onNotMatched
+                    }
                 ),
                 Rule(
                     Keyword("WHEN"),
@@ -930,7 +932,12 @@ namespace SqlParser.SqlStandard
                     // TODO: "AND" <clauseSearchCondition>
                     Keyword("THEN"),
                     mergeOnNotMatched,
-                    (when, not, matched, then, onNotMatched) => new SqlKeywordNode("WHEN NOT MATCHED")
+                    (when, not, matched, then, onNotMatched) => new SqlMergeMatchClauseNode
+                    {
+                        Location = when.Location,
+                        Keyword = new SqlKeywordNode("WHEN NOT MATCHED", when.Location),
+                        Action = onNotMatched
+                    }
                 )
             );
 
@@ -943,7 +950,12 @@ namespace SqlParser.SqlStandard
                 // TODO: "AND" <clauseSearchCondition>
                 Keyword("THEN"),
                 mergeOnMatched,
-                (when, not, matched, by, source, then, onMatched) => new SqlKeywordNode("WHEN NOT MATCHED BY SOURCE")
+                (when, not, matched, by, source, then, onMatched) => new SqlMergeMatchClauseNode
+                {
+                    Location = when.Location,
+                    Keyword = new SqlKeywordNode("WHEN NOT MATCHED BY SOURCE", when.Location),
+                    Action = onMatched
+                }
             );
 
             var mergeMatchingClause = First(
@@ -981,11 +993,8 @@ namespace SqlParser.SqlStandard
                     Location = merge.Location,
                     Target = into, 
                     Source = u,
-                    MergeCondition = on
-                    // TODO: Change the node to accept multiple matching clauses
-                    //Matched = matched,
-                    //NotMatchedByTarget = nmbt,
-                    //NotMatchedBySource = nmbs
+                    MergeCondition = on,
+                    MatchClauses = new SqlListNode<SqlMergeMatchClauseNode>(matched.ToList())
                 }
             );
 

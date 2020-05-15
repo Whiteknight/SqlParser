@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SqlParser.Ast;
 using SqlParser.SqlServer.Tests.Utility;
@@ -6,7 +7,6 @@ using SqlParser.SqlStandard;
 
 namespace SqlParser.SqlServer.Tests.Parsing
 {
-    [TestFixture]
     public class MergeTests
     {
         [Test]
@@ -16,7 +16,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
 MERGE table1 AS TARGET
     USING table2 AS SOURCE
     ON TARGET.Id = SOURCE.Id
-    WHEN MATCHED THEN UPDATE SET StatusCode = 'OK'
+    WHEN MATCHED THEN UPDATE SET TARGET.StatusCode = 'OK'
 ;";
             var target = new Parser();
             var result = target.Parse(s);
@@ -49,19 +49,26 @@ MERGE table1 AS TARGET
                             Identifier = new SqlIdentifierNode("Id")
                         }
                     },
-                    Matched = new SqlUpdateNode
+                    MatchClauses = new SqlListNode<SqlMergeMatchClauseNode>
                     {
-                        SetClause = new SqlListNode<SqlInfixOperationNode>
+                        new SqlMergeMatchClauseNode 
                         {
-                            new SqlInfixOperationNode
+                            Keyword = new SqlKeywordNode("WHEN MATCHED"),
+                            Action = new SqlUpdateNode
                             {
-                                Left = new SqlQualifiedIdentifierNode
+                                SetClause = new SqlListNode<SqlInfixOperationNode>
                                 {
-                                    Qualifier = new SqlIdentifierNode("TARGET"),
-                                    Identifier = new SqlIdentifierNode("StatusCode")
-                                },
-                                Operator = new SqlOperatorNode("="),
-                                Right = new SqlStringNode("OK")
+                                    new SqlInfixOperationNode
+                                    {
+                                        Left = new SqlQualifiedIdentifierNode
+                                        {
+                                            Qualifier = new SqlIdentifierNode("TARGET"),
+                                            Identifier = new SqlIdentifierNode("StatusCode")
+                                        },
+                                        Operator = new SqlOperatorNode("="),
+                                        Right = new SqlStringNode("OK")
+                                    }
+                                }
                             }
                         }
                     }
@@ -109,19 +116,26 @@ MERGE table1 AS TARGET
                             Identifier = new SqlIdentifierNode("Id")
                         }
                     },
-                    NotMatchedByTarget = new SqlInsertNode
+                    MatchClauses = new SqlListNode<SqlMergeMatchClauseNode>
                     {
-                        Columns = new SqlListNode<SqlIdentifierNode>
+                        new SqlMergeMatchClauseNode 
                         {
-                            new SqlIdentifierNode("StatusCode")
-                        },
-                        Source = new SqlValuesNode
-                        {
-                            Values = new SqlListNode<SqlListNode<ISqlNode>>
+                            Keyword = new SqlKeywordNode("WHEN NOT MATCHED"),
+                            Action = new SqlInsertNode
                             {
-                                new SqlListNode<ISqlNode>
+                                Columns = new SqlListNode<SqlIdentifierNode>
                                 {
-                                    new SqlStringNode("OK")
+                                    new SqlIdentifierNode("StatusCode")
+                                },
+                                Source = new SqlValuesNode
+                                {
+                                    Values = new SqlListNode<SqlListNode<ISqlNode>>
+                                    {
+                                        new SqlListNode<ISqlNode>
+                                        {
+                                            new SqlStringNode("OK")
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -170,19 +184,26 @@ MERGE table1 AS TARGET
                             Identifier = new SqlIdentifierNode("Id")
                         }
                     },
-                    NotMatchedByTarget = new SqlInsertNode
+                    MatchClauses = new SqlListNode<SqlMergeMatchClauseNode>
                     {
-                        Columns = new SqlListNode<SqlIdentifierNode>
+                        new SqlMergeMatchClauseNode
                         {
-                            new SqlIdentifierNode("StatusCode")
-                        },
-                        Source = new SqlValuesNode
-                        {
-                            Values = new SqlListNode<SqlListNode<ISqlNode>>
+                            Keyword = new SqlKeywordNode("WHEN NOT MATCHED BY TARGET"),
+                            Action = new SqlInsertNode
                             {
-                                new SqlListNode<ISqlNode>
+                                Columns = new SqlListNode<SqlIdentifierNode>
                                 {
-                                    new SqlStringNode("OK")
+                                    new SqlIdentifierNode("StatusCode")
+                                },
+                                Source = new SqlValuesNode
+                                {
+                                    Values = new SqlListNode<SqlListNode<ISqlNode>>
+                                    {
+                                        new SqlListNode<ISqlNode>
+                                        {
+                                            new SqlStringNode("OK")
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -231,7 +252,14 @@ MERGE table1 AS TARGET
                             Identifier = new SqlIdentifierNode("Id")
                         }
                     },
-                    NotMatchedBySource = new SqlKeywordNode("DELETE")
+                    MatchClauses = new SqlListNode<SqlMergeMatchClauseNode>
+                    {
+                        new SqlMergeMatchClauseNode
+                        {
+                            Keyword = new SqlKeywordNode("WHEN NOT MATCHED BY SOURCE"),
+                            Action = new SqlKeywordNode("DELETE")
+                        }
+                    }
                 }
             );
         }

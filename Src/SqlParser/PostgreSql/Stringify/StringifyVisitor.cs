@@ -274,31 +274,15 @@ namespace SqlParser.PostgreSql.Stringify
             Append("USING ", n.Source);
             AppendLineAndIndent();
             Append("ON ", n.MergeCondition);
-            if (n.Matched != null)
+            foreach (var matchClause in n.MatchClauses)
             {
                 AppendLineAndIndent();
-                Append("WHEN MATCHED THEN");
+                Visit(matchClause.Keyword);
+                // TODO: Condition
+                Append(" THEN");
                 IncreaseIndent();
                 AppendLineAndIndent();
-                Visit(n.Matched);
-                DecreaseIndent();
-            }
-            if (n.NotMatchedByTarget != null)
-            {
-                AppendLineAndIndent();
-                Append("WHEN NOT MATCHED BY TARGET THEN");
-                IncreaseIndent();
-                AppendLineAndIndent();
-                Visit(n.NotMatchedByTarget);
-                DecreaseIndent();
-            }
-            if (n.NotMatchedBySource != null)
-            {
-                AppendLineAndIndent();
-                Append("WHEN NOT MATCHED BY SOURCE THEN");
-                IncreaseIndent();
-                AppendLineAndIndent();
-                Visit(n.NotMatchedBySource);
+                Visit(matchClause.Action);
                 DecreaseIndent();
             }
 

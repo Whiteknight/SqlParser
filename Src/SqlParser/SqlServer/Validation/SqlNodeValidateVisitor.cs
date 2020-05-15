@@ -156,16 +156,17 @@ namespace SqlParser.SqlServer.Validation
             _result.AssertNotNull(n, nameof(n.Target), n.Target);
             _result.AssertNotNull(n, nameof(n.Source), n.Source);
             _result.AssertNotNull(n, nameof(n.MergeCondition), n.MergeCondition);
-            if (n.Matched != null)
-            {
-                if (!(n.Matched is SqlUpdateNode || (n.Matched is SqlKeywordNode keyword && keyword.Keyword == "DELETE")))
-                    _result.AddError(n, nameof(n.Matched), "MATCHED clause must be valid UPDATE or DELETE");
-            }
-            if (n.NotMatchedBySource != null)
-            {
-                if (!(n.NotMatchedBySource is SqlUpdateNode || (n.NotMatchedBySource is SqlKeywordNode keyword && keyword.Keyword == "DELETE")))
-                    _result.AddError(n, nameof(n.NotMatchedBySource), "NOT MATCHED BY SOURCE clause must be valid UPDATE or DELETE");
-            }
+            // TODO: This
+            //if (n.Matched != null)
+            //{
+            //    if (!(n.Matched is SqlUpdateNode || (n.Matched is SqlKeywordNode keyword && keyword.Keyword == "DELETE")))
+            //        _result.AddError(n, nameof(n.Matched), "MATCHED clause must be valid UPDATE or DELETE");
+            //}
+            //if (n.NotMatchedBySource != null)
+            //{
+            //    if (!(n.NotMatchedBySource is SqlUpdateNode || (n.NotMatchedBySource is SqlKeywordNode keyword && keyword.Keyword == "DELETE")))
+            //        _result.AddError(n, nameof(n.NotMatchedBySource), "NOT MATCHED BY SOURCE clause must be valid UPDATE or DELETE");
+            //}
             return base.VisitMerge(n);
         }
 

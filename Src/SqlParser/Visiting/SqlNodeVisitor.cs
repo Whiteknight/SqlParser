@@ -153,10 +153,13 @@ namespace SqlParser.Visiting
             var target = Visit(n.Target);
             var source = Visit(n.Source);
             var cond = Visit(n.MergeCondition);
-            var m = Visit(n.Matched);
-            var nmt = Visit(n.NotMatchedByTarget);
-            var nms = Visit(n.NotMatchedBySource);
-            return n.Update(target, source, cond, m, nmt, nms);
+
+            // TODO: This
+            //var m = Visit(n.Matched);
+            //var nmt = Visit(n.NotMatchedByTarget);
+            //var nms = Visit(n.NotMatchedBySource);
+            //return n.Update(target, source, cond, m, nmt, nms);
+            return n;
         }
 
         public virtual ISqlNode VisitNull(SqlNullNode n) => n;

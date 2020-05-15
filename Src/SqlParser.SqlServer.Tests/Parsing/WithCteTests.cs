@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SqlParser.Ast;
 using SqlParser.SqlServer.Tests.Utility;
@@ -272,19 +273,26 @@ MERGE table1 AS TARGET
                                 Identifier = new SqlIdentifierNode("Id")
                             }
                         },
-                        Matched = new SqlUpdateNode
+                        MatchClauses = new SqlListNode<SqlMergeMatchClauseNode>
                         {
-                            SetClause = new SqlListNode<SqlInfixOperationNode>
+                            new SqlMergeMatchClauseNode
                             {
-                                new SqlInfixOperationNode
+                                Keyword = new SqlKeywordNode("WHEN MATCHED"),
+                                Action = new SqlUpdateNode
                                 {
-                                    Left = new SqlQualifiedIdentifierNode
+                                    SetClause = new SqlListNode<SqlInfixOperationNode>
                                     {
-                                        Qualifier = new SqlIdentifierNode("TARGET"),
-                                        Identifier = new SqlIdentifierNode("StatusCode")
-                                    },
-                                    Operator = new SqlOperatorNode("="),
-                                    Right = new SqlStringNode("OK")
+                                        new SqlInfixOperationNode
+                                        {
+                                            Left = new SqlQualifiedIdentifierNode
+                                            {
+                                                Qualifier = new SqlIdentifierNode("TARGET"),
+                                                Identifier = new SqlIdentifierNode("StatusCode")
+                                            },
+                                            Operator = new SqlOperatorNode("="),
+                                            Right = new SqlStringNode("OK")
+                                        }
+                                    }
                                 }
                             }
                         }
