@@ -12,7 +12,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
     public class InsertSelectTests
     {
         [Test]
-        public void Insert_ValuesOneRowTwoColumns()
+        public void Insert_SelectOneRowTwoColumns()
         {
             const string s = @"INSERT INTO MyTable(Column1, Column2) SELECT ColumnA, ColumnB FROM MyTable;";
             var target = new Parser();
@@ -47,8 +47,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
         [Test]
         public void Insert_Execute()
         {
-            const string s = @"INSERT INTO MyTable(Column1) EXECUTE 'SELECT 1';
-;";
+            const string s = @"INSERT INTO MyTable (Column1) EXECUTE 'SELECT 1';";
             var target = new Parser();
             var result = target.Parse(s);
             result.Should().PassValidation().And.RoundTrip();

@@ -791,6 +791,96 @@ namespace SqlParser.SqlStandard
                 }
             );
 
+
+            var outputKeyword = First(
+                Keyword("OUTPUT"),
+                Keyword("OUT")
+            );
+            var maybeOutputKeyword = outputKeyword.Optional();
+
+            var execArgument = First(
+                Keyword("DEFAULT").Transform(k =>
+                    new SqlExecuteArgumentNode
+                    {
+                        Location = k.Location,
+                        Value = k
+                    }
+                ),
+                Rule(
+                    variable,
+                    equals,
+                    scalarExpression,
+                    maybeOutputKeyword,
+                    (v, eq, expr, output) => new SqlExecuteArgumentNode
+                    {
+                        Location = v.Location,
+                        AssignVariable = v,
+                        Value = expr,
+                        IsOut = output != null
+                    }
+                ),
+                Rule(
+                    scalarExpression,
+                    maybeOutputKeyword,
+                    (expr, output) => new SqlExecuteArgumentNode
+                    {
+                        Location = expr.Location,
+                        Value = expr,
+                        IsOut = output != null
+                    }
+                )
+            );
+
+            var executeStatement = LeftApply<ISqlNode>(
+                // TODO: @return_status = ...
+                First(
+                    Keyword("EXECUTE"),
+                    Keyword("EXEC")
+                ),
+                left => First<ISqlNode>(
+                    Rule(
+                        left,
+                        // TODO: WITH <execute_option>
+                        objectIdentifier,
+                        execArgument.ListSeparatedBy(comma).Transform(l => new SqlListNode<SqlExecuteArgumentNode>(l.ToList())),
+                        (exec, name, args) => new SqlExecuteNode
+                        {
+                            Location = exec.Location,
+                            Name = name,
+                            Arguments = args
+                        }
+                    ),
+                    Rule(
+                        left,
+                        scalarExpression.Parenthesized(),
+                        (exec, expr) => new SqlExecuteNode
+                        {
+                            Location = exec.Location,
+                            Name = expr
+                        }
+                    ),
+                    Rule(
+                        left,
+                        quotedString,
+                        (exec, str) => new SqlExecuteNode
+                        {
+                            Location = exec.Location,
+                            Name = str
+                        }
+                    ),
+                    Rule(
+                        left,
+                        variable,
+                        (exec, str) => new SqlExecuteNode
+                        {
+                            Location = exec.Location,
+                            Name = str
+                        }
+                    )
+                ),
+                ApplyArity.ExactlyOne
+            );
+
             var insertColumnList = identifier
                 .ListSeparatedBy(comma, true)
                 .Transform(l => new SqlListNode<SqlIdentifierNode>(l.ToList()))
@@ -814,16 +904,38 @@ namespace SqlParser.SqlStandard
 
             var insertSource = First(
                 valuesLiteral,
-                queryExpression
+                Keyword("DEFAULT", "VALUES"),
+                queryExpression,
+                executeStatement
                 // TODO: EXEC/EXECUTE
                 // TODO: DEFAULT VALUES
             );
 
             var insertStatement = Rule(
-                Keyword("INSERT", "INTO"),
-                objectIdentifier,
-                insertColumnList,
-                insertSource,
+                Keyword("INSERT", "INTO").Examine((p, i) =>
+                    {
+                    }, (p, i, r) =>
+                    {
+                    }
+                ),
+                objectIdentifier.Examine((p, i) =>
+                    {
+                    }, (p, i, r) =>
+                    {
+                    }
+                ),
+                insertColumnList.Examine((p, i) =>
+                    {
+                    }, (p, i, r) =>
+                    {
+                    }
+                ),
+                insertSource.Examine((p, i) =>
+                    {
+                    }, (p, i, r) =>
+                    {
+                    }
+                ),
                 (insertInto, table, columns, source) => new SqlInsertNode
                 {
                     Location = insertInto.Location,
@@ -1070,95 +1182,6 @@ namespace SqlParser.SqlStandard
                     Operator = op,
                     Right = expr
                 }
-            );
-
-            var outputKeyword = First(
-                Keyword("OUTPUT"),
-                Keyword("OUT")
-            );
-            var maybeOutputKeyword = outputKeyword.Optional();
-
-            var execArgument = First(
-                Keyword("DEFAULT").Transform(k =>
-                    new SqlExecuteArgumentNode
-                    {
-                        Location = k.Location,
-                        Value = k
-                    }
-                ),
-                Rule(
-                    variable,
-                    equals,
-                    scalarExpression,
-                    maybeOutputKeyword,
-                    (v, eq, expr, output) => new SqlExecuteArgumentNode
-                    {
-                        Location = v.Location,
-                        AssignVariable = v,
-                        Value = expr,
-                        IsOut = output != null
-                    }
-                ),
-                Rule(
-                    scalarExpression,
-                    maybeOutputKeyword,
-                    (expr, output) => new SqlExecuteArgumentNode
-                    {
-                        Location = expr.Location,
-                        Value = expr,
-                        IsOut = output != null
-                    }
-                )
-            );
-
-            var executeStatement = LeftApply<ISqlNode>(
-                // TODO: @return_status = ...
-                First(
-                    Keyword("EXECUTE"),
-                    Keyword("EXEC")
-                ),
-                left => First<ISqlNode>(
-                    Rule(
-                        left,
-                        // TODO: WITH <execute_option>
-                        objectIdentifier,
-                        execArgument.ListSeparatedBy(comma).Transform(l => new SqlListNode<SqlExecuteArgumentNode>(l.ToList())),
-                        (exec, name, args) => new SqlExecuteNode
-                        {
-                            Location = exec.Location,
-                            Name = name,
-                            Arguments = args
-                        }
-                    ),
-                    Rule(
-                        left,
-                        scalarExpression.Parenthesized(),
-                        (exec, expr) => new SqlExecuteNode
-                        {
-                            Location = exec.Location,
-                            Name = expr
-                        }
-                    ),
-                    Rule(
-                        left,
-                        quotedString,
-                        (exec, str) => new SqlExecuteNode
-                        {
-                            Location = exec.Location,
-                            Name = str
-                        }
-                    ),
-                    Rule(
-                        left,
-                        variable,
-                        (exec, str) => new SqlExecuteNode
-                        {
-                            Location = exec.Location,
-                            Name = str
-                        }
-                    )
-                ),
-                ApplyArity.ExactlyOne
             );
 
             var statementInternal = Empty().Transform(t => (ISqlNode) null);
