@@ -54,7 +54,9 @@ SELECT
         {
             var target = new Parser();
             var result = target.Parse(Query);
-            SqlParser.SqlServer.Tests.Utility.SqlNodeExtensions.Should(result).NotBeNull();
+            SqlParser.SqlServer.Tests.Utility.SqlNodeExtensions.Should(result).NotBeNull()
+                .And.PassValidation()
+                .And.RoundTrip();
         }
 
         [Test]

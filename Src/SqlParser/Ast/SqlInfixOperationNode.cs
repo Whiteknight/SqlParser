@@ -85,5 +85,12 @@ namespace SqlParser.Ast
             var parts = op.Split(' ');
             return parts.Length == 2 && _comparisonOperators.Contains(parts[0]) && _comparisonSetModifiers.Contains(parts[1]);
         }
+
+        public bool IsNullCompareOperator()
+        {
+            if (Operator.Operator == "IS" || Operator.Operator == "IS NOT")
+                return true;
+            return false;
+        }
     }
 }

@@ -32,7 +32,7 @@ namespace SqlParser.SqlServer.Validation
 
         public override ISqlNode VisitCase(SqlCaseNode n)
         {
-            _result.AssertIsScalarExpression(n, nameof(n.InputExpression), n.InputExpression);
+            _result.AssertIsScalarExpressionOrNothing(n, nameof(n.InputExpression), n.InputExpression);
             if (n.ElseExpression != null)
                 _result.AssertIsScalarExpression(n, nameof(n.ElseExpression), n.ElseExpression);
             return base.VisitCase(n);
@@ -115,6 +115,11 @@ namespace SqlParser.SqlServer.Validation
             {
                 _result.AssertIsScalarExpression(n, nameof(n.Left), n.Left);
                 _result.AssertIsScalarExpression(n, nameof(n.Right), n.Right);
+            }
+            else if (n.IsNullCompareOperator())
+            {
+                _result.AssertIsScalarExpression(n, nameof(n.Left), n.Left);
+                _result.Assert(n, nameof(n.Right), () => n.Right is SqlNullNode);
             }
             else
                 _result.UnexpectedNodeType(n, nameof(n.Operator), n.Operator);

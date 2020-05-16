@@ -46,11 +46,19 @@ namespace SqlParser.SqlServer.Validation
             {
                 typeof(SqlNumberNode), typeof(SqlNullNode), typeof(SqlInfixOperationNode),
                 typeof(SqlPrefixOperationNode), typeof(SqlStringNode),
-                typeof(SqlIdentifierNode), typeof(SqlQualifiedIdentifierNode), typeof(SqlVariableNode)
+                typeof(SqlIdentifierNode), typeof(SqlQualifiedIdentifierNode), typeof(SqlVariableNode),
+                typeof(SqlCastNode)
             }.Contains(childType))
                 return AddError(parent, name, "Is not an acceptable scalar expression node");
 
             return true;
+        }
+
+        public bool AssertIsScalarExpressionOrNothing(ISqlNode parent, string name, ISqlNode child)
+        {
+            if (child == null)
+                return true;
+            return AssertIsScalarExpression(parent, name, child);
         }
 
         public bool AssertIsBooleanExpression(ISqlNode parent, string name, ISqlNode child)
