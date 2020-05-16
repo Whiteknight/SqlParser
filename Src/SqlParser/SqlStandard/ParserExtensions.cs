@@ -1,5 +1,4 @@
 ﻿using ParserObjects;
-using ParserObjects.Parsers;
 using SqlParser.Ast;
 using SqlParser.Tokenizing;
 using static ParserObjects.Parsers.ParserMethods<SqlParser.Tokenizing.SqlToken>;
@@ -24,7 +23,7 @@ namespace SqlParser.SqlStandard
             );
         }
 
-        public static IParser<SqlToken, SqlParenthesisNode<TNode>> MaybeParenthesized<TNode>(this IParser<SqlToken, TNode> parser)
+        public static IParser<SqlToken, TNode> MaybeParenthesized<TNode>(this IParser<SqlToken, TNode> parser)
             where TNode : class, ISqlNode
         {
             return First(
@@ -32,9 +31,9 @@ namespace SqlParser.SqlStandard
                     _openParen,
                     parser,
                     _closeParen,
-                    (o, value, c) => new SqlParenthesisNode<TNode>(value)
+                    (o, value, c) => value
                 ),
-                parser.Transform(x => new SqlParenthesisNode<TNode>(x))
+                parser
             );
         }
     }

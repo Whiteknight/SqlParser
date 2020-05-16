@@ -42,13 +42,13 @@ namespace SqlParser.SqlServer.Validation
                 return false;
             var childType = child.GetType();
             // TODO: Fix this, needs to accept parenthesis, etc
-            //if (!new[]
-            //{
-            //    typeof(SqlNumberNode), typeof(SqlNullNode), typeof(SqlInfixOperationNode),
-            //    typeof(SqlPrefixOperationNode), typeof(SqlStringNode),
-            //    typeof(SqlIdentifierNode), typeof(SqlQualifiedIdentifierNode), typeof(SqlVariableNode)
-            //}.Contains(childType))
-            //    return AddError(parent, name, "Is not an acceptable scalar expression node");
+            if (!new[]
+            {
+                typeof(SqlNumberNode), typeof(SqlNullNode), typeof(SqlInfixOperationNode),
+                typeof(SqlPrefixOperationNode), typeof(SqlStringNode),
+                typeof(SqlIdentifierNode), typeof(SqlQualifiedIdentifierNode), typeof(SqlVariableNode)
+            }.Contains(childType))
+                return AddError(parent, name, "Is not an acceptable scalar expression node");
 
             return true;
         }

@@ -288,5 +288,31 @@ namespace SqlParser.SqlServer.Tests.Parsing
                 }
             );
         }
+
+        [Test]
+        public void Select_CastNullAsInt()
+        {
+            const string s = "SELECT CAST(NULL AS int)";
+            var target = new Parser();
+            var result = target.Parse(s);
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<ISqlNode>
+                    {
+                        new SqlCastNode
+                        {
+                            Expression = new SqlNullNode(),
+                            DataType = new SqlDataTypeNode
+                            {
+                                DataType = new SqlKeywordNode("INT")
+                            }
+                        }
+                    }
+                }
+            );
+        }
     }
 }

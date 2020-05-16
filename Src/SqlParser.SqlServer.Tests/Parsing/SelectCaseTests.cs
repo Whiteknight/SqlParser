@@ -13,7 +13,7 @@ namespace SqlParser.SqlServer.Tests.Parsing
     { 
 
         [Test]
-        public void Select_CaseWhenThenElseEnd()
+        public void Select_CaseExprWhenThenElseEnd()
         {
             const string s = "SELECT CASE 5 WHEN 6 THEN 'A' ELSE 'B' END;";
             var target = new Parser();
@@ -34,6 +34,41 @@ namespace SqlParser.SqlServer.Tests.Parsing
                                 new SqlCaseWhenNode
                                 {
                                     Condition = new SqlNumberNode(6),
+                                    Result = new SqlStringNode("A")
+                                }
+                            },
+                            ElseExpression = new SqlStringNode("B")
+                        }
+                    }
+                }
+            );
+        }
+
+        [Test]
+        public void Select_CaseNoExprWhenThenElseEnd()
+        {
+            const string s = "SELECT CASE WHEN 6=5 THEN 'A' ELSE 'B' END;";
+            var target = new Parser();
+            var result = target.Parse(s);
+            result.Should().PassValidation().And.RoundTrip();
+            var output = result.ToString();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<ISqlNode>
+                    {
+                        new SqlCaseNode
+                        {
+                            WhenExpressions = new List<SqlCaseWhenNode>
+                            {
+                                new SqlCaseWhenNode
+                                {
+                                    Condition = new SqlInfixOperationNode {
+                                        Left = new SqlNumberNode(6),
+                                        Operator = new SqlOperatorNode("="),
+                                        Right = new SqlNumberNode(5)
+                                    },
                                     Result = new SqlStringNode("A")
                                 }
                             },

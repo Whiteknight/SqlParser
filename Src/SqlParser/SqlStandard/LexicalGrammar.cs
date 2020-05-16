@@ -129,15 +129,17 @@ namespace SqlParser.SqlStandard
             );
 
             var identifier = First(
-                regularIdentifier,
-                delimitedIdentifier
+                // If it's not bracketed, it might be a keyword. If it is bracketed, it's
+                // always an identifier
+                regularIdentifier.Transform(c => new SqlToken(c, Facts.IsKeyword(c) ? SqlTokenType.Keyword : SqlTokenType.Identifier)),
+                delimitedIdentifier.Transform(c => new SqlToken(c, SqlTokenType.Identifier))
             );
 
             var tokens = First(
                 End().Transform(c => new SqlToken(null, SqlTokenType.EndOfInput)),
                 variable.Transform(c => new SqlToken(c, SqlTokenType.Variable)),
                 // TODO: Unquoted identifiers might be keywords
-                identifier.Transform(c => new SqlToken(c, Facts.IsKeyword(c) ? SqlTokenType.Keyword : SqlTokenType.Identifier)),
+                identifier,
                 stringLiteral.Transform(c => new SqlToken(c, SqlTokenType.QuotedString)),
                 //nationalStringLiteral.Transform(c => new SqlToken(c, SqlTokenType.QuotedString)),
                 // TODO: Binary literal isn't really a quoted string

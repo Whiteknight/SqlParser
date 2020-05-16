@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using ParserObjects;
 using ParserObjects.Parsers;
@@ -21,13 +20,17 @@ namespace SqlParser.SqlStandard
             var identifierToken = Token(SqlTokenType.Identifier);
             var identifier = identifierToken.Transform(t => new SqlIdentifierNode(t));
             var keywordToken = Token(SqlTokenType.Keyword);
-            var keyword = keywordToken.Transform(k => new SqlKeywordNode(k));
+            var keyword = keywordToken.Transform(k => new SqlKeywordNode(k.Value.ToUpperInvariant(), k.Location));
             var dot = Token(SqlTokenType.Symbol, ".");
             var star = Operator("*");
             var comma = Token(SqlTokenType.Symbol, ",");
             var equals = Token(SqlTokenType.Symbol, "=").Transform(t => new SqlOperatorNode(t));
             var assignmentOperator = Match(t => t.IsSymbol("=", "+=", "-=", "*=", "/=", "%=", "&=", "^=", "|=")).Transform(t => new SqlOperatorNode(t));
-            var identifierOrKeywordAsIdentifier = First(identifierToken, keywordToken).Transform(t => new SqlIdentifierNode(t));
+            var identifierOrKeywordAsIdentifier = First(
+                identifierToken, 
+                Token(SqlTokenType.Keyword, "TARGET"),
+                Token(SqlTokenType.Keyword, "SOURCE")
+            ).Transform(t => new SqlIdentifierNode(t));
             var number = Token(SqlTokenType.Number).Transform(t => new SqlNumberNode(t));
             var openParen = Token(SqlTokenType.Symbol, "(");
             var closeParen = Token(SqlTokenType.Symbol, ")");
@@ -223,11 +226,12 @@ namespace SqlParser.SqlStandard
 
             var caseBlock = Rule(
                 Keyword("CASE"),
-                scalarExpression,
+                scalarExpression.MaybeParenthesized().Optional(),
                 caseWhen.List(),
                 caseElse.Optional(),
                 end,
-                (c, expr, when, e, x) => new SqlCaseNode {
+                (c, expr, when, e, x) => new SqlCaseNode
+                {
                     Location = c.Location,
                     InputExpression = expr,
                     WhenExpressions = when.ToList(),
@@ -328,7 +332,7 @@ namespace SqlParser.SqlStandard
                         left,
                         Keyword("NOT").Optional(),
                         Keyword("LIKE"),
-                        quotedString.MaybeParenthesized().Transform(p => p.Expression),
+                        quotedString.MaybeParenthesized(),
                         (l, not, like, pattern) => new SqlInfixOperationNode
                         {
                             Left = l,
@@ -686,7 +690,7 @@ namespace SqlParser.SqlStandard
 
             var selectTopClause = Rule(
                 Keyword("TOP"),
-                variableOrNumber.MaybeParenthesized().Transform(p => p.Expression),
+                variableOrNumber.MaybeParenthesized(),
                 Keyword("PERCENT").Optional(),
                 Keyword("WITH", "TIES").Optional(),
                 (top, expr, percent, withTies) => new SqlTopLimitNode {
@@ -1171,7 +1175,7 @@ namespace SqlParser.SqlStandard
 
             var ifStatement = Rule(
                 Keyword("IF"),
-                booleanExpression.MaybeParenthesized().Transform(p => p.Expression),
+                booleanExpression.MaybeParenthesized(),
                 statement,
                 Rule(
                     Keyword("ELSE"),
