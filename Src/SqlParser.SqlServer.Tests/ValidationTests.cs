@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using SqlParser.Ast;
 using SqlParser.SqlServer.Validation;
+using SqlParser.SqlStandard;
 
 namespace SqlParser.SqlServer.Tests
 {
@@ -16,14 +17,14 @@ namespace SqlParser.SqlServer.Tests
                 Alias = null,
                 Source = null
             };
-            ast.Validate().Passed.Should().BeFalse();
+            ast.ValidateForSqlServer().Passed.Should().BeFalse();
 
             ast = new SqlAliasNode
             {
                 Alias = new SqlIdentifierNode("x"),
                 Source = new SqlIdentifierNode("MyTable")
             };
-            ast.Validate().Passed.Should().BeTrue();
+            ast.ValidateForSqlServer().Passed.Should().BeTrue();
         }
 
         [Test]
@@ -35,7 +36,7 @@ namespace SqlParser.SqlServer.Tests
                 Low = new SqlNumberNode(5),
                 High = new SqlKeywordNode("MAX")
             };
-            var result = ast.Validate();
+            var result = ast.ValidateForSqlServer();
             result.Passed.Should().BeFalse();
 
             ast = new SqlBetweenOperationNode
@@ -44,7 +45,7 @@ namespace SqlParser.SqlServer.Tests
                 Low = new SqlNumberNode(5),
                 High = new SqlNumberNode(7)
             };
-            ast.Validate().Passed.Should().BeTrue();
+            ast.ValidateForSqlServer().Passed.Should().BeTrue();
         }
     }
 }

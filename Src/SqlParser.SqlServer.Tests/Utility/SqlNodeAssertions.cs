@@ -51,7 +51,7 @@ namespace SqlParser.SqlServer.Tests.Utility
 
         public AndConstraint<SqlNodeAssertions> PassValidation()
         {
-            Subject.Validate().ThrowOnError();
+            Subject.ValidateForSqlServer().ThrowOnError();
             return new AndConstraint<SqlNodeAssertions>(this);
         }
 

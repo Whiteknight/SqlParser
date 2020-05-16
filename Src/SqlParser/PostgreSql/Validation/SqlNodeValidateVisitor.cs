@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using SqlParser.Ast;
+using SqlParser.SqlServer.Validation;
+using SqlParser.SqlStandard;
 using SqlParser.Visiting;
 
 namespace SqlParser.PostgreSql.Validation

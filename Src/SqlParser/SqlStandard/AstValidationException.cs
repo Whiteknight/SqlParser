@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SqlParser.SqlServer.Validation
+namespace SqlParser.SqlStandard
 {
     [Serializable]
     public class AstValidationException : Exception

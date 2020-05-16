@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using SqlParser.Ast;
+using SqlParser.SqlStandard;
 using SqlParser.Visiting;
 
 namespace SqlParser.SqlServer.Validation
