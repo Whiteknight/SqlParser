@@ -1,9 +1,9 @@
-﻿using SqlParser.SqlServer.Stringify;
+﻿using ParserObjects;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlOverNode : ISqlNode
+    public class SqlOverNode : SqlNode, ISqlNode
     {
         public ISqlNode Expression { get; set; }
         public ISqlNode PartitionBy { get; set; }

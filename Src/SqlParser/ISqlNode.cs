@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ParserObjects;
 using SqlParser.Visiting;
 
-namespace SqlParser.Ast
+namespace SqlParser
 {
-    public interface ISqlNode
+    public interface ISqlNode : IDiagnosable
     {
         Location Location { get; set; }
         ISqlNode Accept(INodeVisitorTyped visitor);

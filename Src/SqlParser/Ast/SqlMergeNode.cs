@@ -1,8 +1,9 @@
-﻿using SqlParser.Visiting;
+﻿using ParserObjects;
+using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlMergeNode : ISqlNode
+    public class SqlMergeNode : SqlNode, ISqlNode
     {
         // TODO: Symbol table? source and target can be aliased, we also want to insert 'TARGET' and 'SOURCE' as symbols
         public ISqlNode Target { get; set; }
@@ -29,7 +30,7 @@ namespace SqlParser.Ast
         }
     }
 
-    public class SqlMergeMatchClauseNode : ISqlNode
+    public class SqlMergeMatchClauseNode : SqlNode, ISqlNode
     {
         public SqlKeywordNode Keyword { get; set; }
         public ISqlNode Condition { get; set; }

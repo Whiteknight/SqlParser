@@ -4,7 +4,7 @@ using SqlParser.Ast;
 
 namespace SqlParser.Visiting
 {
-    public abstract class SqlNodeVisitor : ISqlNodeVisitor, INodeVisitorTyped
+    public abstract class SqlNodeVisitor : SqlNode, ISqlNodeVisitor, INodeVisitorTyped
     {
         // TODO: Some kind of ShouldVisit predicate so certain visitors can choose which trees to navigate
         public virtual ISqlNode Visit(ISqlNode n) => (n as ISqlNode)?.Accept(this);

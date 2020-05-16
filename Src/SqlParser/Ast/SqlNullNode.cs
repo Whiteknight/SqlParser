@@ -1,10 +1,10 @@
-﻿using SqlParser.SqlServer.Stringify;
+﻿using ParserObjects;
 using SqlParser.Tokenizing;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlNullNode : ISqlNode
+    public class SqlNullNode : SqlNode, ISqlNode
     {
         public SqlNullNode()
         {

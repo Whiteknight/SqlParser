@@ -1,11 +1,10 @@
-﻿using SqlParser.SqlServer.Stringify;
-using SqlParser.SqlServer.Symbols;
+﻿using ParserObjects;
 using SqlParser.Symbols;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlUpdateNode : ISqlNode, ISqlSymbolScopeNode
+    public class SqlUpdateNode : SqlNode, ISqlNode, ISqlSymbolScopeNode
     {
         public ISqlNode Source { get; set; }
         public SqlListNode<SqlInfixOperationNode> SetClause { get; set; }
@@ -13,8 +12,6 @@ namespace SqlParser.Ast
         public SymbolTable Symbols { get; set; }
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitUpdate(this);
-
-        
 
         public Location Location { get; set; }
 

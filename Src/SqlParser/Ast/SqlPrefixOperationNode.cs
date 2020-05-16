@@ -1,9 +1,9 @@
-﻿using SqlParser.SqlServer.Stringify;
+﻿using ParserObjects;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlPrefixOperationNode : ISqlNode
+    public class SqlPrefixOperationNode : SqlNode, ISqlNode
     {
         public SqlOperatorNode Operator { get; set; }
         public ISqlNode Right { get; set; }

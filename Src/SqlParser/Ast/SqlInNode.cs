@@ -1,9 +1,9 @@
-﻿using SqlParser.SqlServer.Stringify;
+﻿using ParserObjects;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlInNode : ISqlNode
+    public class SqlInNode : SqlNode, ISqlNode
     {
         public bool Not { get; set; }
         public ISqlNode Search { get; set; }

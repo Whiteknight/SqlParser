@@ -1,12 +1,10 @@
-﻿using SqlParser.SqlServer.Stringify;
+﻿using ParserObjects;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlAliasNode  : ISqlNode
+    public class SqlAliasNode  : SqlNode, ISqlNode
     {
-        
-
         public Location Location { get; set; }
 
         public ISqlNode Source { get; set; }

@@ -4,7 +4,7 @@ using SqlParser.Visiting;
 
 namespace SqlParser.Analysis
 {
-    public class SubtreeVisitor : ISqlNodeVisitor
+    public class SubtreeVisitor : SqlNode, ISqlNodeVisitor
     {
         private readonly ISqlNodeVisitor _inner;
         private readonly Predicate<ISqlNode> _include;

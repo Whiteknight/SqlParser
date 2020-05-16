@@ -1,13 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using SqlParser.SqlServer.Stringify;
-using SqlParser.SqlServer.Symbols;
+using ParserObjects;
 using SqlParser.Symbols;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlStatementListNode : ISqlNode, ISqlSymbolScopeNode, IList<ISqlNode>
+    public class SqlStatementListNode : SqlNode, ISqlNode, ISqlSymbolScopeNode, IList<ISqlNode>
     {
         public List<ISqlNode> Statements { get; }
         public bool UseBeginEnd { get; set; }
@@ -23,8 +22,6 @@ namespace SqlParser.Ast
         {
             Statements = statements ?? new List<ISqlNode>();
         }
-
-        
 
         public Location Location { get; set; }
 

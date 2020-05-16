@@ -1,9 +1,10 @@
 ﻿using System.Linq;
+using ParserObjects;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlCastNode : ISqlNode
+    public class SqlCastNode : SqlNode, ISqlNode
     {
         public ISqlNode Expression { get; set; }
         public SqlDataTypeNode DataType { get; set; }

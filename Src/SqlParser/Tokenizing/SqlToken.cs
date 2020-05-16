@@ -1,10 +1,11 @@
-﻿using System.Linq;
-using SqlParser.SqlServer;
+﻿using System.Collections.Generic;
+using System.Linq;
+using ParserObjects;
 using SqlParser.SqlStandard;
 
 namespace SqlParser.Tokenizing
 {
-    public class SqlToken
+    public class SqlToken : IDiagnosable
     {
         public string Value { get; }
         public SqlTokenType Type { get; }
@@ -82,5 +83,14 @@ namespace SqlParser.Tokenizing
 
         // Used primarily for debugging/testing purposes
         public override string ToString() => $"{Type}: '{Value}'";
+
+        private List<ParseError> _errors;
+        public IEnumerable<ParseError> Errors => _errors;
+        public void AddErrors(IEnumerable<ParseError> errors)
+        {
+            if (_errors == null)
+                _errors = new List<ParseError>();
+            _errors.AddRange(errors);
+        }
     }
 }

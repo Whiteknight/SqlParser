@@ -1,7 +1,6 @@
-﻿using SqlParser.SqlServer.Symbols;
-using SqlParser.Symbols;
+﻿using SqlParser.Symbols;
 
-namespace SqlParser.Ast
+namespace SqlParser
 {
     public interface ISqlSymbolScopeNode
     {

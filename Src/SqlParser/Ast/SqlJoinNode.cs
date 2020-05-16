@@ -1,9 +1,9 @@
-﻿using SqlParser.SqlServer.Stringify;
+﻿using ParserObjects;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlJoinNode : ISqlNode
+    public class SqlJoinNode : SqlNode, ISqlNode
     {
         public ISqlNode Left { get; set; }
         public SqlOperatorNode Operator { get; set; }

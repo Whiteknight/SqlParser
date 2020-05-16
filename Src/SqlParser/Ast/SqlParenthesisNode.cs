@@ -1,9 +1,9 @@
-﻿using SqlParser.SqlServer.Stringify;
+﻿using ParserObjects;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlParenthesisNode<TNode> : ISqlNode
+    public class SqlParenthesisNode<TNode> : SqlNode, ISqlNode
         where TNode: class, ISqlNode
     {
         public SqlParenthesisNode()

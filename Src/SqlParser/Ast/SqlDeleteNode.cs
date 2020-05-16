@@ -1,11 +1,10 @@
-﻿using SqlParser.SqlServer.Stringify;
-using SqlParser.SqlServer.Symbols;
+﻿using ParserObjects;
 using SqlParser.Symbols;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlDeleteNode : ISqlNode, ISqlSymbolScopeNode
+    public class SqlDeleteNode : SqlNode, ISqlNode, ISqlSymbolScopeNode
     {
         public ISqlNode Source { get; set; }
         public ISqlNode WhereClause { get; set; }

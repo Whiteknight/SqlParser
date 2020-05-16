@@ -1,9 +1,9 @@
-﻿using SqlParser.SqlServer.Stringify;
+﻿using ParserObjects;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlIfNode : ISqlNode
+    public class SqlIfNode : SqlNode, ISqlNode
     {
         public ISqlNode Condition { get; set; }
         public ISqlNode Then { get; set; }

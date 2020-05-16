@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using SqlParser.SqlServer.Stringify;
+using ParserObjects;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlInfixOperationNode : ISqlNode
+    public class SqlInfixOperationNode : SqlNode, ISqlNode
     {
         public ISqlNode Left { get; set; }
         public SqlOperatorNode Operator { get; set; }

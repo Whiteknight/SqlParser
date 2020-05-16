@@ -1,9 +1,10 @@
-﻿using SqlParser.Symbols;
+﻿using ParserObjects;
+using SqlParser.Symbols;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlSelectNode : ISqlNode, ISqlSymbolScopeNode
+    public class SqlSelectNode : SqlNode, ISqlNode, ISqlSymbolScopeNode
     {
         public string Modifier { get; set; }
         public SqlTopLimitNode TopLimitClause { get; set; }
@@ -16,7 +17,6 @@ namespace SqlParser.Ast
         public ISqlNode OffsetClause { get; set; }
         public ISqlNode FetchClause { get; set; }
         
-
         public SymbolTable Symbols { get; set; }
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitSelect(this);

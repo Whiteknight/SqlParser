@@ -5,7 +5,7 @@ using SqlParser.Visiting;
 
 namespace SqlParser.SqlServer.Stringify
 {
-    public partial class StringifyVisitor : ISqlNodeVisitor
+    public partial class StringifyVisitor : SqlNode, ISqlNodeVisitor
     {
         private readonly Stack<SymbolTable> _allSymbolTables;
         private readonly Stack<SymbolTable> _nonNullSymbolTables;

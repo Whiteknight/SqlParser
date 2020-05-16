@@ -1,9 +1,10 @@
-﻿using SqlParser.Tokenizing;
+﻿using ParserObjects;
+using SqlParser.Tokenizing;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlStringNode : ISqlNode
+    public class SqlStringNode : SqlNode, ISqlNode
     {
         public SqlStringNode()
         {

@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using SqlParser.SqlServer.Stringify;
+using ParserObjects;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlListNode<TNode> : ISqlNode, ICollection<TNode>
+    public class SqlListNode<TNode> : SqlNode, ISqlNode, ICollection<TNode>
         where TNode : class, ISqlNode
     {
         public SqlListNode()

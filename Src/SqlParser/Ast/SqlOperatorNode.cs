@@ -1,11 +1,11 @@
 ﻿using System;
-using SqlParser.SqlServer.Stringify;
+using ParserObjects;
 using SqlParser.Tokenizing;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlOperatorNode  : ISqlNode
+    public class SqlOperatorNode  : SqlNode, ISqlNode
     {
         public SqlOperatorNode()
         {
@@ -15,6 +15,7 @@ namespace SqlParser.Ast
         {
             Operator = token.Value;
             Location = token.Location;
+            AddErrors(token.Errors);
         }
 
         public SqlOperatorNode(string op, Location location)
@@ -27,9 +28,6 @@ namespace SqlParser.Ast
         {
             Operator = op;
         }
-
-
-        
 
         public Location Location { get; set; }
 

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ParserObjects;
 using SqlParser.Tokenizing;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlIdentifierNode : ISqlNode
+    public class SqlIdentifierNode : SqlNode, ISqlNode
     {
         public SqlIdentifierNode()
         {
@@ -33,7 +34,7 @@ namespace SqlParser.Ast
         public override string ToString() => Name;
     }
 
-    public class SqlQualifiedIdentifierNode : ISqlNode
+    public class SqlQualifiedIdentifierNode : SqlNode, ISqlNode
     {
         public SqlQualifiedIdentifierNode()
         {
@@ -78,7 +79,7 @@ namespace SqlParser.Ast
         }
     }
 
-    public class SqlObjectIdentifierNode : ISqlNode
+    public class SqlObjectIdentifierNode : SqlNode, ISqlNode
     {
         public SqlObjectIdentifierNode()
         {

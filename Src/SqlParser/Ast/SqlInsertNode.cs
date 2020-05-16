@@ -1,9 +1,10 @@
-﻿using SqlParser.Symbols;
+﻿using ParserObjects;
+using SqlParser.Symbols;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlInsertNode : ISqlNode, ISqlSymbolScopeNode
+    public class SqlInsertNode : SqlNode, ISqlNode, ISqlSymbolScopeNode
     {
         public ISqlNode Table { get; set; }
         public SqlListNode<SqlIdentifierNode> Columns { get; set; }

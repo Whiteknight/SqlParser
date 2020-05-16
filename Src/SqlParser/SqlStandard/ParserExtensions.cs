@@ -2,23 +2,18 @@
 using SqlParser.Ast;
 using SqlParser.Tokenizing;
 using static ParserObjects.Parsers.ParserMethods<SqlParser.Tokenizing.SqlToken>;
-using static SqlParser.SqlStandard.ParserMethods;
 
 namespace SqlParser.SqlStandard
 {
     public static class ParserExtensions
     {
-        // TODO: Move these into the grammar
-        private static readonly IParser<SqlToken, SqlToken> _openParen = Token(SqlTokenType.Symbol, "(");
-        private static readonly IParser<SqlToken, SqlToken> _closeParen = Token(SqlTokenType.Symbol, ")");
-
         public static IParser<SqlToken, SqlParenthesisNode<TNode>> Parenthesized<TNode>(this IParser<SqlToken, TNode> parser) 
             where TNode : class, ISqlNode
         {
             return Rule(
-                _openParen,
+                SqlStandardGrammar.OpenParen,
                 parser,
-                _closeParen,
+                SqlStandardGrammar.CloseParen,
                 (o, value, c) => new SqlParenthesisNode<TNode>(value)
             );
         }
@@ -28,9 +23,9 @@ namespace SqlParser.SqlStandard
         {
             return First(
                 Rule(
-                    _openParen,
+                    SqlStandardGrammar.OpenParen,
                     parser,
-                    _closeParen,
+                    SqlStandardGrammar.CloseParen,
                     (o, value, c) => value
                 ),
                 parser

@@ -1,10 +1,11 @@
 ﻿using System;
+using ParserObjects;
 using SqlParser.Tokenizing;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlNumberNode : ISqlNode
+    public class SqlNumberNode : SqlNode, ISqlNode
     {
         private enum DataType
         {
@@ -14,6 +15,11 @@ namespace SqlParser.Ast
         }
 
         private readonly DataType _type;
+
+        public SqlNumberNode()
+        {
+            _type = DataType.Int;
+        }
 
         public SqlNumberNode(SqlToken token)
         {

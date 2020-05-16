@@ -1,9 +1,9 @@
-﻿using SqlParser.SqlServer.Stringify;
+﻿using ParserObjects;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlExecuteNode : ISqlNode
+    public class SqlExecuteNode : SqlNode, ISqlNode
     {
         public ISqlNode Name { get; set; }
 
@@ -27,7 +27,7 @@ namespace SqlParser.Ast
         }
     }
 
-    public class SqlExecuteArgumentNode : ISqlNode
+    public class SqlExecuteArgumentNode : SqlNode, ISqlNode
     {
         public SqlVariableNode AssignVariable { get; set; }
         public ISqlNode Value { get; set; }

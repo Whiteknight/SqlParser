@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using SqlParser.SqlServer.Stringify;
+using ParserObjects;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlCaseNode : ISqlNode
+    public class SqlCaseNode : SqlNode, ISqlNode
     {
         public SqlCaseNode()
         {
@@ -35,7 +35,7 @@ namespace SqlParser.Ast
         }
     }
 
-    public class SqlCaseWhenNode: ISqlNode
+    public class SqlCaseWhenNode: SqlNode, ISqlNode
     {
         public ISqlNode Condition { get; set; }
         public ISqlNode Result { get; set; }

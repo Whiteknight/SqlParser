@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using ParserObjects;
 using SqlParser.Tokenizing;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlUnknownStatementNode : ISqlNode
+    public class SqlUnknownStatementNode : SqlNode, ISqlNode
     {
         public List<SqlToken> Tokens { get; set; }
         public Location Location { get; set; }

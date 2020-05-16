@@ -1,17 +1,15 @@
-﻿using SqlParser.SqlServer.Stringify;
+﻿using ParserObjects;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlTopLimitNode : ISqlNode
+    public class SqlTopLimitNode : SqlNode, ISqlNode
     {
         public ISqlNode Value { get; set; }
         public bool Percent { get; set; }
         public bool WithTies { get; set; }
 
         public ISqlNode Accept(INodeVisitorTyped visitor) => visitor.VisitTopLimit(this);
-
-        
 
         public Location Location { get; set; }
 

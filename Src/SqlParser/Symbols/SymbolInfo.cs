@@ -1,4 +1,5 @@
 ﻿using System;
+using ParserObjects;
 using SqlParser.Ast;
 
 namespace SqlParser.Symbols

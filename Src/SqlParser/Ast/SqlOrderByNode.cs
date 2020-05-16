@@ -1,8 +1,9 @@
-﻿using SqlParser.Visiting;
+﻿using ParserObjects;
+using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlOrderByNode : ISqlNode
+    public class SqlOrderByNode : SqlNode, ISqlNode
     {
         public SqlListNode<SqlOrderByEntryNode> Entries { get; set; }
 
@@ -22,7 +23,7 @@ namespace SqlParser.Ast
         }
     }
 
-    public class SqlOrderByEntryNode : ISqlNode
+    public class SqlOrderByEntryNode : SqlNode, ISqlNode
     {
         public ISqlNode Source { get; set; }
         public string Direction { get; set; }

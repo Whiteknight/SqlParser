@@ -6,6 +6,7 @@ using System.Reflection;
 using FluentAssertions;
 using FluentAssertions.Common;
 using FluentAssertions.Primitives;
+using ParserObjects;
 using SqlParser.Ast;
 using SqlParser.PostgreSql.Stringify;
 using SqlParser.PostgreSql.Parsing;

@@ -1,9 +1,9 @@
-﻿using SqlParser.SqlServer.Stringify;
+﻿using ParserObjects;
 using SqlParser.Visiting;
 
 namespace SqlParser.Ast
 {
-    public class SqlFunctionCallNode : ISqlNode
+    public class SqlFunctionCallNode : SqlNode, ISqlNode
     {
         public ISqlNode Name { get; set; }
         public SqlListNode<ISqlNode> Arguments { get; set; }

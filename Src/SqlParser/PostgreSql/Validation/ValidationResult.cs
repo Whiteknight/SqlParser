@@ -14,6 +14,7 @@ namespace SqlParser.PostgreSql.Validation
             _errors = new List<string>();
         }
 
+        // TODO: Take a Location object and store as objects, not strings
         public bool AddError(ISqlNode parent, string name, string message)
         {
             _errors.Add($"{parent.GetType().Name}.{name}: {message}");
