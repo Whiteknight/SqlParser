@@ -1,22 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ParserObjects;
 using SqlParser.Ast;
 
 namespace SqlParser.SqlStandard
 {
+    public class ValidationError
+    {
+        public ValidationError(string error, Location location, string source)
+        {
+            Error = error;
+            Location = location;
+            Source = source;
+        }
+
+        public string Error { get; }
+        public Location Location { get; }
+        public string Source { get; }
+
+        public override string ToString()
+        {
+            if (Location == null)
+                return $"{Source}: {Error}";
+            return $"{Source}: {Error} at {Location}";
+        }
+    }
+
     public class ValidationResult
     {
-        private readonly List<string> _errors;
+        private readonly List<ValidationError> _errors;
 
         public ValidationResult()
         {
-            _errors = new List<string>();
+            _errors = new List<ValidationError>();
         }
 
         public bool AddError(ISqlNode parent, string name, string message)
         {
-            _errors.Add($"{parent.GetType().Name}.{name}: {message}");
+            _errors.Add(new ValidationError(message, null, $"{parent.GetType().Name}.{name}"));
+            return false;
+        }
+
+        public bool AddError(string parserName, string message, Location location)
+        {
+            _errors.Add(new ValidationError(message, location, parserName));
             return false;
         }
 

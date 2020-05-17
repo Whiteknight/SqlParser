@@ -21,13 +21,13 @@ namespace SqlParser.SqlStandard
 
         public IReadOnlyList<string> Errors { get; set; }
 
-        public static AstValidationException Create(IReadOnlyList<string> errors)
+        public static AstValidationException Create(IReadOnlyList<ValidationError> errors)
         {
             var sb = new StringBuilder();
             sb.AppendLine("AST Validation failed");
             sb.AppendLine();
             foreach (var error in errors)
-                sb.AppendLine(error);
+                sb.AppendLine(error.ToString());
             return new AstValidationException(sb.ToString());
         }
     }
