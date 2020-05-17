@@ -8,7 +8,7 @@ using FluentAssertions.Common;
 using FluentAssertions.Primitives;
 using ParserObjects;
 using SqlParser.SqlServer.Validation;
-using SqlParser.SqlStandard;
+using SqlParser.SqlServer.Parsing;
 using SqlParser.Symbols;
 
 namespace SqlParser.SqlServer.Tests.Utility

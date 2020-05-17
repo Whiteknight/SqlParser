@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using SqlParser.Ast;
 using SqlParser.SqlServer.Validation;
-using SqlParser.SqlStandard;
+using SqlParser.SqlServer.Parsing;
 
 namespace SqlParser.SqlServer.Tests
 {

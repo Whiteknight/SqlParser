@@ -2,8 +2,8 @@
 using System.Linq;
 using NUnit.Framework;
 using SqlParser.Ast;
+using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Tests.Utility;
-using SqlParser.SqlStandard;
 
 namespace SqlParser.SqlServer.Tests.Parsing
 {

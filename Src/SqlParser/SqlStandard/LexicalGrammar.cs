@@ -105,28 +105,31 @@ namespace SqlParser.SqlStandard
             //);
 
             var binaryStringLiteral = Rule(
-                CharacterString("X\'"),
+                CharacterString("X\""),
                 hexit.ListCharToString(),
-                CharacterString("\'"),
+                CharacterString("\""),
                 (introducer, body, terminator) => introducer + body + terminator
             );
             var stringCharacter = First(
-                CharacterString("\'\'").Transform(c => '\''),
-                Match(c => c != '\'')
+                CharacterString("\"\"").Transform(c => '\"'),
+                Match(c => c != '\"')
             );
             var nationalStringLiteral = Rule(
-                CharacterString("N\'"),
+                CharacterString("N\""),
                 stringCharacter.List().Transform(s => string.Join("", s)),
-                CharacterString("\'"),
+                CharacterString("\""),
                 (introducer, body, terminator) => introducer + body + terminator
             );
             var stringLiteral = Rule(
-                CharacterString("\'"),
-                stringCharacter.List().Transform(s => new string(s.ToArray())),
-                CharacterString("\'"),
-                (introducer, body, terminator) => 
-                    body
-            );
+                    CharacterString("\""),
+                    stringCharacter.List().Transform(s => new string(s.ToArray())),
+                    CharacterString("\""),
+                    (introducer, body, terminator) =>
+                        body
+                )
+                .Replaceable()
+                .Named("stringLiteral")
+                .Transform(c => new SqlToken(c, SqlTokenType.QuotedString));
 
             var identifier = First(
                 // If it's not bracketed, it might be a keyword. If it is bracketed, it's
@@ -140,7 +143,7 @@ namespace SqlParser.SqlStandard
                 variable.Transform(c => new SqlToken(c, SqlTokenType.Variable)),
                 // TODO: Unquoted identifiers might be keywords
                 identifier,
-                stringLiteral.Transform(c => new SqlToken(c, SqlTokenType.QuotedString)),
+                stringLiteral,
                 //nationalStringLiteral.Transform(c => new SqlToken(c, SqlTokenType.QuotedString)),
                 // TODO: Binary literal isn't really a quoted string
                 //binaryStringLiteral.Transform(c => new SqlToken(c, SqlTokenType.QuotedString)),
