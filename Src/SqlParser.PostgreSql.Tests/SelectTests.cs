@@ -93,11 +93,7 @@ namespace SqlParser.PostgreSql.Tests
                 {
                     Columns = new SqlListNode<ISqlNode>
                     {
-                        new SqlPrefixOperationNode
-                        {
-                            Operator = new SqlOperatorNode("-"),
-                            Right = new SqlNumberNode(10)
-                        }
+                        new SqlNumberNode(-10)
                     }
                 }
             );
@@ -122,11 +118,7 @@ namespace SqlParser.PostgreSql.Tests
                             Right = new SqlPrefixOperationNode
                             {
                                 Operator = new SqlOperatorNode("+"),
-                                Right = new SqlPrefixOperationNode
-                                {
-                                    Operator = new SqlOperatorNode("-"),
-                                    Right = new SqlNumberNode(10)
-                                }
+                                Right = new SqlNumberNode(-10)
                             }
                         }
                     }
@@ -257,7 +249,8 @@ namespace SqlParser.PostgreSql.Tests
                         {
                             Source = new SqlFunctionCallNode
                             {
-                                Name = new SqlIdentifierNode("getutcdate")
+                                Name = new SqlIdentifierNode("GETUTCDATE"),
+                                Arguments = new SqlListNode<ISqlNode>()
                             },
                             Alias = new SqlIdentifierNode("columna")
                         }
@@ -313,7 +306,7 @@ namespace SqlParser.PostgreSql.Tests
                         {
                             Source = new SqlFunctionCallNode
                             {
-                                Name = new SqlIdentifierNode("abs"),
+                                Name = new SqlIdentifierNode("ABS"),
                                 Arguments = new SqlListNode<ISqlNode>
                                 {
                                     new SqlNumberNode(1)
@@ -343,7 +336,7 @@ namespace SqlParser.PostgreSql.Tests
                         {
                             Source = new SqlFunctionCallNode
                             {
-                                Name = new SqlIdentifierNode("coalesce"),
+                                Name = new SqlIdentifierNode("COALESCE"),
                                 Arguments = new SqlListNode<ISqlNode>
                                 {
                                     new SqlNullNode(),
@@ -370,11 +363,7 @@ namespace SqlParser.PostgreSql.Tests
                 {
                     Columns = new SqlListNode<ISqlNode>
                     {
-                        new SqlAliasNode
-                        {
-                            Source = new SqlNullNode(),
-                            Alias = new SqlIdentifierNode("columna")
-                        }
+                        new SqlNullNode()
                     }
                 }
             );
