@@ -15,7 +15,7 @@
 //        {
 //            const string s = "INSERT INTO MyTable(Column1, Column2) VALUES (1, 'TEST');";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -47,7 +47,7 @@
 //        {
 //            const string s = "INSERT INTO MyTable(Column1, Column2) VALUES (1, 'TESTA'), (2, 'TESTB');";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            var output = result.ToString();
 //            result.Should().PassValidation().And.RoundTrip();
 
@@ -85,7 +85,7 @@
 //        {
 //            const string s = "INSERT INTO MyTable(Column1, Column2) DEFAULT VALUES;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -107,7 +107,7 @@
 //        {
 //            const string s = "INSERT INTO MyTable(Column1, Column2) DEFAULT VALUES ON CONFLICT DO NOTHING;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -130,7 +130,7 @@
 //        {
 //            const string s = "INSERT INTO MyTable(Column1, Column2) DEFAULT VALUES ON CONFLICT DO UPDATE SET Column1 = 'TEST';";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(

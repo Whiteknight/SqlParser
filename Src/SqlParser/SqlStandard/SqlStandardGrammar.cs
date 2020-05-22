@@ -11,11 +11,7 @@ namespace SqlParser.SqlStandard
 {
     public class SqlStandardGrammar
     {
-        public static Lazy<SqlStandardGrammar> Instance { get; } = new Lazy<SqlStandardGrammar>(() => new SqlStandardGrammar());
-
-        public static IParser<SqlToken, ISqlNode> GetParser() => Instance.Value.Parser;
-
-        private SqlStandardGrammar()
+        public SqlStandardGrammar()
         {
             Parser = InitializeParser();
         }

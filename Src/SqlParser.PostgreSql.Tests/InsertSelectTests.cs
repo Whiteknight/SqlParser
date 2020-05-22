@@ -16,7 +16,7 @@
 //        {
 //            const string s = @"INSERT INTO ""MyTable""(""Column1"", ""Column2"") SELECT ""ColumnA"", ""ColumnB"" FROM ""MyTable"";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -50,7 +50,7 @@
 //            const string s = @"INSERT INTO ""MyTable""(""Column1"") EXECUTE 'SELECT 1';
 //;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(

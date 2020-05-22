@@ -12,7 +12,7 @@
 //        public void Tokenize_WithLocation()
 //        {
 //            const string s = "SELECT * FROM MyTable";
-//            var target = Tokenizer.ForPostgreSql(s);
+//            var target = s;
 //            var result = target.ToList();
 
 //            result[0].Type.Should().Be(SqlTokenType.Keyword);

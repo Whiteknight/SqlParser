@@ -394,6 +394,25 @@ namespace SqlParser.SqlServer.Tests.Parsing
         }
 
         [Test]
+        public void Select_DelimitedIdentifier()
+        {
+            const string s = "SELECT [columnName]";
+            var target = new Parser();
+            var result = target.Parse(s);
+            result.Should().PassValidation().And.RoundTrip();
+
+            result.Statements.First().Should().MatchAst(
+                new SqlSelectNode
+                {
+                    Columns = new SqlListNode<ISqlNode>
+                    {
+                        new SqlIdentifierNode("columnName")
+                    }
+                }
+            );
+        }
+
+        [Test]
         public void Select_Null()
         {
             const string s = "SELECT NULL";

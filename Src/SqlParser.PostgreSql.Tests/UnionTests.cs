@@ -19,7 +19,7 @@
 //        {
 //            string s = $"SELECT * FROM table1 {op} SELECT * FROM table2";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 //            var o1 = result.ToString();
 
@@ -58,7 +58,7 @@
 //        {
 //            const string s = "SELECT * FROM table1 UNION SELECT * FROM table2 UNION ALL SELECT * FROM table3;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            var output = result.ToString();
 //            result.Should().PassValidation().And.RoundTrip();
 

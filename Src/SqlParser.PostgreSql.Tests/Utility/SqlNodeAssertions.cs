@@ -53,7 +53,7 @@ namespace SqlParser.PostgreSql.Tests.Utility
 
         public AndConstraint<SqlNodeAssertions> PassValidation()
         {
-            Subject.Validate().ThrowOnError();
+            Subject.ValidateForPostgres().ThrowOnError();
             return new AndConstraint<SqlNodeAssertions>(this);
         }
 

@@ -15,7 +15,7 @@
 //        {
 //            const string s = "UPDATE mytable SET columna = 1 WHERE columnb = 2;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            var output = result.ToString();
 //            result.Should().PassValidation().And.RoundTrip();
 
@@ -47,7 +47,7 @@
 //        {
 //            const string s = "UPDATE mytable SET columna = NULL;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -72,7 +72,7 @@
 //        {
 //            const string s = "UPDATE mytable SET columna = DEFAULT;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(

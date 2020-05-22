@@ -16,7 +16,7 @@
 //        {
 //            const string s = "SELECT * FROM \"MyTable\";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -36,7 +36,7 @@
 //        {
 //            const string s = "SELECT * FROM public.\"MyTable\";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -66,7 +66,7 @@
 //                    ""MyTable""
 //                    -- INNER JOIN SomeOtherTable ON MyTableId = SomeOtherTableId;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -96,7 +96,7 @@
 //                FROM 
 //                    MyTable /* INNER JOIN SomeOtherTable ON MyTableId = SomeOtherTableId */;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -119,7 +119,7 @@
 //        {
 //            const string s = "SELECT DISTINCT * FROM MyTable;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().NotBeNull();
 //            result.Should().PassValidation().And.RoundTrip();
 
@@ -144,7 +144,7 @@
 //        {
 //            const string s = "SELECT * FROM @tableVar;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -167,7 +167,7 @@
 //        {
 //            const string s = "SELECT t1.* FROM MyTable AS t1;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -198,7 +198,7 @@
 //        {
 //            const string s = "SELECT t1.* FROM MyTable AS t1(ColumnA);";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -233,7 +233,7 @@
 //        {
 //            const string s = "SELECT t1.MyColumn FROM MyTable AS t1;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -264,7 +264,7 @@
 //        {
 //            const string s = "SELECT \"t1\".* FROM \"MyTable\" AS \"t1\";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -295,7 +295,7 @@
 //        {
 //            const string s = "SELECT t1.* FROM @myTable AS t1;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -330,7 +330,7 @@
 //                    FROM 
 //                        (SELECT * FROM ""MyTable"") AS t1;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 //            var output = result.ToString();
 
@@ -379,7 +379,7 @@
 //                    FROM 
 //                        (SELECT * FROM ""MyTable"") AS t1(""ColumnA"");";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 //            var output = result.ToString();
 
@@ -426,7 +426,7 @@
 //                    FROM 
 //                        (VALUES (1), (2)) AS t1(""ColumnA"");";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 //            var output = result.ToString();
 
@@ -475,7 +475,7 @@
 //        {
 //            const string s = "SELECT \"ColumnA\", \"ColumnB\" FROM \"MyTable\";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -499,7 +499,7 @@
 //        {
 //            const string s = "SELECT -\"ColumnA\" FROM \"MyTable\";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -523,7 +523,7 @@
 //        {
 //            const string s = "SELECT $IDENTITY, $ROWGUID FROM \"MyTable\";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -547,7 +547,7 @@
 //        {
 //            const string s = "SELECT \"ColumnA\", \"ColumnB\" FROM \"MyTable\";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -571,7 +571,7 @@
 //        {
 //            const string s = "SELECT \"SELECT\", \"FROM\" FROM \"MyTable\";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -595,7 +595,7 @@
 //        {
 //            const string s = "SELECT \"ColumnA\" AS \"ColumnB\" FROM \"MyTable\";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -622,7 +622,7 @@
 //        {
 //            const string s = "SELECT \"ColumnA\" AS \"ColumnB\" FROM \"MyTable\";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -649,7 +649,7 @@
 //        {
 //            const string s = "SELECT @value = \"ColumnA\" FROM \"MyTable\";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(

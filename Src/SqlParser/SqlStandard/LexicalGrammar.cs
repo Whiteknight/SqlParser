@@ -13,9 +13,7 @@ namespace SqlParser.SqlStandard
     // https://ronsavage.github.io/SQL/sql-2003-2.bnf.html#character%20set%20specification
     public static class LexicalGrammar
     {
-        private static readonly Lazy<IParser<char, SqlToken>> _parser = new Lazy<IParser<char, SqlToken>>(InitializeParsers);
-
-        public static IParser<char, SqlToken> GetParser() => _parser.Value;
+        public static IParser<char, SqlToken> CreateParser() => InitializeParsers();
 
         private static IParser<char, SqlToken> InitializeParsers()
         {
@@ -33,28 +31,20 @@ namespace SqlParser.SqlStandard
 
                 (prefix, name) => prefix + name
             );
-            //var delimitedIdentifierPart = First(
-            //    Match(c => c != '"').Transform(c => c.ToString()),
-            //    Match("\"\"").Transform(c => new string(c.ToArray()))
-            //);
-            var delimitedIdentifierPart = First(
-                Match(c => c != ']').Transform(c => c.ToString()),
-                Match("[]").Transform(c => new string(c.ToArray()))
-            );
-            //var delimitedIdentifier = Rule(
-            //    Match('\"'),
-            //    delimitedIdentifierPart.List().Transform(s => string.Join("", s)),
-            //    Match('\"'),
 
-            //    (open, parts, close) => parts
-            //);
+            var delimitedIdentifierPart = First(
+                Match(c => c != '"').Transform(c => c.ToString()),
+                Match("\"\"").Transform(c => new string(c.ToArray()))
+            );
             var delimitedIdentifier = Rule(
-                Match('['),
+                Match('\"'),
                 delimitedIdentifierPart.List().Transform(s => string.Join("", s)),
-                Match(']'),
+                Match('\"'),
 
                 (open, parts, close) => parts
-            );
+            )
+                .Replaceable()
+                .Named("delimitedIdentifier");
 
             // TODO: Need this to be case-insensitive
             var booleanLiteral = First(
@@ -81,49 +71,27 @@ namespace SqlParser.SqlStandard
 
             var hexDigits = new HashSet<char>("0123456789abcdefABCDEF");
             var hexit = Match(c => hexDigits.Contains(c));
-            //var binaryStringLiteral = Rule(
-            //    CharacterString("X\""),
-            //    hexit.ListCharToString(),
-            //    CharacterString("\""),
-            //    (introducer, body, terminator) => introducer + body + terminator
-            //);
-            //var stringCharacter = First(
-            //    CharacterString("\"\""),
-            //    Match(c => c != '"').Transform(c => c.ToString())
-            //);
-            //var nationalStringLiteral = Rule(
-            //    CharacterString("N\""),
-            //    stringCharacter.List().Transform(s => string.Join("", s)),
-            //    CharacterString("\""),
-            //    (introducer, body, terminator) => introducer + body + terminator
-            //);
-            //var stringLiteral = Rule(
-            //    CharacterString("\""),
-            //    stringCharacter.List().Transform(s => string.Join("", s)),
-            //    CharacterString("\""),
-            //    (introducer, body, terminator) => introducer + body + terminator
-            //);
 
             var binaryStringLiteral = Rule(
-                CharacterString("X\""),
+                CharacterString("X\'"),
                 hexit.ListCharToString(),
-                CharacterString("\""),
+                CharacterString("\'"),
                 (introducer, body, terminator) => introducer + body + terminator
             );
             var stringCharacter = First(
-                CharacterString("\"\"").Transform(c => '\"'),
-                Match(c => c != '\"')
+                CharacterString("\'\'").Transform(c => '\''),
+                Match(c => c != '\'')
             );
             var nationalStringLiteral = Rule(
-                CharacterString("N\""),
+                CharacterString("N\'"),
                 stringCharacter.List().Transform(s => string.Join("", s)),
-                CharacterString("\""),
+                CharacterString("\'"),
                 (introducer, body, terminator) => introducer + body + terminator
             );
             var stringLiteral = Rule(
-                    CharacterString("\""),
+                    CharacterString("\'"),
                     stringCharacter.List().Transform(s => new string(s.ToArray())),
-                    CharacterString("\""),
+                    CharacterString("\'"),
                     (introducer, body, terminator) =>
                         body
                 )
@@ -189,8 +157,9 @@ namespace SqlParser.SqlStandard
                     )
                     .Transform(s => new SqlToken(s, SqlTokenType.Symbol))
             )
-                .Examine(after: (p, i, r) => 
-                    Debug.WriteLine($"Creating token {r.Value.Type}={r.Value.Value}"));
+                //.Examine(after: (p, i, r) => 
+                //    Debug.WriteLine($"Creating token {r.Value.Type}={r.Value.Value}"))
+                ;
 
             var simpleComment = Rule(
                 CharacterString("--"),

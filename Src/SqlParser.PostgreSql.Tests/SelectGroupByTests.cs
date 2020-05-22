@@ -15,7 +15,7 @@
 //        {
 //            const string s = "SELECT * FROM \"TableA\" GROUP BY \"Column1\"";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(

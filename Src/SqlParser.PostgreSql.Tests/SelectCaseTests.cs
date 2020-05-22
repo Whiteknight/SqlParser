@@ -17,7 +17,7 @@
 //        {
 //            const string s = "SELECT CASE 5 WHEN 6 THEN 'A' ELSE 'B' END;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 //            var output = result.ToString();
 
@@ -49,7 +49,7 @@
 //        {
 //            const string s = "SELECT CASE \"ValueA\" WHEN 6 THEN 'A' ELSE 'B' END AS \"ColumnA\", \"ColumnB\";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(

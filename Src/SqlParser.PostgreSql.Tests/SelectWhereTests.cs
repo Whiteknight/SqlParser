@@ -15,7 +15,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE mycolumn = 1;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -41,7 +41,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE mycolumn1 = mycolumn2 + 1;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -72,7 +72,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE mycolumn1 = 1 AND mycolumn2 = 2;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -108,7 +108,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE mycolumn BETWEEN 1 AND 2;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -134,7 +134,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE mycolumn IN (1, 2, 3);";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -165,7 +165,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE mycolumn IS NULL;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -191,7 +191,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE mycolumn IS NOT NULL;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -217,7 +217,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE mycolumn LIKE '%test%';";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -243,7 +243,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE mycolumn NOT LIKE '%test%';";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -269,7 +269,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable1 WHERE EXISTS (SELECT * FROM mytable2);";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -301,7 +301,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable1 WHERE NOT EXISTS (SELECT * FROM mytable2);";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -337,7 +337,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE mycolumn = ALL (SELECT 5);";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -372,7 +372,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE mycolumn1 = 1 AND (mycolumn2 = 2 OR mycolumn3 = 3);";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -418,7 +418,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE mycolumn1 = 1 AND mycolumn2 = 2 OR mycolumn3 = 3;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -464,7 +464,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE (mycolumn1 = 1 AND mycolumn2 = 2) OR mycolumn3 = 3;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -510,7 +510,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE NOT mycolumn1 = 1 OR mycolumn2 = 2;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -550,7 +550,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable WHERE NOT (mycolumn1 = 1 OR mycolumn2 = 2);";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(

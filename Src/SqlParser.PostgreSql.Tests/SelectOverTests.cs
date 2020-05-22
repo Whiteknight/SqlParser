@@ -15,7 +15,7 @@
 //        {
 //            const string s = "SELECT ROW_NUMBER() OVER (PARTITION BY columna)";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -44,7 +44,7 @@
 //        {
 //            const string s = "SELECT AVG(columna) OVER (ORDER BY columna) FROM mytable";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(

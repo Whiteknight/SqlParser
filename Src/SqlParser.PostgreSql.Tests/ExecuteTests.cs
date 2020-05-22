@@ -16,7 +16,7 @@
 //        {
 //            const string s = "EXECUTE \"myProc\";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -32,7 +32,7 @@
 //        {
 //            const string s = "EXEC \"myProc\";";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -48,7 +48,7 @@
 //        {
 //            const string s = "EXECUTE \"myProc\" 5, 'TEST';";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -75,7 +75,7 @@
 //        {
 //            const string s = "EXECUTE \"myProc\" @size=5, @name='TEST';";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -104,7 +104,7 @@
 //        {
 //            const string s = "EXECUTE \"myProc\" @size OUTPUT, @count OUT;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -133,7 +133,7 @@
 //        {
 //            const string s = "EXECUTE 'SELECT * FROM MyTable';";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -149,7 +149,7 @@
 //        {
 //            const string s = "EXECUTE ('SELECT * ' + 'FROM MyTable');";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -177,7 +177,7 @@
 //            // of any variety.
 //            const string s = "EXECUTE 'SELECT * ' + 'FROM MyTable';";
 //            var target = new Parser();
-//            Action act  = () => target.Parse(Tokenizer.ForPostgreSql(s));
+//            Action act  = () => target.Parse(s);
 //            FluentAssertions.AssertionExtensions.Should(act).Throw<Exception>();
 //        }
 
@@ -186,7 +186,7 @@
 //        {
 //            const string s = "EXECUTE @string;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(

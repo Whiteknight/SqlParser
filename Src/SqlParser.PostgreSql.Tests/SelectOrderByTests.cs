@@ -15,7 +15,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable ORDER BY mycolumn DESC;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -46,7 +46,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable ORDER BY 1 DESC;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -77,7 +77,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable ORDER BY mycolumn ASC;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -108,7 +108,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable ORDER BY mycolumn;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -138,7 +138,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable ORDER BY mycolumn OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
@@ -170,7 +170,7 @@
 //        {
 //            const string s = "SELECT * FROM mytable ORDER BY mycolumn1 ASC, mycolumn2 DESC;";
 //            var target = new Parser();
-//            var result = target.Parse(Tokenizer.ForPostgreSql(s));
+//            var result = target.Parse(s);
 //            result.Should().PassValidation().And.RoundTrip();
 
 //            result.Statements.First().Should().MatchAst(
