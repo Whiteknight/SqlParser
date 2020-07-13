@@ -36,7 +36,7 @@ namespace SqlParser.SqlServer.Parsing
                 (introducer, body, terminator) =>
                     body
             );
-            bool ok = lexer.Replace("stringLiteral", stringLiteral);
+            var ok = lexer.Replace("stringLiteral", stringLiteral);
 
             var delimitedIdentifierPart = First(
                 Match(c => c != ']').Transform(c => c.ToString()),

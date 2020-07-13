@@ -22,7 +22,11 @@ namespace SqlParser.PostgreSql.Parsing
 
         private static IParser<char, SqlToken> InitializeLexer()
         {
-            return SqlStandard.LexicalGrammar.CreateParser();
+            var lexer = SqlStandard.LexicalGrammar.CreateParser();
+            lexer.Replace<char, string>("regularIdentifier", id => 
+                id.Transform(i => 
+                    i.ToLowerInvariant()));
+            return lexer;
         }
 
         public SqlStatementListNode Parse(string s)
