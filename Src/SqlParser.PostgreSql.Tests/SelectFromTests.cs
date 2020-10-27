@@ -4,7 +4,6 @@ using NUnit.Framework;
 using SqlParser.Ast;
 using SqlParser.PostgreSql.Parsing;
 using SqlParser.PostgreSql.Tests.Utility;
-using SqlParser.Tokenizing;
 
 namespace SqlParser.PostgreSql.Tests
 {
@@ -109,7 +108,7 @@ namespace SqlParser.PostgreSql.Tests
                             new SqlOperatorNode("*")
                         }
                     },
-                    FromClause = new SqlObjectIdentifierNode("MyTable")
+                    FromClause = new SqlObjectIdentifierNode("mytable")
                 }
             );
         }
@@ -533,8 +532,8 @@ namespace SqlParser.PostgreSql.Tests
                     {
                         Children = new List<ISqlNode>
                         {
-                            new SqlIdentifierNode("$IDENTITY"),
-                            new SqlIdentifierNode("$ROWGUID")
+                            new SqlVariableNode("$IDENTITY"),
+                            new SqlVariableNode("$ROWGUID")
                         }
                     },
                     FromClause = new SqlObjectIdentifierNode("MyTable")

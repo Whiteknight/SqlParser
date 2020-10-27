@@ -23,7 +23,9 @@ namespace SqlParser.SqlStandard
 
                     (start, parts) => start + new string(parts)
                 )
-                .Transform(c => new SqlToken(c, Facts.IsKeyword(c) ? SqlTokenType.Keyword : SqlTokenType.Identifier));
+                .Transform(c => new SqlToken(c, Facts.IsKeyword(c) ? SqlTokenType.Keyword : SqlTokenType.Identifier))
+                .Replaceable()
+                .Named("regularIdentifier");
 
             var variable = Rule(
                 Match(c => c == '$' || c == '@'),
@@ -198,6 +200,11 @@ namespace SqlParser.SqlStandard
                 separator,
                 tokens,
                 (s, t) => t
+           ).Examine(
+                s =>
+                { },
+                s =>
+                { }
             );
         }
     }
