@@ -33,6 +33,15 @@ namespace SqlParser
             return root.Find(n => true);
         }
 
+        // TODO: Move these methods into the specific subdirectories
+
+        public static string ToSqlStandardString(this ISqlNode n)
+        {
+            var sb = new StringBuilder();
+            new SqlStandard.Stringify.StringifyVisitor(sb).Visit(n);
+            return sb.ToString();
+        }
+
         public static string ToSqlServerString(this ISqlNode n)
         {
             var sb = new StringBuilder();

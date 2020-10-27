@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ParserObjects;
-using SqlParser.Tokenizing;
 using ParserObjects.Parsers;
+using SqlParser.Tokenizing;
 using static ParserObjects.Parsers.ParserMethods;
 using static ParserObjects.Parsers.ParserMethods<char>;
 
@@ -158,10 +157,16 @@ namespace SqlParser.SqlStandard
                     number.Transform(c => new SqlToken(c, SqlTokenType.Number)),
                     integer.Transform(c => new SqlToken(c, SqlTokenType.Number)),
                     operators
-                )
-                //.Examine(after: (p, i, r) => 
-                //    Debug.WriteLine($"Creating token {r.Value.Type}={r.Value.Value}"))
-                ;
+                ).Examine(
+                        s =>
+                        {
+                            var next = s.Input.Peek();
+                            Debug.WriteLine(next);
+                        }
+                    )
+            //.Examine(after: (p, i, r) => 
+            //    Debug.WriteLine($"Creating token {r.Value.Type}={r.Value.Value}"))
+            ;
 
             var simpleComment = Rule(
                 CharacterString("--"),

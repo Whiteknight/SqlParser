@@ -7,11 +7,10 @@ using FluentAssertions;
 using FluentAssertions.Common;
 using FluentAssertions.Primitives;
 using ParserObjects;
-using SqlParser.SqlServer.Parsing;
 using SqlParser.SqlServer.Validation;
 using SqlParser.Symbols;
 
-namespace SqlParser.SqlServer.Tests.Utility
+namespace SqlParser.SqlStandard.Tests.Utility
 {
     public class SqlNodeAssertions : ReferenceTypeAssertions<ISqlNode, SqlNodeAssertions>
     {
