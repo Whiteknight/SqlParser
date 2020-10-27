@@ -32,7 +32,7 @@ namespace SqlParser.SqlServer.Tests.Utility
 
         public AndConstraint<SqlNodeAssertions> RoundTrip()
         {
-            var asString = Subject.ToSqlStandardString();
+            var asString = Subject.ToSqlServerString();
             ISqlNode roundTripped = null;
             try
             {

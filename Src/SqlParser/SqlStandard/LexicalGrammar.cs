@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using ParserObjects;
 using ParserObjects.Parsers;
@@ -44,6 +43,8 @@ namespace SqlParser.SqlStandard
 
                     (open, parts, close) => parts
                 )
+                .Replaceable()
+                .Named("delimitedIdentifier")
                 .Transform(c => new SqlToken(c, SqlTokenType.Identifier));
 
             // TODO: Need this to be case-insensitive
@@ -156,16 +157,9 @@ namespace SqlParser.SqlStandard
                     //booleanLiteral.Transform(c => new SqlToken(c, SqlTokenType.Keyword)),
                     number.Transform(c => new SqlToken(c, SqlTokenType.Number)),
                     integer.Transform(c => new SqlToken(c, SqlTokenType.Number)),
-                    operators
-                ).Examine(
-                        s =>
-                        {
-                            var next = s.Input.Peek();
-                            Debug.WriteLine(next);
-                        }
-                    )
-            //.Examine(after: (p, i, r) => 
-            //    Debug.WriteLine($"Creating token {r.Value.Type}={r.Value.Value}"))
+                    operators,
+                    Produce(s => new SqlToken(s.GetNext().ToString(), SqlTokenType.Unknown))
+                )
             ;
 
             var simpleComment = Rule(

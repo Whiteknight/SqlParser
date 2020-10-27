@@ -2,6 +2,7 @@
 {
     public enum SqlTokenType
     {
+        Unknown,
         EndOfInput,
         Number,
         Keyword,
