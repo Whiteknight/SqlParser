@@ -1,11 +1,12 @@
 ﻿using System.Linq;
 using ParserObjects;
-using SqlParser.Ast;
-using SqlParser.Tokenizing;
 using ParserObjects.Parsers;
+using SqlParser.Ast;
+using SqlParser.SqlStandard;
+using SqlParser.Tokenizing;
 using static ParserObjects.Parsers.ParserMethods<SqlParser.Tokenizing.SqlToken>;
 
-namespace SqlParser.SqlStandard
+namespace SqlParser.Parsing
 {
     public static class ParserMethods
     {
@@ -14,7 +15,7 @@ namespace SqlParser.SqlStandard
             var matchers = words.Select(w => Match(t => t
                 .IsKeyword(w))).ToList();
             if (matchers.Count == 1)
-                return matchers.First().Transform(t => 
+                return matchers.First().Transform(t =>
                     new SqlKeywordNode(t));
             // TODO: Clean this up
             return new RuleParser<SqlToken, SqlKeywordNode>(matchers, r =>

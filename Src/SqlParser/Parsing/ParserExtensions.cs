@@ -1,13 +1,14 @@
 ﻿using ParserObjects;
 using SqlParser.Ast;
+using SqlParser.SqlStandard;
 using SqlParser.Tokenizing;
 using static ParserObjects.Parsers.ParserMethods<SqlParser.Tokenizing.SqlToken>;
 
-namespace SqlParser.SqlStandard
+namespace SqlParser.Parsing
 {
     public static class ParserExtensions
     {
-        public static IParser<SqlToken, SqlParenthesisNode<TNode>> Parenthesized<TNode>(this IParser<SqlToken, TNode> parser) 
+        public static IParser<SqlToken, SqlParenthesisNode<TNode>> Parenthesized<TNode>(this IParser<SqlToken, TNode> parser)
             where TNode : class, ISqlNode
         {
             return Rule(

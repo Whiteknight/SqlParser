@@ -1,9 +1,5 @@
-﻿using System.Linq;
-using NUnit.Framework;
-using SqlParser.Ast;
+﻿using NUnit.Framework;
 using SqlParser.SqlStandard.Tests.Utility;
-using SqlParser.SqlServer.Parsing;
-using SqlParser.Tokenizing;
 
 namespace SqlParser.SqlStandard.Tests.Parsing
 {
@@ -16,22 +12,8 @@ namespace SqlParser.SqlStandard.Tests.Parsing
             const string s = "SELECT TOP 10 * FROM MyTable;";
             var target = new Parser();
             var result = target.Parse(s);
-            result.Should().PassValidation().And.RoundTrip();
-
-            result.Statements.First().Should().MatchAst(
-                new SqlSelectNode
-                {
-                    Columns = new SqlListNode<ISqlNode>
-                    {
-                        new SqlOperatorNode("*")
-                    },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    TopLimitClause = new SqlTopLimitNode
-                    {
-                        Value = new SqlNumberNode(10)
-                    }
-                }
-            );
+            // SQL Standard does not support the top clause
+            result.Should().BeNull();
         }
 
         [Test]
@@ -40,22 +22,8 @@ namespace SqlParser.SqlStandard.Tests.Parsing
             const string s = "SELECT TOP @limit * FROM MyTable;";
             var target = new Parser();
             var result = target.Parse(s);
-            result.Should().PassValidation().And.RoundTrip();
-
-            result.Statements.First().Should().MatchAst(
-                new SqlSelectNode
-                {
-                    Columns = new SqlListNode<ISqlNode>
-                    {
-                        new SqlOperatorNode("*")
-                    },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    TopLimitClause = new SqlTopLimitNode
-                    {
-                        Value = new SqlVariableNode("@limit")
-                    }
-                }
-            );
+            // SQL Standard does not support the top clause
+            result.Should().BeNull();
         }
 
         [Test]
@@ -64,22 +32,8 @@ namespace SqlParser.SqlStandard.Tests.Parsing
             const string s = "SELECT TOP (10) * FROM MyTable;";
             var target = new Parser();
             var result = target.Parse(s);
-            result.Should().PassValidation().And.RoundTrip();
-
-            result.Statements.First().Should().MatchAst(
-                new SqlSelectNode
-                {
-                    Columns = new SqlListNode<ISqlNode>
-                    {
-                        new SqlOperatorNode("*")
-                    },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    TopLimitClause = new SqlTopLimitNode
-                    {
-                        Value = new SqlNumberNode(10)
-                    }
-                }
-            );
+            // SQL Standard does not support the top clause
+            result.Should().BeNull();
         }
 
         [Test]
@@ -88,22 +42,8 @@ namespace SqlParser.SqlStandard.Tests.Parsing
             const string s = "SELECT TOP (@limit) * FROM MyTable;";
             var target = new Parser();
             var result = target.Parse(s);
-            result.Should().PassValidation().And.RoundTrip();
-
-            result.Statements.First().Should().MatchAst(
-                new SqlSelectNode
-                {
-                    Columns = new SqlListNode<ISqlNode>
-                    {
-                        new SqlOperatorNode("*")
-                    },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    TopLimitClause = new SqlTopLimitNode
-                    {
-                        Value = new SqlVariableNode("@limit")
-                    }
-                }
-            );
+            // SQL Standard does not support the top clause
+            result.Should().BeNull();
         }
 
         [Test]
@@ -112,23 +52,8 @@ namespace SqlParser.SqlStandard.Tests.Parsing
             const string s = "SELECT TOP (10) PERCENT * FROM MyTable;";
             var target = new Parser();
             var result = target.Parse(s);
-            result.Should().PassValidation().And.RoundTrip();
-
-            result.Statements.First().Should().MatchAst(
-                new SqlSelectNode
-                {
-                    Columns = new SqlListNode<ISqlNode>
-                    {
-                        new SqlOperatorNode("*")
-                    },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    TopLimitClause = new SqlTopLimitNode
-                    {
-                        Value = new SqlNumberNode(10),
-                        Percent = true
-                    }
-                }
-            );
+            // SQL Standard does not support the top clause
+            result.Should().BeNull();
         }
 
         [Test]
@@ -137,23 +62,8 @@ namespace SqlParser.SqlStandard.Tests.Parsing
             const string s = "SELECT TOP (10) WITH TIES * FROM MyTable;";
             var target = new Parser();
             var result = target.Parse(s);
-            result.Should().PassValidation().And.RoundTrip();
-
-            result.Statements.First().Should().MatchAst(
-                new SqlSelectNode
-                {
-                    Columns = new SqlListNode<ISqlNode>
-                    {
-                        new SqlOperatorNode("*")
-                    },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    TopLimitClause = new SqlTopLimitNode
-                    {
-                        Value = new SqlNumberNode(10),
-                        WithTies = true
-                    }
-                }
-            );
+            // SQL Standard does not support the top clause
+            result.Should().BeNull();
         }
 
         [Test]
@@ -162,24 +72,8 @@ namespace SqlParser.SqlStandard.Tests.Parsing
             const string s = "SELECT TOP (10) PERCENT WITH TIES * FROM MyTable;";
             var target = new Parser();
             var result = target.Parse(s);
-            result.Should().PassValidation().And.RoundTrip();
-
-            result.Statements.First().Should().MatchAst(
-                new SqlSelectNode
-                {
-                    Columns = new SqlListNode<ISqlNode>
-                    {
-                        new SqlOperatorNode("*")
-                    },
-                    FromClause = new SqlObjectIdentifierNode("MyTable"),
-                    TopLimitClause = new SqlTopLimitNode
-                    {
-                        Value = new SqlNumberNode(10),
-                        Percent = true,
-                        WithTies = true
-                    }
-                }
-            );
+            // SQL Standard does not support the top clause
+            result.Should().BeNull();
         }
     }
 }

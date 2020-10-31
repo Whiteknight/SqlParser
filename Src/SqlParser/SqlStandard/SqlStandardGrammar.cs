@@ -1,11 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using ParserObjects;
 using ParserObjects.Parsers;
 using SqlParser.Ast;
+using SqlParser.Parsing;
 using SqlParser.Tokenizing;
 using static ParserObjects.Parsers.ParserMethods<SqlParser.Tokenizing.SqlToken>;
-using static SqlParser.SqlStandard.ParserMethods;
+using static SqlParser.Parsing.ParserMethods;
 
 namespace SqlParser.SqlStandard
 {
@@ -44,33 +44,33 @@ namespace SqlParser.SqlStandard
             var dot = Token(SqlTokenType.Symbol, ".");
             var star = Operator("*");
             var comma = Token(SqlTokenType.Symbol, ",");
-            
+
             var equals = Operator("=");
             var assignmentOperator = Match(t => t.IsSymbol("=", "+=", "-=", "*=", "/=", "%=", "&=", "^=", "|="))
                 .Transform(t => new SqlOperatorNode(t));
 
-            var number = Token(SqlTokenType.Number).Transform(t => new SqlNumberNode(t));
+            var number = Token(SqlTokenType.Number)
+                .Transform(t => new SqlNumberNode(t))
+                .Named("number");
             var quotedString = Token(SqlTokenType.QuotedString).Transform(t => new SqlStringNode(t));
             var constant = First<ISqlNode>(
                 quotedString,
                 number
             );
 
-            var variable = Token(SqlTokenType.Variable).Transform(t => new SqlVariableNode(t));
+            var variable = Token(SqlTokenType.Variable)
+                .Transform(t => new SqlVariableNode(t))
+                .Named("variable");
 
             var variableOrConstant = First(
                 variable,
                 constant
             );
-            var variableOrNumber = First<ISqlNode>(
-                variable,
-                number
-            );
-            
-            var queryExpressionInternal = Empty().Transform(x => (ISqlNode) null);
+
+            var queryExpressionInternal = Empty().Transform(x => (ISqlNode)null);
             var queryExpression = Deferred(() => queryExpressionInternal);
 
-            var booleanExpressionInternal = Empty().Transform(x => (ISqlNode) null);
+            var booleanExpressionInternal = Empty().Transform(x => (ISqlNode)null);
             var booleanExpression = Deferred(() => booleanExpressionInternal);
 
             var scalarExpressionInternal = Empty().Transform(x => (ISqlNode)null);
@@ -122,7 +122,8 @@ namespace SqlParser.SqlStandard
                 keyword,
                 // TODO: If we see an open paren we must require a datatype
                 dataTypeSize.Optional(),
-                (n, s) => new SqlDataTypeNode {
+                (n, s) => new SqlDataTypeNode
+                {
                     Location = n.Location,
                     DataType = n,
                     Size = s
@@ -186,13 +187,14 @@ namespace SqlParser.SqlStandard
             var arithmeticPrefixInternal = Empty().Transform(t => (ISqlNode)null);
             var arithmeticPrefix = Deferred(() => arithmeticPrefixInternal);
             arithmeticPrefixInternal = First(
-                nullTerm, 
+                nullTerm,
                 scalarTerm,
                 Rule(
                     // TODO: prefix operator not followed by NULL
                     arithmeticPrefixOperator,
                     arithmeticPrefix,
-                    (op, expr) => new SqlPrefixOperationNode {
+                    (op, expr) => new SqlPrefixOperationNode
+                    {
                         Location = op.Location,
                         Operator = op,
                         Right = expr
@@ -437,7 +439,7 @@ namespace SqlParser.SqlStandard
             var orderDirection = First(
                 Keyword("ASC"),
                 Keyword("DESC")
-                // TODO: Should we insert a synthetic ASC here since it's the default?
+            // TODO: Should we insert a synthetic ASC here since it's the default?
             ).Optional();
 
             var orderColumn = Rule(
@@ -554,7 +556,9 @@ namespace SqlParser.SqlStandard
                     identifier,
                     // TODO: If we see an open paren, we must find a column list and a closed paren
                     Parenthesized(
-                        identifier.ListSeparatedBy(comma, true).Transform(l => new SqlListNode<SqlIdentifierNode>(l.ToList()))
+                        identifier
+                            .ListSeparatedBy(comma, true)
+                            .Transform(l => new SqlListNode<SqlIdentifierNode>(l.ToList()))
                     ).Optional(),
                     (source, a, alias, columns) => new SqlAliasNode
                     {
@@ -646,6 +650,7 @@ namespace SqlParser.SqlStandard
                 scalarExpression.List(true).Transform(l => new SqlListNode<ISqlNode>(l.ToList())),
                 (partition, by, l) => l
             );
+
             var overOrderBy = Rule(
                 Keyword("ORDER"),
                 RequiredKeyword("BY"),
@@ -731,22 +736,7 @@ namespace SqlParser.SqlStandard
                 (k, expr) => expr
             );
 
-            var selectTopClause = Rule(
-                Keyword("TOP"),
-                First(
-                    variableOrNumber.MaybeParenthesized(),
-                    ErrorNode<SqlNumberNode>("Expecting variable or number")
-                ),
-                Keyword("PERCENT").Optional(),
-                // TODO: If we see WITH we must require TIES
-                Keyword("WITH", "TIES").Optional(),
-                (top, expr, percent, withTies) => new SqlTopLimitNode {
-                    Location = top.Location,
-                    Value = expr,
-                    Percent = percent != null,
-                    WithTies = withTies != null
-                }
-            );
+
 
             var whereClause = Rule(
                 Keyword("WHERE"),
@@ -775,7 +765,7 @@ namespace SqlParser.SqlStandard
             var selectClause = Rule(
                 keywordSelect,
                 selectModifier.Optional(),
-                selectTopClause.Optional(),
+                Empty().Transform(_ => (SqlTopLimitNode)null).Replaceable("selectTopClause"),
                 selectColumnList,
                 // TODO: This should return a Select Clause Node
                 (select, mod, top, columns) => new
@@ -974,8 +964,8 @@ namespace SqlParser.SqlStandard
                 Keyword("DEFAULT", "VALUES"),
                 queryExpression,
                 executeStatement
-                // TODO: EXEC/EXECUTE
-                // TODO: DEFAULT VALUES
+            // TODO: EXEC/EXECUTE
+            // TODO: DEFAULT VALUES
             );
 
             var insertStatement = Rule(
@@ -1074,7 +1064,8 @@ namespace SqlParser.SqlStandard
                 // TODO: "AND" <clauseSearchCondition>
                 Keyword("THEN"),
                 mergeOnMatched,
-                (when, matched, then, onMatched) => new SqlMergeMatchClauseNode {
+                (when, matched, then, onMatched) => new SqlMergeMatchClauseNode
+                {
                     Location = when.Location,
                     Keyword = new SqlKeywordNode("WHEN MATCHED", when.Location),
                     Action = onMatched
@@ -1163,7 +1154,7 @@ namespace SqlParser.SqlStandard
                 (merge, into, u, on, matched) => new SqlMergeNode
                 {
                     Location = merge.Location,
-                    Target = into, 
+                    Target = into,
                     Source = u,
                     MergeCondition = on,
                     MatchClauses = new SqlListNode<SqlMergeMatchClauseNode>(matched.ToList())
@@ -1258,9 +1249,9 @@ namespace SqlParser.SqlStandard
                 }
             );
 
-            var statementInternal = Empty().Transform(t => (ISqlNode) null);
+            var statementInternal = Empty().Transform(t => (ISqlNode)null);
             var statement = Deferred(() => statementInternal);
-            var statementList = statement.List().Transform(l => 
+            var statementList = statement.List().Transform(l =>
                 new SqlStatementListNode(l.ToList()));
 
             var ifStatement = Rule(
@@ -1306,12 +1297,12 @@ namespace SqlParser.SqlStandard
                 executeStatement,
                 ifStatement,
                 beginBlock
-                // TODO: If we don't know what it is, Parse it into an Unknown node and continue
-                // TODO: RETURN?
-                // TODO: THROW/TRY/CATCH
-                // TODO: WHILE/CONTINUE/BREAK
-                // TODO: CREATE/DROP/ALTER? Do we want to handle DDL statments here?
-                //Empty().Transform(x => (ISqlNode)null)
+            // TODO: If we don't know what it is, Parse it into an Unknown node and continue
+            // TODO: RETURN?
+            // TODO: THROW/TRY/CATCH
+            // TODO: WHILE/CONTINUE/BREAK
+            // TODO: CREATE/DROP/ALTER? Do we want to handle DDL statments here?
+            //Empty().Transform(x => (ISqlNode)null)
             );
 
             statementInternal = Rule(
