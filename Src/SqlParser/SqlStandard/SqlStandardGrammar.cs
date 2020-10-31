@@ -115,8 +115,12 @@ namespace SqlParser.SqlStandard
 
             var dataTypeSize = First<ISqlNode>(
                     Keyword("MAX"),
-                    number.ListSeparatedBy(comma, true).Transform(n => new SqlListNode<SqlNumberNode>(n.ToList()))
-                ).Parenthesized().Transform(p => p.Expression);
+                    number
+                        .ListSeparatedBy(comma, true)
+                        .Transform(n => new SqlListNode<SqlNumberNode>(n.ToList()))
+                )
+                .Parenthesized()
+                .Transform(p => p.Expression);
 
             var dataType = Rule(
                 keyword,
@@ -183,6 +187,7 @@ namespace SqlParser.SqlStandard
             );
 
             // TODO: Make this rule properly recursive (right-associative) (NULL doesn't recurse and can't have the operators applied)
+            // TODO: In SQL Standard the "||" operator is used to concat strings, but in SQL Server it is "+"
             var arithmeticPrefixOperator = Match(t => t.IsSymbol("-", "+", "~")).Transform(t => new SqlOperatorNode(t));
             var arithmeticPrefixInternal = Empty().Transform(t => (ISqlNode)null);
             var arithmeticPrefix = Deferred(() => arithmeticPrefixInternal);
@@ -277,6 +282,8 @@ namespace SqlParser.SqlStandard
 
             scalarExpressionInternal = caseExpression;
 
+            // TODO: The "!=" operator is only for SQL Server, not SQL Standard. SQL Server 
+            // supports both "!=" and "<>". Standard only supports the later.
             var booleanComparison = Operator(">", "<", "=", "<=", ">=", "!=", "<>");
             var booleanComparisonModifier = First(
                 Keyword("ALL"),
@@ -780,11 +787,14 @@ namespace SqlParser.SqlStandard
             // TODO: Need to reduce the size of this list to 9 or less
             var querySpecification = Rule(
                 selectClause,
+                // TODO: I think FROM clause is mandatory in SQL standard, optional only in SQL Server
                 selectFromClause.Optional(),
                 whereClause.Optional(),
                 selectGroupByClause.Optional(),
                 selectHavingClause.Optional(),
                 selectOrderByClause.Optional(),
+                // TODO: In SQL Standard I think ORDER BY is optional with OFFSET/FETCH, but in
+                // SQL Server it might be mandatory.
                 selectOffsetClause.Optional(),
                 selectFetchClause.Optional(),
                 // TODO: This should return a QuerySpecificationNode which takes an SelectClauseNode
@@ -834,6 +844,9 @@ namespace SqlParser.SqlStandard
                     ErrorNode<SqlObjectIdentifierNode>("Expecting table name")
                 ),
                 whereClause.Optional(),
+                // TODO: SQL Server supports an extra FROM clause to select records to delete based
+                // on values from another query
+                // TODO: SQL Server supports "DELETE A FROM A JOIN B" syntax
                 // TODO: OUTPUT clause
                 (delete, from, id, where) => new SqlDeleteNode
                 {
@@ -962,6 +975,7 @@ namespace SqlParser.SqlStandard
                 valuesLiteral,
                 // TODO: If we see DEFAULT we must see VALUES
                 Keyword("DEFAULT", "VALUES"),
+                // TODO: "INSERT INTO ... SELECT ..." from is only supported by SQL Server, not standard
                 queryExpression,
                 executeStatement
             // TODO: EXEC/EXECUTE
@@ -1019,7 +1033,8 @@ namespace SqlParser.SqlStandard
                     updateSetClause,
                     ErrorNode<SqlListNode<SqlInfixOperationNode>>("Expected SET clause")
                 ),
-                // TODO: OUTPUT clause
+                // TODO: SQL Server provides a "FROM" syntax to delete from table B based on values from a query on table A
+                // TODO: OUTPUT clause, which is only supported by SQL Server
                 whereClause.Optional(),
                 (update, table, set, where) => new SqlUpdateNode
                 {

@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Analysis\" />
-    <Folder Include="Optimizer\" />
+    <Folder Include="Optimizing\" />
   </ItemGroup>
 
   <ItemGroup>

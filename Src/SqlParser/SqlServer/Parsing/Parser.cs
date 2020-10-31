@@ -14,6 +14,9 @@ namespace SqlParser.SqlServer.Parsing
         private static readonly Lazy<IParser<char, SqlToken>> _lexer = new Lazy<IParser<char, SqlToken>>(InitializeLexer);
         private static readonly Lazy<IParser<SqlToken, ISqlNode>> _parser = new Lazy<IParser<SqlToken, ISqlNode>>(InitializeParser);
 
+        // See, for some reference about differences from standard:
+        // https://learnsql.com/blog/14-differences-sql-vs-tsql/
+
         public SqlStatementListNode Parse(string sql)
         {
             var lexer = _lexer.Value;
