@@ -1,6 +1,4 @@
-﻿using SqlParser.Ast;
-
-namespace SqlParser.Optimizer
+﻿namespace SqlParser.Optimizing
 {
     public static class SqlNodeExtensions
     {

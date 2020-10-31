@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using SqlParser.Ast;
-using SqlParser.Optimizer;
+using SqlParser.Optimizing;
 using SqlParser.SqlStandard.Tests.Utility;
 
 namespace SqlParser.SqlStandard.Tests

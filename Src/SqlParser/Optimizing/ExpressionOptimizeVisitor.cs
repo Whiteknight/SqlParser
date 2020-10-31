@@ -1,7 +1,7 @@
 ﻿using SqlParser.Ast;
 using SqlParser.Visiting;
 
-namespace SqlParser.Optimizer
+namespace SqlParser.Optimizing
 {
     public class ExpressionOptimizeVisitor : SqlNodeVisitor
     {
@@ -59,6 +59,6 @@ namespace SqlParser.Optimizer
             return base.VisitSelect(n);
         }
 
-        
+
     }
 }
