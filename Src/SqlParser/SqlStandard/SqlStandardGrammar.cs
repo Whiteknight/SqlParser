@@ -1,10 +1,9 @@
 ﻿using System.Linq;
 using ParserObjects;
-using ParserObjects.Parsers;
 using SqlParser.Ast;
 using SqlParser.Parsing;
 using SqlParser.Tokenizing;
-using static ParserObjects.Parsers.ParserMethods<SqlParser.Tokenizing.SqlToken>;
+using static ParserObjects.ParserMethods<SqlParser.Tokenizing.SqlToken>;
 using static SqlParser.Parsing.ParserMethods;
 
 namespace SqlParser.SqlStandard
@@ -130,7 +129,7 @@ namespace SqlParser.SqlStandard
                 {
                     Location = n.Location,
                     DataType = n,
-                    Size = s
+                    Size = s.GetValueOrDefault(null)
                 }
             );
 
@@ -269,9 +268,9 @@ namespace SqlParser.SqlStandard
                 (c, expr, when, e, x) => new SqlCaseNode
                 {
                     Location = c.Location,
-                    InputExpression = expr,
+                    InputExpression = expr.GetValueOrDefault(null),
                     WhenExpressions = when.ToList(),
-                    ElseExpression = e
+                    ElseExpression = e.GetValueOrDefault(null)
                 }
             );
 
@@ -282,7 +281,7 @@ namespace SqlParser.SqlStandard
 
             scalarExpressionInternal = caseExpression;
 
-            // TODO: The "!=" operator is only for SQL Server, not SQL Standard. SQL Server 
+            // TODO: The "!=" operator is only for SQL Server, not SQL Standard. SQL Server
             // supports both "!=" and "<>". Standard only supports the later.
             var booleanComparison = Operator(">", "<", "=", "<=", ">=", "!=", "<>");
             var booleanComparisonModifier = First(
@@ -304,7 +303,7 @@ namespace SqlParser.SqlStandard
                             Location = l.Location,
                             Left = l,
                             Right = query,
-                            Operator = mod != null ? new SqlOperatorNode($"{comp.Operator} {mod.Keyword}", comp.Location) : comp
+                            Operator = mod.Success ? new SqlOperatorNode($"{comp.Operator} {mod.GetValueOrDefault(null)?.Keyword}", comp.Location) : comp
                         }
                     ),
                     Rule(
@@ -331,7 +330,7 @@ namespace SqlParser.SqlStandard
                             Operator = new SqlOperatorNode
                             {
                                 Location = i.Location,
-                                Operator = not == null ? "IS" : "IS NOT"
+                                Operator = !not.Success ? "IS" : "IS NOT"
                             },
                             Right = n
                         }
@@ -346,7 +345,7 @@ namespace SqlParser.SqlStandard
                         (l, not, between, expr1, and, expr2) => new SqlBetweenOperationNode
                         {
                             Location = between.Location,
-                            Not = not != null,
+                            Not = not.Success,
                             Left = l,
                             Low = expr1,
                             High = expr2
@@ -359,7 +358,7 @@ namespace SqlParser.SqlStandard
                         variableOrConstant.ListSeparatedBy(comma, true).Transform(l => new SqlListNode<ISqlNode>(l.ToList())).Parenthesized(),
                         (l, not, @in, values) => new SqlInNode
                         {
-                            Not = not != null,
+                            Not = not.Success,
                             Search = l,
                             Location = @in.Location,
                             Items = values.Expression
@@ -376,13 +375,13 @@ namespace SqlParser.SqlStandard
                             Operator = new SqlOperatorNode
                             {
                                 Location = like.Location,
-                                Operator = (not != null ? "NOT " : "") + "LIKE",
+                                Operator = (not.Success ? "NOT " : "") + "LIKE",
                             },
                             Right = pattern
                         }
                     )
                 ),
-                ApplyArity.ZeroOrOne
+                Quantifier.ZeroOrOne
             );
 
             var existsExpression = Rule(
@@ -401,7 +400,7 @@ namespace SqlParser.SqlStandard
 
             var booleanExists = First(
                 existsExpression,
-                // If we see a '(' at this point, it might be "(5) = 5" or it might be "(5 == 5)", so we 
+                // If we see a '(' at this point, it might be "(5) = 5" or it might be "(5 == 5)", so we
                 // go to <booleanTerm> first because the scalar parser will cover the first case. Otherwise
                 // we fallback to Parenthesized(<booleanExpression>) to try it that way. Extra backtracking
                 // but it's what we have to do.
@@ -411,17 +410,20 @@ namespace SqlParser.SqlStandard
                 ).Transform(p => p.Expression)
             );
 
-            var invertedBoolean = Rule(
-                Keyword("NOT").Optional(),
-                booleanExists,
-                (not, expr) => not == null
-                    ? expr
-                    : new SqlPrefixOperationNode
-                    {
-                        Operator = new SqlOperatorNode(not.Keyword, not.Location),
-                        Location = not.Location,
-                        Right = expr
-                    }
+            var invertedBoolean = First(
+                Rule(
+                    Keyword("NOT"),
+                    booleanExists,
+                    (not, expr) => not == null
+                        ? expr
+                        : new SqlPrefixOperationNode
+                        {
+                            Operator = new SqlOperatorNode(not.Keyword, not.Location),
+                            Location = not.Location,
+                            Right = expr
+                        }
+                ),
+                booleanExists
             );
 
             var combinedBoolean = LeftApply(
@@ -459,7 +461,7 @@ namespace SqlParser.SqlStandard
                 {
                     Source = col,
                     // TODO: This should be an SqlKeywordNode
-                    Direction = dir?.Keyword,
+                    Direction = dir.GetValueOrDefault(null)?.Keyword,
                     Location = col.Location
                 }
             );
@@ -481,14 +483,14 @@ namespace SqlParser.SqlStandard
                 rowOrRows,
                 RequiredKeyword("ONLY"),
                 (f, n, qty, r, o) => qty
-            ).Optional();
+            );
 
             var selectOffsetClause = Rule(
                 Keyword("OFFSET"),
                 number,
                 rowOrRows,
                 (o, qty, r) => qty
-            ).Optional();
+            );
 
             var selectOrderByClause = Rule(
                 Keyword("ORDER"),
@@ -500,7 +502,7 @@ namespace SqlParser.SqlStandard
                     Location = order.Location,
                     Entries = new SqlListNode<SqlOrderByEntryNode>(cols.ToList())
                 }
-            ).Optional();
+            );
 
             var objectIdentifier = identifier
                 .ListSeparatedBy(dot, 1, 4)
@@ -523,10 +525,10 @@ namespace SqlParser.SqlStandard
                         Location = source.Location,
                         Source = source,
                         Alias = alias,
-                        ColumnNames = columns?.Expression
+                        ColumnNames = columns.GetValueOrDefault(null)?.Expression
                     }
                 ),
-                ApplyArity.ZeroOrOne
+                Quantifier.ZeroOrOne
             );
 
             var valuesClause = Rule(
@@ -572,10 +574,10 @@ namespace SqlParser.SqlStandard
                         Location = source.Location,
                         Source = source,
                         Alias = alias,
-                        ColumnNames = columns?.Expression
+                        ColumnNames = columns.GetValueOrDefault(null)?.Expression
                     }
                 ),
-                ApplyArity.ZeroOrOne
+                Quantifier.ZeroOrOne
             );
             var requiredTableOrSubexpressionWithOptionalAlias = First(
                 tableOrSubexpressionWithOptionalAlias,
@@ -596,7 +598,7 @@ namespace SqlParser.SqlStandard
                     ).Optional(),
                     Token(SqlTokenType.Keyword, "OUTER").Optional(),
                     Token(SqlTokenType.Keyword, "JOIN"),
-                    (scope, side, op) => new SqlOperatorNode(string.Join(" ", new[] { scope?.Value, side?.Value, op.Value }.Where(x => x != null)))
+                    (scope, side, op) => new SqlOperatorNode(string.Join(" ", new[] { scope.GetValueOrDefault(null)?.Value, side.GetValueOrDefault(null)?.Value, op.Value }.Where(x => x != null)))
                 )
             );
             var joinOperatorNotRequiringOnClause = First(
@@ -701,9 +703,9 @@ namespace SqlParser.SqlStandard
                         Location = k.Location,
                         // TODO: Have to invert this, the column has an over, not the over has an expression
                         Expression = l,
-                        PartitionBy = p,
-                        OrderBy = ob,
-                        RowsRange = r
+                        PartitionBy = p.GetValueOrDefault(null),
+                        OrderBy = ob.GetValueOrDefault(null),
+                        RowsRange = r.GetValueOrDefault(null)
                     }
                 )
             );
@@ -742,8 +744,6 @@ namespace SqlParser.SqlStandard
                 booleanExpression,
                 (k, expr) => expr
             );
-
-
 
             var whereClause = Rule(
                 Keyword("WHERE"),
@@ -803,15 +803,15 @@ namespace SqlParser.SqlStandard
                     Location = select.Select.Location,
                     TopLimitClause = select.Top,
                     // TODO: .Modifier should be an SqlKeywordNode
-                    Modifier = select.Modifiers?.Keyword,
+                    Modifier = select.Modifiers.GetValueOrDefault(null)?.Keyword,
                     Columns = select.Columns,
-                    FromClause = from,
-                    WhereClause = where,
-                    GroupByClause = gb,
-                    HavingClause = having,
-                    OrderByClause = orderBy,
-                    OffsetClause = offset,
-                    FetchClause = fetch
+                    FromClause = from.GetValueOrDefault(null),
+                    WhereClause = where.GetValueOrDefault(null),
+                    GroupByClause = gb.GetValueOrDefault(null),
+                    HavingClause = having.GetValueOrDefault(null),
+                    OrderByClause = orderBy.GetValueOrDefault(null),
+                    OffsetClause = offset.GetValueOrDefault(null),
+                    FetchClause = fetch.GetValueOrDefault(null)
                 }
             );
 
@@ -852,7 +852,7 @@ namespace SqlParser.SqlStandard
                 {
                     Location = delete.Location,
                     Source = id,
-                    WhereClause = where
+                    WhereClause = where.GetValueOrDefault(null)
                 }
             );
 
@@ -884,7 +884,7 @@ namespace SqlParser.SqlStandard
                         Location = v.Location,
                         AssignVariable = v,
                         Value = expr,
-                        IsOut = output != null
+                        IsOut = output.Success
                     }
                 ),
                 Rule(
@@ -894,7 +894,7 @@ namespace SqlParser.SqlStandard
                     {
                         Location = expr.Location,
                         Value = expr,
-                        IsOut = output != null
+                        IsOut = output.Success
                     }
                 )
             );
@@ -946,7 +946,7 @@ namespace SqlParser.SqlStandard
                         }
                     )
                 ),
-                ApplyArity.ExactlyOne
+                Quantifier.ExactlyOne
             );
 
             var insertColumnList = identifier
@@ -1041,7 +1041,7 @@ namespace SqlParser.SqlStandard
                     Location = update.Location,
                     Source = table,
                     SetClause = set,
-                    WhereClause = where
+                    WhereClause = where.GetValueOrDefault(null)
                 }
             );
 
@@ -1190,7 +1190,7 @@ namespace SqlParser.SqlStandard
                     {
                         Location = id.Location,
                         Name = id,
-                        ColumnNames = cols?.Expression,
+                        ColumnNames = cols.GetValueOrDefault(null)?.Expression,
                         Select = query
                     };
                     cte.DetectRecursion();
@@ -1243,7 +1243,7 @@ namespace SqlParser.SqlStandard
                     Location = declare.Location,
                     Variable = vari,
                     DataType = type,
-                    Initializer = init
+                    Initializer = init.GetValueOrDefault(null)
                 }
             );
 
@@ -1283,7 +1283,7 @@ namespace SqlParser.SqlStandard
                     Location = i.Location,
                     Condition = cond,
                     Then = onThen,
-                    Else = onElse
+                    Else = onElse.GetValueOrDefault(null)
                 }
             );
 
@@ -1330,7 +1330,7 @@ namespace SqlParser.SqlStandard
             return Rule(
                 statementList,
                 First(
-                    End().Transform(b => (object)null),
+                    If(End(), Produce(() => (SqlToken)null)),
                     Match(t => t.Type == SqlTokenType.EndOfInput)
                 ),
                 (stmts, eof) => stmts

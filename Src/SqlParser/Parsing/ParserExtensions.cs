@@ -2,7 +2,7 @@
 using SqlParser.Ast;
 using SqlParser.SqlStandard;
 using SqlParser.Tokenizing;
-using static ParserObjects.Parsers.ParserMethods<SqlParser.Tokenizing.SqlToken>;
+using static ParserObjects.ParserMethods<SqlParser.Tokenizing.SqlToken>;
 
 namespace SqlParser.Parsing
 {

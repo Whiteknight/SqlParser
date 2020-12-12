@@ -4,7 +4,7 @@ using ParserObjects.Parsers;
 using SqlParser.Ast;
 using SqlParser.SqlStandard;
 using SqlParser.Tokenizing;
-using static ParserObjects.Parsers.ParserMethods<SqlParser.Tokenizing.SqlToken>;
+using static ParserObjects.ParserMethods<SqlParser.Tokenizing.SqlToken>;
 
 namespace SqlParser.Parsing
 {
@@ -31,7 +31,7 @@ namespace SqlParser.Parsing
         {
             return First(
                 Keyword(words),
-                Produce(i =>
+                Produce((i, d) =>
                 {
                     var word = string.Join(" ", words);
                     var n = new SqlKeywordNode(word, i.CurrentLocation);
@@ -58,7 +58,7 @@ namespace SqlParser.Parsing
         public static IParser<SqlToken, TNode> ErrorNode<TNode>(string error)
             where TNode : IDiagnosable, new()
         {
-            return Produce(i =>
+            return Produce((i, d) =>
             {
                 var t = new TNode();
                 t.AddErrors(i.CurrentLocation, error);
@@ -91,7 +91,7 @@ namespace SqlParser.Parsing
         {
             return First(
                 Token(type, value),
-                Produce(i =>
+                Produce((i, d) =>
                 {
                     var t = new SqlToken(value, type, i.CurrentLocation);
                     t.AddErrors(i.CurrentLocation, $"Missing {type} '{value}'");
@@ -99,7 +99,5 @@ namespace SqlParser.Parsing
                 })
             );
         }
-
     }
-
 }

@@ -3,8 +3,8 @@ using System.Linq;
 using ParserObjects;
 using ParserObjects.Parsers;
 using SqlParser.Tokenizing;
-using static ParserObjects.Parsers.ParserMethods;
-using static ParserObjects.Parsers.ParserMethods<char>;
+using static ParserObjects.ParserMethods;
+using static ParserObjects.ParserMethods<char>;
 
 namespace SqlParser.SqlStandard
 {
@@ -58,10 +58,11 @@ namespace SqlParser.SqlStandard
 
             var sign = First(
                 CharacterString("+"),
-                CharacterString("-")
+                CharacterString("-"),
+                Produce(() => "")
             );
             var integer = Rule(
-                sign.Optional(),
+                sign,
                 Match(char.IsDigit).ListCharToString(true),
                 (s, value) => s + value
             );
@@ -145,7 +146,7 @@ namespace SqlParser.SqlStandard
                 .Transform(s => new SqlToken(s, SqlTokenType.Symbol));
 
             var tokens = First(
-                    End().Transform(c => new SqlToken(null, SqlTokenType.EndOfInput)),
+                    If(End(), Produce(() => new SqlToken(null, SqlTokenType.EndOfInput))),
                     variable.Transform(c => new SqlToken(c, SqlTokenType.Variable)),
                     // TODO: Unquoted identifiers might be keywords
                     identifier,
@@ -160,7 +161,7 @@ namespace SqlParser.SqlStandard
                     number.Transform(c => new SqlToken(c, SqlTokenType.Number)),
                     integer.Transform(c => new SqlToken(c, SqlTokenType.Number)),
                     operators,
-                    Produce(s => new SqlToken(s.GetNext().ToString(), SqlTokenType.Unknown))
+                    Produce((s, d) => new SqlToken(s.GetNext().ToString(), SqlTokenType.Unknown))
                 )
             ;
 
@@ -190,7 +191,7 @@ namespace SqlParser.SqlStandard
                 simpleComment,
                 bracketedComment
             );
-            var whitespace = Match(char.IsWhiteSpace).List(true);
+            var whitespace = Whitespace();
             var separatorItem = First(
                 comment,
                 whitespace

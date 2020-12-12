@@ -5,7 +5,7 @@ using ParserObjects.Parsers;
 using ParserObjects.Sequences;
 using SqlParser.Ast;
 using SqlParser.Tokenizing;
-using static ParserObjects.Parsers.ParserMethods<char>;
+using static ParserObjects.ParserMethods<char>;
 
 namespace SqlParser.PostgreSql.Parsing
 {

@@ -1,8 +1,7 @@
 ﻿using ParserObjects;
 using ParserObjects.Parsers;
 using SqlParser.Tokenizing;
-using static ParserObjects.Parsers.ParserMethods<char>;
-
+using static ParserObjects.ParserMethods<char>;
 
 namespace SqlParser.SqlServer.Parsing
 {

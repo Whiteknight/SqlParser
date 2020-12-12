@@ -30,7 +30,7 @@ namespace SqlParser.SqlStandard
             var parser = _parser.Value;
             var result = parser.Parse(tokens);
             var unparsedRemainder = input.GetRemainder();
-            return result.Value as SqlStatementListNode;
+            return result.Success ? result.Value as SqlStatementListNode : null;
         }
     }
 }
