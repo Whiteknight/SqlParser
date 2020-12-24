@@ -66,13 +66,13 @@ namespace SqlParser.SqlStandard
                 constant
             );
 
-            var queryExpressionInternal = Empty().Transform(x => (ISqlNode)null);
+            var queryExpressionInternal = Produce(() => (ISqlNode)null);
             var queryExpression = Deferred(() => queryExpressionInternal);
 
-            var booleanExpressionInternal = Empty().Transform(x => (ISqlNode)null);
+            var booleanExpressionInternal = Produce(() => (ISqlNode)null);
             var booleanExpression = Deferred(() => booleanExpressionInternal);
 
-            var scalarExpressionInternal = Empty().Transform(x => (ISqlNode)null);
+            var scalarExpressionInternal = Produce(() => (ISqlNode)null);
             var scalarExpression = Deferred(() => scalarExpressionInternal);
 
             var qualifierDotIdentifier = Rule(
@@ -188,7 +188,7 @@ namespace SqlParser.SqlStandard
             // TODO: Make this rule properly recursive (right-associative) (NULL doesn't recurse and can't have the operators applied)
             // TODO: In SQL Standard the "||" operator is used to concat strings, but in SQL Server it is "+"
             var arithmeticPrefixOperator = Match(t => t.IsSymbol("-", "+", "~")).Transform(t => new SqlOperatorNode(t));
-            var arithmeticPrefixInternal = Empty().Transform(t => (ISqlNode)null);
+            var arithmeticPrefixInternal = Produce(() => (ISqlNode)null);
             var arithmeticPrefix = Deferred(() => arithmeticPrefixInternal);
             arithmeticPrefixInternal = First(
                 nullTerm,
@@ -668,7 +668,7 @@ namespace SqlParser.SqlStandard
             );
 
             // TODO: This
-            var overRows = Empty().Transform(x => (ISqlNode)null);
+            var overRows = Produce(() => (ISqlNode)null);
 
             var variableColumn = First<ISqlNode>(
                 Rule(
@@ -772,7 +772,7 @@ namespace SqlParser.SqlStandard
             var selectClause = Rule(
                 keywordSelect,
                 selectModifier.Optional(),
-                Empty().Transform(_ => (SqlTopLimitNode)null).Replaceable("selectTopClause"),
+                Produce(() => (SqlTopLimitNode)null).Replaceable("selectTopClause"),
                 selectColumnList,
                 // TODO: This should return a Select Clause Node
                 (select, mod, top, columns) => new
@@ -1264,7 +1264,7 @@ namespace SqlParser.SqlStandard
                 }
             );
 
-            var statementInternal = Empty().Transform(t => (ISqlNode)null);
+            var statementInternal = Produce(() => (ISqlNode)null);
             var statement = Deferred(() => statementInternal);
             var statementList = statement.List().Transform(l =>
                 new SqlStatementListNode(l.ToList()));

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ParserObjects;
-using ParserObjects.Parsers;
 using SqlParser.Tokenizing;
 using static ParserObjects.ParserMethods;
 using static ParserObjects.ParserMethods<char>;
@@ -172,13 +171,8 @@ namespace SqlParser.SqlStandard
                 (introducer, commentChars) => ""
             );
             var bracketedCommentContentChar = First(
-                Rule(
-                    CharacterString("*"),
-                    Match(c => c != '/'),
-
-                    (asterisk, slash) => new[] { asterisk[0], slash }
-                ),
-                Match(c => c != '*').Transform(c => new[] { c })
+                Match('*').NotFollowedBy(Match('/')),
+                Match(c => c != '*')
             );
             var bracketedComment = Rule(
                 CharacterString("/*"),
@@ -201,11 +195,6 @@ namespace SqlParser.SqlStandard
                 separator,
                 tokens,
                 (s, t) => t
-           ).Examine(
-                s =>
-                { },
-                s =>
-                { }
             );
         }
     }

@@ -26,6 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ParserObjects" Version="3.0.0-alpha5" />
+    <PackageReference Include="ParserObjects" Version="3.0.0-beta1" />
   </ItemGroup>
 </Project>

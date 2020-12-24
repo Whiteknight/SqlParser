@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SqlParser.SqlStandard
 {
-    public class Facts
+    public static class Facts
     {
         private static HashSet<string> _reservedWords;
         private static HashSet<string> _builtInFunctionNames;
@@ -14,7 +14,7 @@ namespace SqlParser.SqlStandard
             k = (k ?? "").ToUpperInvariant();
 
             if (_reservedWords == null)
-                _reservedWords = new HashSet<string>(_keywords.Split(new [] { '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Distinct());
+                _reservedWords = new HashSet<string>(_keywords.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Distinct());
             return _reservedWords.Contains(k);
         }
 
@@ -910,6 +910,5 @@ YEAR
 YEAR_MONTH
 ZEROFILL
 ZONE";
-    
     }
 }
